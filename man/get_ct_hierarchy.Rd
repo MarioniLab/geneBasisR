@@ -32,3 +32,15 @@ hclust object representing relationship of celltypes.
 \description{
 Produces binary tree representing celltype relationships (based on input genes)
 }
+\examples{
+require(SingleCellExperiment)
+n_row = 30000
+n_col = 100
+sce = SingleCellExperiment(assays = list(logcounts = matrix(rnorm(n_row*n_col), ncol=n_col)))
+rownames(sce) = as.factor(1:n_row)
+colnames(sce) = c(1:n_col)
+sce$cell = colnames(sce)
+sce$celltype = as.factor(sample(1:5, n_col, replace=TRUE))
+ct_hierarchy = get_ct_hierarchy(sce , genes = c(1:20), nPC = 10)
+
+}

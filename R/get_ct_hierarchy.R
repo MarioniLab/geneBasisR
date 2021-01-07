@@ -13,6 +13,16 @@
 #' @export
 #' @importFrom stats dist hclust
 #' @examples
+#' require(SingleCellExperiment)
+#' n_row = 30000
+#' n_col = 100
+#' sce = SingleCellExperiment(assays = list(logcounts = matrix(rnorm(n_row*n_col), ncol=n_col)))
+#' rownames(sce) = as.factor(1:n_row)
+#' colnames(sce) = c(1:n_col)
+#' sce$cell = colnames(sce)
+#' sce$celltype = as.factor(sample(1:5, n_col, replace=TRUE))
+#' ct_hierarchy = get_ct_hierarchy(sce , genes = c(1:20), nPC = 10)
+#'
 get_ct_hierarchy = function(sce , genes = NULL , batch = NULL, cosineNorm = TRUE , nPC = NULL, p.thresh = 0.05){
   if (!.check_counts_matrix_correct(sce)) {
     stop()
@@ -43,20 +53,11 @@ get_ct_hierarchy = function(sce , genes = NULL , batch = NULL, cosineNorm = TRUE
   }
 }
 
-
-#' Transforms celltype hierarchy representation to the nested list format.
-#'
-#' @param ct_hierarchy hclust object representing celltype hierarchy.
-#'
-#' @return Celltype hierarchy in the nested lists format.
-#' @export
-#'
-#' @examples
+# Transforms celltype hierarchy representation to the nested list format.
 .get_listed_ct_hierarchy = function(ct_hierarchy){
   if (!is(hc , "hclust")){
     stop("input should be of hclust class")
   } else {
-
     ct_hierarchy.merge = ct_hierarchy$merge
     ct_hierarchy.labels = ct_hierarchy$labels
 
