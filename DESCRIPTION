@@ -1,0 +1,24 @@
+Package: geneBasisR
+Title: Generates gene selection to be probed in -FISH experiments and evaluates custom gene selections for their suitability for -FISH experiments
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Alsu",
+           family = "Missarova",
+           role = c("aut", "cre"),
+           email = "alsu.missarova.32@gmail.com")
+Description: Package contains various functions to facilitate and evaluate gene selection for -FISH based experiments. That includes PCA-based gene selection that takes annotated (e.g. with celltypes) scRNA-seq dataset as an input and generates the panel of genes that explain majority of the biological variation. Additionally, it contains set of functions to evaluate any custom panel of selected genes using various metrics such as celltype annotation, transcriptional graph similarity and the potential to impute the remaining transcriptome.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    scran,
+    SingleCellExperiment,
+    batchelor,
+    stats,
+    forcats,
+    dplyr,
+    tibble,
+    stringr,
+    BiocNeighbors
