@@ -20,5 +20,13 @@ list containing stat per PC and order gene vector
 Returns ordered gene selection (by their relevance to PC-space)
 }
 \examples{
-
+require(SingleCellExperiment)
+n_row = 30000
+n_col = 100
+sce = SingleCellExperiment(assays = list(logcounts = matrix(rnorm(n_row*n_col), ncol=n_col)))
+rownames(sce) = as.factor(1:n_row)
+colnames(sce) = c(1:n_col)
+sce$cell = colnames(sce)
+sce$celltype = as.factor(sample(1:5, n_col, replace=TRUE))
+genes_ranked = get_gene_ranking(sce , genes = c(1:20))
 }
