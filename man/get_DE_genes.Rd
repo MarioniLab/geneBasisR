@@ -12,7 +12,7 @@ get_DE_genes(
 )
 }
 \arguments{
-\item{sce}{SingleCellExperiment object representing scRNA-seq counts matrix containing celltype field}
+\item{sce}{SingleCellExperiment object representing scRNA-seq counts matrix containing celltype field.}
 
 \item{test}{A parameter of findMarkers function determining which statistical test should be used for selection of DE genes. Default=binom.}
 
@@ -32,6 +32,8 @@ n_row = 30000
 n_col = 100
 sce = SingleCellExperiment(assays = list(logcounts = matrix(rnorm(n_row*n_col), ncol=n_col)))
 rownames(sce) = as.factor(1:n_row)
+colnames(sce) = c(1:n_col)
+sce$cell = colnames(sce)
 sce$celltype = as.factor(sample(1:5, n_col, replace=TRUE))
 
 markers.binom = get_DE_genes(sce)
