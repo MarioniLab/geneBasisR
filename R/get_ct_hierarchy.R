@@ -50,9 +50,13 @@ get_ct_hierarchy = function(sce , genes = NULL , batch = NULL, cosineNorm = TRUE
     dist = dist(t(avg_pc_per_ct.stat) , diag=TRUE)
     ct_hierarchy = hclust(dist ,  method = "average")
     if (option == "list"){
-      ct_hierarchy = .get_listed_ct_hierarchy(ct_hierarchy)
+      out = .get_listed_ct_hierarchy(ct_hierarchy)
+    } else if (option == "hclust"){
+      out = ct_hierarchy
+    } else if (option == "both"){
+      out = list("hclust" = ct_hierarchy , "list" =  .get_listed_ct_hierarchy(ct_hierarchy))
     }
-    return(ct_hierarchy)
+    return(out)
   }
 }
 
