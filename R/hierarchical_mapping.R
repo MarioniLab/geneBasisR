@@ -15,8 +15,23 @@
 #' @export
 #'
 #' @examples
-get_hierarchical_mapping = function( sce_reference , sce_query , genes, ct_hierarchy , batch = NULL , cosineNorm = TRUE , n.neigh = 10 , nPC = NULL , p.thresh = 0.05){
-  mapping = .get_mapping_single_split(sce_reference, sce_query, genes, ct_hierarchy, batch, cosineNorm, n.neigh, nPC, p.thresh)
+#' require(SingleCellExperiment)
+#' n_row = 30000
+#' n_col = 100
+#' cells_reference = c(1:80)
+#' sce = SingleCellExperiment(assays = list(logcounts = matrix(rnorm(n_row*n_col), ncol=n_col)))
+#' rownames(sce) = as.factor(1:n_row)
+#' colnames(sce) = c(1:n_col)
+#' sce$cell = colnames(sce)
+#' sce$celltype = as.factor(sample(1:5, n_col, replace=TRUE))
+#' genes = c(1:20)
+#' ct_hierarchy = get_ct_hierarchy(sce , genes = genes, nPC = 10)
+#' sce_reference = sce[ , colnames(sce) %in% cells_reference]
+#' sce_query = sce[ , !colnames(sce) %in% cells_reference]
+#' out = hierarchical_mapping(sce_reference , sce_query , genes , ct_hierarchy, nPC=5)
+
+hierarchical_mapping = function( sce_reference , sce_query , genes, ct_hierarchy , batch = NULL , cosineNorm = TRUE , n.neigh = 10 , nPC = NULL , p.thresh = 0.05){
+  mapping = .mapping_single_split(sce_reference, sce_query, genes, ct_hierarchy, batch, cosineNorm, n.neigh, nPC, p.thresh)
   mappings = lapply(1:2, function(i){
     if (!is(ct_hierarchy[[i]] , "list")){
       current_mapping = mapping[mapping$celltype_mapped == ct_hierarchy[[i]] , ]
@@ -26,7 +41,7 @@ get_hierarchical_mapping = function( sce_reference , sce_query , genes, ct_hiera
       current_sce_reference = sce_reference[, sce_reference$celltype %in% unlist( ct_hierarchy[[i]] ) ]
       current_sce_query = sce_query[, colnames(sce_query) %in% mapping$cell[mapping$celltype_mapped == i]]
       current_ct_hierarchy = ct_hierarchy[[i]]
-      return(get_hierarchical_mapping(current_sce_reference , current_sce_query , genes , current_ct_hierarchy, batch, cosineNorm, n.neigh, nPC, p.thresh))
+      return(hierarchical_mapping(current_sce_reference , current_sce_query , genes , current_ct_hierarchy, batch, cosineNorm, n.neigh, nPC, p.thresh))
     }
   })
   mappings = do.call(rbind , mappings)
@@ -34,7 +49,7 @@ get_hierarchical_mapping = function( sce_reference , sce_query , genes, ct_hiera
 }
 
 
-.get_mapping_single_split = function(sce_reference , sce_query , genes , ct_hierarchy , batch = NULL , cosineNorm = TRUE , n.neigh = 10, nPC = NULL , p.thresh){
+.mapping_single_split = function(sce_reference , sce_query , genes , ct_hierarchy , batch = NULL , cosineNorm = TRUE , n.neigh = 10, nPC = NULL , p.thresh){
   if (!.check_counts_matrix_correct(sce_reference) | !.check_counts_matrix_correct(sce_query)) {
     stop()
   } else {

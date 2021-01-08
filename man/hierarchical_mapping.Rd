@@ -41,3 +41,19 @@ data.frame object, where every row corresponds to cell from sce_query. celltype_
 \description{
 MNN-based mapping in hierarchical fashion.
 }
+\examples{
+require(SingleCellExperiment)
+n_row = 30000
+n_col = 100
+cells_reference = c(1:80)
+sce = SingleCellExperiment(assays = list(logcounts = matrix(rnorm(n_row*n_col), ncol=n_col)))
+rownames(sce) = as.factor(1:n_row)
+colnames(sce) = c(1:n_col)
+sce$cell = colnames(sce)
+sce$celltype = as.factor(sample(1:5, n_col, replace=TRUE))
+genes = c(1:20)
+ct_hierarchy = get_ct_hierarchy(sce , genes = genes, nPC = 10)
+sce_reference = sce[ , colnames(sce) \%in\% cells_reference]
+sce_query = sce[ , !colnames(sce) \%in\% cells_reference]
+out = hierarchical_mapping(sce_reference , sce_query , genes , ct_hierarchy, nPC=5)
+}

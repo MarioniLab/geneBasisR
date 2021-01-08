@@ -13,7 +13,20 @@
 #' @export
 #' @importFrom BiocNeighbors queryKNN
 #' @examples
-#'
+#' require(SingleCellExperiment)
+#' n_row = 30000
+#' n_col = 100
+#' cells_reference = c(1:80)
+#' sce = SingleCellExperiment(assays = list(logcounts = matrix(rnorm(n_row*n_col), ncol=n_col)))
+#' rownames(sce) = as.factor(1:n_row)
+#' colnames(sce) = c(1:n_col)
+#' sce$cell = colnames(sce)
+#' sce$celltype = as.factor(sample(1:5, n_col, replace=TRUE))
+#' sce_reference = sce[ , colnames(sce) %in% cells_reference]
+#' sce_query = sce[ , !colnames(sce) %in% cells_reference]
+#' genes = c(1:20)
+#' out = mapping(sce_reference , sce_query , genes, nPC=5)
+
 mapping = function(sce_reference , sce_query , genes , batch = NULL , cosineNorm = TRUE , n.neigh = 10 , nPC = NULL , p.thresh = 0.05){
   if (!.check_counts_matrix_correct(sce_reference) | !.check_counts_matrix_correct(sce_query)) {
     stop()
@@ -36,11 +49,11 @@ mapping = function(sce_reference , sce_query , genes , batch = NULL , cosineNorm
       else {
         pcs_corrected = .get_corrected_pcs(sce , genes , batch , cosineNorm)
         relevant_pcs = .get_relevant_for_celltypes_pcs(pcs_corrected , sce_reference, nPC, p.thresh)
-        corrected_pcs = corrected_pcs[, relevant_pcs]
+        pcs_corrected = pcs_corrected[, relevant_pcs]
 
         reference_cells = colnames(sce_reference)
         query_cells = colnames(sce_query)
-        knns = suppressWarnings( queryKNN( corrected_pcs[reference_cells ,], corrected_pcs[query_cells ,], k = n.neigh, get.index = TRUE) )
+        knns = suppressWarnings( queryKNN( pcs_corrected[reference_cells ,], pcs_corrected[query_cells ,], k = n.neigh, get.index = TRUE) )
         cells_mapped = t( apply(knns$index, 1, function(x) reference_cells[x]) )
         celltypes = t(apply(cells_mapped, 1, function(x) meta$celltype[match(x, meta$cell)]))
         celltype_mapped = apply(celltypes, 1, function(x) .getmode(x, 1:length(x)))
