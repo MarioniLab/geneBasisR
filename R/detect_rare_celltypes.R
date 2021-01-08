@@ -10,6 +10,17 @@
 #' @export
 #'
 #' @examples
+#' require(SingleCellExperiment)
+#' n_row = 30000
+#' n_col = 100
+#' sce = SingleCellExperiment(assays = list(logcounts = matrix(rnorm(n_row*n_col), ncol=n_col)))
+#' rownames(sce) = as.factor(1:n_row)
+#' sce$celltype = as.factor(sample(1:10, n_col, replace=TRUE))
+#'
+#' out = detect_rare_celltypes(sce)
+#' sce.filtered = detect_rare_celltypes(sce, get_markers_rare_celltypes = FALSE)
+#' markers.rare_celltypes = detect_rare_celltypes(sce, filter_rare_celltypes = FALSE)
+
 detect_rare_celltypes = function(sce , n_cells.thresh = 10 , Top = 5, filter_rare_celltypes = TRUE, get_markers_rare_celltypes = TRUE){
   if(!is.numeric(n_cells.thresh) | n_cells.thresh < 0){
     stop("n_cells.thresh must be a non-negative number.")
@@ -21,19 +32,19 @@ detect_rare_celltypes = function(sce , n_cells.thresh = 10 , Top = 5, filter_rar
     celltypes_2discard = names(celltypes_stat)[celltypes_stat < n_cells.thresh]
     if (isEmpty(celltypes_2discard)){
       message("No rare celltypes found.")
-      out = sce
+      out = list(filtered_sce = sce)
     } else {
       message(paste0("Detected next rare celltypes: " , celltypes_2discard))
       if (get_markers_rare_celltypes & filter_rare_celltypes){
-        markers.rare_celltypes = .get_markers_rare_celltypes(sce, celltypes_2discard)
+        markers.rare_celltypes = .get_markers_rare_celltypes(sce, celltypes_2discard, Top)
         sce.filtered = .filter_rare_celltypes(sce, celltypes_2discard)
         out = list(filtered_sce = sce.filtered, markers = markers.rare_celltypes)
       } else if (filter_rare_celltypes){
         sce.filtered = .filter_rare_celltypes(sce, celltypes_2discard)
-        out = sce.filtered
+        out = list(filtered_sce = sce.filtered)
       } else if (get_markers_rare_celltypes){
-        markers.rare_celltypes = .get_markers_rare_celltypes(sce, celltypes_2discard)
-        out = markers.rare_celltypes
+        markers.rare_celltypes = .get_markers_rare_celltypes(sce, celltypes_2discard, Top)
+        out = list(markers = markers.rare_celltypes)
       }
     }
     return(out)
@@ -41,7 +52,7 @@ detect_rare_celltypes = function(sce , n_cells.thresh = 10 , Top = 5, filter_rar
 }
 
 #' @importFrom scran findMarkers
-.get_markers_rare_celltypes = function(sce, celltypes){
+.get_markers_rare_celltypes = function(sce, celltypes, Top=5){
   markers <- findMarkers(sce , groups=sce$celltype, direction = "up", test = "t", assay.type = "logcounts", pval.type="any")
   markers.rare_celltypes = lapply(celltypes, function(celltype){
     current_sce = sce
