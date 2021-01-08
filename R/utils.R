@@ -30,9 +30,9 @@
   } else {
     # assign whether we work with cosine normalized logcounts
     if (cosineNorm){
-      counts = cosineNorm( logcounts(sce[genes , ]) )
+      counts = cosineNorm( logcounts(sce[rownames(sce) %in% genes , ]) )
     } else {
-      counts = logcounts(sce[genes , ])
+      counts = logcounts(sce[rownames(sce) %in% genes , ])
     }
     # perform pca and if multiple batches exist - perform correction
     if (!is.null(batch)){
@@ -46,7 +46,7 @@
           pcs_corrected = suppressWarnings( do.call(reducedMNN, as.list(pcs)) )
           pcs_corrected = pcs_corrected$corrected
         } else {
-          pcs_corrected = pcs_corrected[[1]]
+          pcs_corrected = pcs[[1]]
         }
       }
     } else {
@@ -64,7 +64,7 @@
 #' @importFrom stats aov p.adjust
 #' @importFrom stringr str_remove
 .get_relevant_for_celltypes_pcs = function(pcs_corrected , sce_reference , nPC = NULL, p.thresh = 0.05){
-  if (!.check_counts_matrix_correct(sce)) {
+  if (!.check_counts_matrix_correct(sce_reference)) {
     stop()
   } else {
     pcs_corrected = as.data.frame( pcs_corrected[rownames(pcs_corrected) %in% colnames(sce_reference) ,] )
