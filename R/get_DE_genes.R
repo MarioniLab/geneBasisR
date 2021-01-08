@@ -53,6 +53,7 @@ get_DE_genes = function(sce , test = "binom", FDR.thresh = 0.01 , filter_by_ct_s
 }
 
 #' @importFrom dplyr summarise group_by
+#' @importFrom stats quantile
 .filter_by_ct_specificity = function(sce){
   if (!.check_counts_matrix_correct(sce)) {
     stop()
@@ -65,7 +66,7 @@ get_DE_genes = function(sce , test = "binom", FDR.thresh = 0.01 , filter_by_ct_s
     stat = do.call(rbind , stat)
     stat = as.data.frame( stat %>% group_by(gene) %>% summarise(frac_q75_positive = mean(q75 > 0)))
 
-    # keep only lowly expressed and specific cts
+    # keep only lowly expressed and specific celltypes
     thresh.n_ct = 0.5
     genes = as.character( stat$gene[stat$frac_q75_positive < thresh.n_ct] )
     sce = sce[rownames(sce) %in% genes , ]
