@@ -14,7 +14,9 @@ hierarchical_mapping(
   nPC = NULL,
   nPC.ct_hierarchy = NULL,
   p.thresh = 0.05,
-  p.thresh.ct_hierarchy = 0.05
+  p.thresh.ct_hierarchy = 0.05,
+  get.sensitivity = TRUE,
+  sensitivity.thresh = 0.75
 )
 }
 \arguments{
@@ -39,7 +41,7 @@ hierarchical_mapping(
 \item{p.thresh.ct_hierarchy}{A P-value threshold to determine significance of each PC (for building the celltype hierarchy). Default=0.05.}
 }
 \value{
-data.frame object, where every row corresponds to cell from sce_query. 'celltype' field contains actual celltype labels. 'celltype_mapped' field contains assigned from sce_reference celltype.
+mapping = data.frame object, where every row corresponds to cell from sce_query. 'celltype' field contains actual celltype labels. 'celltype_mapped' field contains assigned from sce_reference celltype. mapping_sensitivity = list containing objects: phylo object 'tree' - alternative representation of ct_hierarchy; vector 'sensitivity_score' - a sensitivity of mapping, each element corresponds to node (i.e. clade or set of celltypes) in 'tree'; list 'celltypes.poorly_mapped' - each element represents clade with poor mapping sensitivity such as no ancestor clade has poor mapping sensitivity.
 }
 \description{
 MNN-based mapping in hierarchical fashion

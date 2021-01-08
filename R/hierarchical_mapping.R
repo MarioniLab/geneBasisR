@@ -12,7 +12,7 @@
 #' @param p.thresh A P-value threshold to determine significance of each PC (for the integration between sce_reference and sce_query). Default=0.05.
 #' @param p.thresh.ct_hierarchy A P-value threshold to determine significance of each PC (for building the celltype hierarchy). Default=0.05.
 #'
-#' @return data.frame object, where every row corresponds to cell from sce_query. 'celltype' field contains actual celltype labels. 'celltype_mapped' field contains assigned from sce_reference celltype.
+#' @return mapping = data.frame object, where every row corresponds to cell from sce_query. 'celltype' field contains actual celltype labels. 'celltype_mapped' field contains assigned from sce_reference celltype. mapping_sensitivity = list containing objects: phylo object 'tree' - alternative representation of ct_hierarchy; vector 'sensitivity_score' - a sensitivity of mapping, each element corresponds to node (i.e. clade or set of celltypes) in 'tree'; list 'celltypes.poorly_mapped' - each element represents clade with poor mapping sensitivity such as no ancestor clade has poor mapping sensitivity.
 #' @export
 #'
 #' @examples
@@ -30,14 +30,19 @@
 #' sce_query = sce[ , !colnames(sce) %in% cells_reference]
 #' out = hierarchical_mapping(sce_reference , sce_query , genes, nPC = 5, nPC.ct_hierarchy=5)
 #'
-hierarchical_mapping = function( sce_reference , sce_query , genes , batch = NULL , cosineNorm = TRUE , n.neigh = 10 , nPC = NULL , nPC.ct_hierarchy = NULL, p.thresh = 0.05, p.thresh.ct_hierarchy = 0.05){
+hierarchical_mapping = function( sce_reference , sce_query , genes , batch = NULL ,
+                                 cosineNorm = TRUE , n.neigh = 10 , nPC = NULL , nPC.ct_hierarchy = NULL,
+                                 p.thresh = 0.05, p.thresh.ct_hierarchy = 0.05,
+                                 get.sensitivity = TRUE, sensitivity.thresh = 0.75){
   if (!.check_counts_matrix_correct(sce_reference) | !.check_counts_matrix_correct(sce_query)) {
     stop()
   } else {
     if ( (sum(genes %in% rownames(sce_reference)) < length(genes)) | (sum(genes %in% rownames(sce_query)) < length(genes))){
       stop("Either reference or query ds do not have some genes in their rownames.")
     } else {
-      ct_hierarchy = get_ct_hierarchy(sce_reference , genes = genes , batch = batch, cosineNorm = cosineNorm , nPC = nPC.ct_hierarchy, p.thresh = p.thresh.ct_hierarchy, option = "list")
+      ct_hierarchy = get_ct_hierarchy(sce_reference , genes = genes , batch = batch,
+                                      cosineNorm = cosineNorm , nPC = nPC.ct_hierarchy,
+                                      p.thresh = p.thresh.ct_hierarchy, option = "both")
 
       # select genes entries and order
       sce_reference = sce_reference[rownames(sce_reference) %in% genes , ]
@@ -45,10 +50,17 @@ hierarchical_mapping = function( sce_reference , sce_query , genes , batch = NUL
       sce_query = sce_query[rownames(sce_query) %in% genes , ]
       sce_query = sce_query[order(rownames(sce_query)),]
 
-      mapping = .hierarchical_mapping_intermediate(sce_reference, sce_query, ct_hierarchy, batch, cosineNorm, n.neigh, nPC, p.thresh)
+      mapping = .hierarchical_mapping_intermediate(sce_reference, sce_query, ct_hierarchy$list, batch, cosineNorm, n.neigh, nPC, p.thresh)
       meta = as.data.frame(colData(sce_query))
       mapping = merge(mapping , meta[, c("cell" , "celltype")])
-      return(mapping)
+
+      if (get.sensitivity){
+        mapping_sensitivity = .sensitivity_of_hierarchical_mapping(mapping , ct_hierarchy$hclust, sensitivity.thresh)
+        out = list(mapping = mapping , mapping_sensitivity = mapping_sensitivity)
+      } else {
+        out = list(mapping = mapping)
+      }
+      return(out)
     }
   }
 }
