@@ -33,7 +33,7 @@ mapping(
 \item{p.thresh}{A P-value threshold to determine significance of each PC. Default=0.05.}
 }
 \value{
-data.frame object, where every row corresponds to cell from sce_query. celltype_mapped field contains assigned from sce_reference celltype.
+data.frame object, where every row corresponds to cell from sce_query. 'celltype' field contains actual celltype labels. 'celltype_mapped' field contains assigned from sce_reference celltype.
 }
 \description{
 MNN-based mapping of celltypes
@@ -52,4 +52,5 @@ sce_reference = sce[ , colnames(sce) \%in\% cells_reference]
 sce_query = sce[ , !colnames(sce) \%in\% cells_reference]
 genes = c(1:20)
 out = mapping(sce_reference , sce_query , genes, nPC=5)
+
 }

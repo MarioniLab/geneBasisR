@@ -2,18 +2,19 @@
 % Please edit documentation in R/hierarchical_mapping.R
 \name{hierarchical_mapping}
 \alias{hierarchical_mapping}
-\title{MNN-based mapping in hierarchical fashion.}
+\title{MNN-based mapping in hierarchical fashion}
 \usage{
 hierarchical_mapping(
   sce_reference,
   sce_query,
   genes,
-  ct_hierarchy,
   batch = NULL,
   cosineNorm = TRUE,
   n.neigh = 10,
   nPC = NULL,
-  p.thresh = 0.05
+  nPC.ct_hierarchy = NULL,
+  p.thresh = 0.05,
+  p.thresh.ct_hierarchy = 0.05
 )
 }
 \arguments{
@@ -21,25 +22,27 @@ hierarchical_mapping(
 
 \item{sce_query}{SingleCellExperiment object representing query scRNA-seq counts matrix containing celltype field. Cells and accordingly celltype labels from this ds would be assigned neighbors from sce_reference.}
 
-\item{genes}{Genes that are used for integration between sce_reference and sce_query}
-
-\item{ct_hierarchy}{Nested lists object representing celltype hierarchy}
+\item{genes}{Genes that are used for integration between sce_reference and sce_query.}
 
 \item{batch}{A field from colData of sce object that indicates which field is used as batch. If specified, PCA would be calculated using multiBatchPCA and pcs would be batch-corrected. Default=NULL that assumes no batch.}
 
 \item{cosineNorm}{A boolean specifying whether cosine normalization should be applied to logcounts. Default=TRUE.}
 
-\item{n.neigh}{Number of nearets neighbrs used for the integration. Default=10.}
+\item{n.neigh}{Positive scalar specifying number of nearest neighbors to be used in the integration. Default=10.}
 
-\item{nPC}{Number of PCs to be used. Default=NULL, and in this case all significant PCs (reflecting dependence between celltype and PC from ANOVA) will be included.}
+\item{nPC}{Number of PCs to be used for the integration between sce_reference and sce_query. Default=NULL, and in this case all significant PCs (reflecting dependence between celltype and PC from ANOVA) will be included.}
 
-\item{p.thresh}{A P-value threshold to determine significance of each PC. Default=0.05.}
+\item{nPC.ct_hierarchy}{Number of PCs to be used in building celltype hierarchy. Default=NULL, and in this case all significant PCs (reflecting dependence between celltype and PC from ANOVA) will be included.}
+
+\item{p.thresh}{A P-value threshold to determine significance of each PC (for the integration between sce_reference and sce_query). Default=0.05.}
+
+\item{p.thresh.ct_hierarchy}{A P-value threshold to determine significance of each PC (for building the celltype hierarchy). Default=0.05.}
 }
 \value{
-data.frame object, where every row corresponds to cell from sce_query. celltype_mapped field contains assigned from sce_reference celltype.
+data.frame object, where every row corresponds to cell from sce_query. 'celltype' field contains actual celltype labels. 'celltype_mapped' field contains assigned from sce_reference celltype.
 }
 \description{
-MNN-based mapping in hierarchical fashion.
+MNN-based mapping in hierarchical fashion
 }
 \examples{
 require(SingleCellExperiment)
@@ -52,8 +55,8 @@ colnames(sce) = c(1:n_col)
 sce$cell = colnames(sce)
 sce$celltype = as.factor(sample(1:5, n_col, replace=TRUE))
 genes = c(1:20)
-ct_hierarchy = get_ct_hierarchy(sce , genes = genes, nPC = 10)
 sce_reference = sce[ , colnames(sce) \%in\% cells_reference]
 sce_query = sce[ , !colnames(sce) \%in\% cells_reference]
-out = hierarchical_mapping(sce_reference , sce_query , genes , ct_hierarchy, nPC=5)
+out = hierarchical_mapping(sce_reference , sce_query , genes, nPC = 5, nPC.ct_hierarchy=5)
+
 }
