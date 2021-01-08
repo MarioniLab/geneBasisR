@@ -37,7 +37,7 @@ hierarchical_mapping = function( sce_reference , sce_query , genes , batch = NUL
     if ( (sum(genes %in% rownames(sce_reference)) < length(genes)) | (sum(genes %in% rownames(sce_query)) < length(genes))){
       stop("Either reference or query ds do not have some genes in their rownames.")
     } else {
-      ct_hierarchy = get_ct_hierarchy(sce_reference , genes = genes , batch = batch, cosineNorm = cosineNorm , nPC = nPC.ct_hierarchy, p.thresh = p.thresh.ct_hierarchy)
+      ct_hierarchy = get_ct_hierarchy(sce_reference , genes = genes , batch = batch, cosineNorm = cosineNorm , nPC = nPC.ct_hierarchy, p.thresh = p.thresh.ct_hierarchy, option = "list")
 
       # select genes entries and order
       sce_reference = sce_reference[rownames(sce_reference) %in% genes , ]
