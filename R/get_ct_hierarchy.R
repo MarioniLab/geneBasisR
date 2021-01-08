@@ -48,14 +48,15 @@ get_ct_hierarchy = function(sce , genes = NULL , batch = NULL, cosineNorm = TRUE
 
     # build hierarchy
     dist = dist(t(avg_pc_per_ct.stat) , diag=TRUE)
-    hc = hclust(dist ,  method = "average")
-    return(hc)
+    ct_hierarchy = hclust(dist ,  method = "average")
+    ct_hierarchy = .get_listed_ct_hierarchy(ct_hierarchy)
+    return(ct_hierarchy)
   }
 }
 
 # Transforms celltype hierarchy representation to the nested list format.
 .get_listed_ct_hierarchy = function(ct_hierarchy){
-  if (!is(hc , "hclust")){
+  if (!is(ct_hierarchy , "hclust")){
     stop("input should be of hclust class")
   } else {
     ct_hierarchy.merge = ct_hierarchy$merge
