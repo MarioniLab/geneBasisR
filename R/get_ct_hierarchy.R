@@ -23,7 +23,7 @@
 #' sce$celltype = as.factor(sample(1:5, n_col, replace=TRUE))
 #' ct_hierarchy = get_ct_hierarchy(sce , genes = c(1:20), nPC = 10)
 #'
-get_ct_hierarchy = function(sce , genes = NULL , batch = NULL, cosineNorm = TRUE , nPC = NULL, p.thresh = 0.05){
+get_ct_hierarchy = function(sce , genes = NULL , batch = NULL, cosineNorm = TRUE , nPC = NULL, p.thresh = 0.05, option = "hclust"){
   if (!.check_counts_matrix_correct(sce)) {
     stop()
   } else {
@@ -49,7 +49,9 @@ get_ct_hierarchy = function(sce , genes = NULL , batch = NULL, cosineNorm = TRUE
     # build hierarchy
     dist = dist(t(avg_pc_per_ct.stat) , diag=TRUE)
     ct_hierarchy = hclust(dist ,  method = "average")
-    ct_hierarchy = .get_listed_ct_hierarchy(ct_hierarchy)
+    if (option == "list"){
+      ct_hierarchy = .get_listed_ct_hierarchy(ct_hierarchy)
+    }
     return(ct_hierarchy)
   }
 }
