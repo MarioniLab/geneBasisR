@@ -9,7 +9,7 @@ plot_mapping_heatmap(mapping, title = NULL)
 \arguments{
 \item{mapping}{A \code{data.frame} object representing mapping.}
 
-\item{A}{string specifying title. Default=gene.}
+\item{title}{A string specifying title. Default=gene.}
 }
 \value{
 A \code{ggplot} object containing boxplots per celltype. X-axis corresponds to actual celltype, Y-axis corresponds to mapped celltypes, and color gradient corresponds to fraction of cells from actual celltype that are mapped to mapped celltype.
