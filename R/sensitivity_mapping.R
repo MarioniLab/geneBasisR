@@ -1,4 +1,37 @@
 
+#' Returns celltype corresponding vector representing percentage of cells from the celltype that is mapped correctly
+#'
+#' @param mapping A \code{data.frame} object representing mapping.
+#'
+#' @return A \code{data.frame} object with fields 'celltype' and 'frac_mapped_correctly'.
+#' @export
+#'
+#' @examples
+get_sensitivity_mapping = function(mapping){
+  if (!.valid_mapping_df(mapping)) {
+    stop()
+  } else {
+    tab = table(mapping$celltype , mapping$celltype_mapped)
+    tab = sweep(tab, 1, rowSums(tab), "/" )
+    tab = as.data.frame(tab)
+    colnames(tab) = c("celltype" , "celltype_mapped" , "frac")
+
+    celltypes = as.character(unique(tab$celltype))
+    stat = lapply(celltypes, function(celltype){
+      current.tab = tab[tab$celltype == celltype , ]
+      if (celltype %in% current.tab$celltype_mapped){
+        out = data.frame(celltype = celltype , frac_mapped_correctly = current.tab$frac[current.tab$celltype_mapped == celltype])
+      }
+      else {
+        out = data.frame(celltype = celltype , frac_mapped_correctly = 0)
+      }
+      return(out)
+    })
+    stat = do.call(rbind, stat)
+    return(stat)
+  }
+}
+
 
 #' @importFrom stats as.dendrogram
 #' @importFrom ape as.phylo extract.clade
