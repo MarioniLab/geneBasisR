@@ -38,7 +38,7 @@ plot_expr_distribution = function(sce , gene , assay = "logcounts" , title = gen
 #' Heatmap representing how well celltypes are mapped
 #'
 #' @param mapping A \code{data.frame} object representing mapping.
-#' @param A string specifying title. Default=gene.
+#' @param title A string specifying title. Default=gene.
 #'
 #' @return A \code{ggplot} object containing boxplots per celltype. X-axis corresponds to actual celltype, Y-axis corresponds to mapped celltypes, and color gradient corresponds to fraction of cells from actual celltype that are mapped to mapped celltype.
 #' @export
@@ -58,8 +58,8 @@ plot_mapping_heatmap = function(mapping , title = NULL){
       tab = sweep(tab, 1, rowSums(tab), "/")
       tab = as.data.frame( tab )
       colnames(tab) = c("celltype", "celltype_mapped", "n")
-      tab$celltype = factor(tab$celltype , levels = unique(sce$celltype))
-      tab$celltype_mapped = factor(tab$celltype_mapped , levels = c(unique(sce$celltype),"Unmapped"))
+      tab$celltype = factor(tab$celltype , levels = unique(mapping$celltype))
+      tab$celltype_mapped = factor(tab$celltype_mapped , levels = c(unique(mapping$celltype)))
       tab = tab[!is.na(tab$celltype) , ]
       p <- ggplot(tab, aes(x = celltype , y = celltype_mapped, fill = n)) +
         geom_tile() + viridis::scale_fill_viridis(discrete = F) +
@@ -70,3 +70,5 @@ plot_mapping_heatmap = function(mapping , title = NULL){
     }
   }
 }
+
+
