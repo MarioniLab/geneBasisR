@@ -19,6 +19,18 @@
   }
 }
 
+# The function does a check for correct mapping data.frame format
+.valid_mapping_df = function(mapping){
+  if (!is(mapping , "data.frame")){
+    stop("mapping data.frame should be data.frame object")
+    return(F)
+  } else if (!"celltype" %in% colnames(mapping) | !"celltype_mapped" %in% colnames(mapping)){
+    stop("mapping data.frame should contain columns 'celltype' and 'celltype_mapped'.")
+    return(F)
+  } else {
+    return(T)
+  }
+}
 
 # The function returns corrected PCs on the selected genes
 #' @importFrom batchelor cosineNorm multiBatchPCA reducedMNN
@@ -85,7 +97,7 @@
     anova_stat$p = p.adjust(anova_stat$p, method = "BH", n = length(anova_stat$p))
 
     if ( !is.null(nPC) ){
-      out = as.numeric(  anova_stat$pc[1:nPC] )
+      out = as.numeric(  anova_stat$pc[1:min(nPC, nrow(anova_stat))] )
       return(out)
     } else {
       out = as.numeric( anova_stat$pc[anova_stat$p < p.thresh] )
