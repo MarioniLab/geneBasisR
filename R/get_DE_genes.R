@@ -23,7 +23,7 @@
 #' markers.binom = get_DE_genes(sce)
 #' markers.t = get_DE_genes(sce , test = "t")
 #'
-get_DE_genes = function(sce , test = "binom", FDR.thresh = 0.01 , filter_by_ct_specificity = TRUE){
+get_DE_genes = function(sce , test = "binom", FDR.thresh = 0.01 , n_per_celltype = NULL, filter_by_ct_specificity = TRUE){
 
   # requires there is a column named celltype and assay named logcounts: abort if the criteria are not met
   if (!.check_counts_matrix_correct(sce)) {
@@ -40,6 +40,10 @@ get_DE_genes = function(sce , test = "binom", FDR.thresh = 0.01 , filter_by_ct_s
       current.markers = as.data.frame(markers[[i]])
       current.markers = current.markers[!is.na(current.markers$FDR) & current.markers$FDR < FDR.thresh , ]
       if (nrow(current.markers) > 0){
+        if (!is.null(n_per_celltype)){
+          current.markers = current.markers[order(current.markers$FDR , decreasing = F), ]
+          current.markers = current.markers[1:n_per_celltype, ]
+        }
         out = data.frame( celltype = celltypes[i], gene = rownames(current.markers))
         return(out)
       }
