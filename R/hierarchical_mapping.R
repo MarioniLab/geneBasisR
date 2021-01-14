@@ -37,7 +37,7 @@ hierarchical_mapping = function( sce_reference , sce_query , genes , batch = NUL
   if (!.check_counts_matrix_correct(sce_reference) | !.check_counts_matrix_correct(sce_query)) {
     stop()
   } else {
-    if ( (sum(genes %in% rownames(sce_reference)) < length(genes)) | (sum(genes %in% rownames(sce_query)) < length(genes))){
+    if ( (sum(genes %in% rownames(sce_reference)) < length(genes)) | (sum(genes %in% rownames(sce_query)) < length(genes)) ){
       stop("Either reference or query ds do not have some genes in their rownames.")
     } else {
       ct_hierarchy = get_ct_hierarchy(sce_reference , genes = genes , batch = batch,
@@ -76,7 +76,9 @@ hierarchical_mapping = function( sce_reference , sce_query , genes , batch = NUL
       current_sce_reference = sce_reference[, sce_reference$celltype %in% unlist( ct_hierarchy[[i]] ) ]
       current_sce_query = sce_query[, colnames(sce_query) %in% mapping$cell[mapping$celltype_mapped == i]]
       current_ct_hierarchy = ct_hierarchy[[i]]
-      return(.hierarchical_mapping_intermediate(current_sce_reference , current_sce_query, current_ct_hierarchy, batch, cosineNorm, n.neigh, nPC, p.thresh))
+      if (ncol(current_sce_query) > 0){
+        return(.hierarchical_mapping_intermediate(current_sce_reference , current_sce_query, current_ct_hierarchy, batch, cosineNorm, n.neigh, nPC, p.thresh))
+      }
     }
   })
   mappings = do.call(rbind , mappings)
@@ -102,7 +104,7 @@ hierarchical_mapping = function( sce_reference , sce_query , genes , batch = NUL
         return(0)
       }
     })
-    mapping = .mapping_intermediate(sce_reference, sce_query, batch, cosineNorm, n.neigh, nPC, p.thresh)
+    mapping = .mapping_intermediate(sce_reference, sce_query, batch = batch, cosineNorm = cosineNorm, n.neigh = n.neigh, nPC = nPC, p.thresh = p.thresh)
     if (!is.list(ct_hierarchy[[1]])){
       mapping$celltype_mapped[mapping$celltype_mapped == 1] = celltypes.1
     }
