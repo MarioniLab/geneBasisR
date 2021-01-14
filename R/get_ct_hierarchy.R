@@ -30,12 +30,12 @@ get_ct_hierarchy = function(sce , genes = NULL , batch = NULL, cosineNorm = TRUE
     if (is.null(genes)){
       genes = rownames(sce)
     }
-    pcs_corrected = .get_corrected_pcs(sce , genes , batch , cosineNorm)
+    sce = sce[rownames(sce) %in% genes , ]
+    pcs_corrected = .get_corrected_pcs(sce , batch = batch, cosineNorm = cosineNorm)
 
     # get only those w relevant pcs
     relevant_pcs = .get_relevant_for_celltypes_pcs(pcs_corrected , sce , nPC , p.thresh)
     pcs_corrected = pcs_corrected[, relevant_pcs]
-
     meta = as.data.frame(colData(sce))
     # get avg pc-value per ct
     celltypes = unique(sce$celltype)
@@ -48,7 +48,7 @@ get_ct_hierarchy = function(sce , genes = NULL , batch = NULL, cosineNorm = TRUE
 
     # build hierarchy
     dist = dist(t(avg_pc_per_ct.stat) , diag=TRUE)
-    ct_hierarchy = hclust(dist ,  method = "average")
+    ct_hierarchy = hclust(dist ,  method = "complete")
     if (option == "list"){
       out = .get_listed_ct_hierarchy(ct_hierarchy)
     } else if (option == "hclust"){
