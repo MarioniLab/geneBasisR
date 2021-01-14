@@ -77,8 +77,8 @@ get_sensitivity_mapping = function(mapping){
         return(out)
       }
     })
-    celltypes.poorly_mapped = .get_clades_poorly_mapped(tree , sensitivity_score , sensitivity.thresh)
-    out = list(tree = tree , sensitivity_score = sensitivity_score, celltypes.poorly_mapped = celltypes.poorly_mapped)
+    celltypes.poorly_mapped = .get_celltypes_poorly_mapped(tree , sensitivity_score , sensitivity.thresh)
+    out = list(tree = tree , sensitivity_score = sensitivity_score, celltypes.poorly_mapped = celltypes.poorly_mapped, sensitivity.thresh = sensitivity.thresh)
     return(out)
   }
 }
@@ -95,29 +95,23 @@ get_sensitivity_mapping = function(mapping){
 
 #
 #' @importFrom phangorn Ancestors
-.get_clades_poorly_mapped = function(tree , sensitivity_score , sensitivity.thresh){
+.get_celltypes_poorly_mapped = function(tree , sensitivity_score , sensitivity.thresh){
   edges = tree$edge
   nodes = sort(unique(as.vector(edges)))
   tip.nodes = 1:length(tree$tip.label)
   tip.labels = tree$tip.label
 
   nodes.poorly_mapped = nodes[sensitivity_score < sensitivity.thresh]
-  ancestors.poorly_mapped = sapply(nodes.poorly_mapped , function(node){
-    current.ancestors = Ancestors(tree, node, type = "all")
-    if (sum(nodes.poorly_mapped %in% current.ancestors) == 0){
-      return(F)
-    } else {
-      return(T)
-    }
-  })
-  nodes.poorly_mapped = nodes.poorly_mapped[ancestors.poorly_mapped == F]
-  celltypes.poorly_mapped = lapply(nodes.poorly_mapped , function(node){
-    if (node %in% tip.nodes){
-      out = tip.labels[node]
-    } else {
-      current.tree = extract.clade(tree , node)
-      out = current.tree$tip.label
-    }
+  tip.nodes.poorly_mapped = intersect(tip.nodes,nodes.poorly_mapped)
+
+  celltypes.poorly_mapped = lapply(tip.nodes.poorly_mapped, function(tip.node){
+    celltypes_add_markers = tip.labels[tip.node]
+    current.ancestors = Ancestors(tree, tip.node, type = "all")
+    current.ancestors.well_mapped = current.ancestors[!current.ancestors %in% nodes.poorly_mapped]
+    closest.ancestor.well_mapped = max(current.ancestors.well_mapped)
+    current.tree = extract.clade(tree , closest.ancestor.well_mapped)
+    celltypes_distinguish = current.tree$tip.label
+    out = list(celltypes_add_markers = celltypes_add_markers , celltypes_distinguish = celltypes_distinguish)
     return(out)
   })
   return(celltypes.poorly_mapped)
