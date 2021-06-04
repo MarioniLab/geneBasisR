@@ -1,24 +1,38 @@
 Package: geneBasisR
-Title: Generates gene selection to be probed in -FISH experiments and evaluates custom gene selections for their suitability for -FISH experiments
+Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "Alsu",
-           family = "Missarova",
+    person(given = "First",
+           family = "Last",
            role = c("aut", "cre"),
-           email = "alsu.missarova.32@gmail.com")
-Description: Package contains various functions to facilitate and evaluate gene selection for -FISH based experiments. That includes PCA-based gene selection that takes annotated (e.g. with celltypes) scRNA-seq dataset as an input and generates the panel of genes that explain majority of the biological variation. Additionally, it contains set of functions to evaluate any custom panel of selected genes using various metrics such as celltype annotation, transcriptional graph similarity and the potential to impute the remaining transcriptome.
+           email = "first.last@example.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: geneBasisR provides functions to select an optimal gene library (of a fixed set) 
+    using scRNA-seq data and functions to evaluate how optimal a selected library is.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+biocViews: SingleCell, MultipleComparison, FunctionalGenomics, Software
 Imports: 
-    scran,
-    SingleCellExperiment,
     batchelor,
-    stats,
-    forcats,
-    dplyr,
+    BiocManager,
+    BiocNeighbors,
+    ggcorrplot,
+    ggplot2,
+    ggpubr,
+    irlba,
+    paleotree,
+    scran,
+    scuttle,
+    SingleCellExperiment,
     tibble,
-    stringr,
-    BiocNeighbors
+    viridis,
+    wesanderson
+Depends: 
+    R (>= 2.10)
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
