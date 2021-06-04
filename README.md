@@ -1,10 +1,10 @@
 # geneBasisR
-*geneBasis* is an approach to select an optimal gene library (based on scRNA-seq data) as a function of designated number of genes. 
+**geneBasis** is an approach to select an optimal gene library (based on scRNA-seq data) as a function of designated number of genes. 
 Essentially, we attempt to identify all sources of heterogeneity driving transcriptional relationships between cells, represented in the form of k-NN graph. For greater details on the method, read our paper. 
 
 
 <p align="center">
-  <img src="docs/geneBasis_cartoon.png" width="500">
+  <img src="geneBasis_cartoon.png" width="500">
 </p>
 
 
@@ -28,7 +28,7 @@ Explore vignette and tutorials to get a grasp on the package and its functions.
 
 ### Tutorials
 
-1. [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://raw.githack.com/MarioniLab/am_geneBasis/main/analysis/make_tutorials_4_package/geneBasis_mouseEmbryo_extended.html)
+1. [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/am_geneBasis/main/analysis/make_tutorials_4_package/geneBasis_mouseEmbryo_extended.html)
 
 
 
