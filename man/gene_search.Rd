@@ -2,7 +2,7 @@
 % Please edit documentation in R/gene_search.R
 \name{gene_search}
 \alias{gene_search}
-\title{Main function of the package - returns library of the selected size.}
+\title{gene_search}
 \usage{
 gene_search(
   sce,
@@ -28,6 +28,8 @@ gene_search(
 
 \item{n.neigh}{Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
 
+\item{p.minkowski}{Order of Minkowski distance. Default p.minkowski=3.}
+
 \item{nPC.selection}{Scalar specifying number of PCs to use for Selection Graphs. Default nPC=NULL.}
 
 \item{nPC.all}{Scalar specifying number of PCs to use for True Graph. Default nPC.all=50.}
@@ -35,8 +37,6 @@ gene_search(
 \item{verbose}{Boolean identifying whether intermediate print outputs should be returned. Default verbose=TRUE.}
 
 \item{stat_all}{If True graph and corresponding Minkowski distcances have been calculated prior to search, provide this data here. Ensure that colnames = gene, dist_all. Default stat_all=NULL in case this info is not supplied.}
-
-\item{p}{Order of Minkowski distance. Default p=3.}
 }
 \value{
 data.frame containing selected genes and corresponding ranks. In case genes_base are supplied, rank among them will be assigned based on the order they are supplied in the corresponding string.
