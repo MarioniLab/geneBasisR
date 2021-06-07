@@ -1,5 +1,6 @@
 # geneBasisR
-**geneBasis** is an approach to select an optimal gene library (based on scRNA-seq data) as a function of designated number of genes. 
+
+`geneBasis` is an approach to select an optimal gene library (based on scRNA-seq data) as a function of designated number of genes. 
 Essentially, we attempt to identify all sources of heterogeneity driving transcriptional relationships between cells, represented in the form of k-NN graph. For greater details on the method, read our paper. 
 
 
