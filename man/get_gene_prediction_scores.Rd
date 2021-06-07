@@ -15,7 +15,8 @@ get_gene_prediction_scores(
   genes.predict = genes.all,
   method = "spearman",
   corr_all.thresh = 0.25,
-  stat_all = NULL
+  gene_stat_all = NULL,
+  ...
 )
 }
 \arguments{
@@ -33,13 +34,15 @@ get_gene_prediction_scores(
 
 \item{nPC.selection}{Scalar (or NULL) specifying number of PCs to use for construction of Selection kNN-graph. Default nPC.selection=NULL (no PCA).}
 
-\item{genes.predict}{Character vector containing names of genes for which we want to calculate gene prediction score.}
+\item{genes.predict}{Character vector containing names of genes for which we want to calculate gene prediction score. Default = genes.all.}
 
 \item{method}{Character specifying method for correlation. Availbale options are c("spearman" , "pearson"). Default method="spearman".}
 
 \item{corr_all.thresh}{Scalar specifying suitable threshold for correlation to consider (on True graph).}
 
-\item{stat_all}{If correlation-stat is pre-calculated for True graph, pass it here (default stat_all=NULL). This is useful if this variable will be used re-used multiple times.}
+\item{gene_stat_all}{If correlation-stat is pre-calculated for True graph, pass it here (default stat_all=NULL). This is useful if this variable will be used re-used multiple times.}
+
+\item{...}{Additional arguments}
 }
 \value{
 data.frame, each row corresponds to gene, contains field gene_score = gene prediction score.

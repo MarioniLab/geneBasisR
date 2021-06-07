@@ -12,7 +12,8 @@ get_neighborhood_preservation_scores(
   batch = NULL,
   n.neigh = 5,
   nPC.all = 50,
-  nPC.selection = NULL
+  nPC.selection = NULL,
+  ...
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ get_neighborhood_preservation_scores(
 \item{nPC.all}{Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.}
 
 \item{nPC.selection}{Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.selection=NULL (no PCA).}
+
+\item{...}{Additional arguments}
 }
 \value{
 data.frame, each row corresponds to cell from counts matrix, contains field cell_score = cell neighborhood preservation score

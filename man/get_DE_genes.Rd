@@ -4,7 +4,13 @@
 \alias{get_DE_genes}
 \title{get_DE_genes}
 \usage{
-get_DE_genes(sce, test.type = "binom", pval.type = "some", FDR.thresh = 0.01)
+get_DE_genes(
+  sce,
+  test.type = "binom",
+  pval.type = "some",
+  FDR.thresh = 0.01,
+  ...
+)
 }
 \arguments{
 \item{sce}{SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).}
@@ -14,6 +20,8 @@ get_DE_genes(sce, test.type = "binom", pval.type = "some", FDR.thresh = 0.01)
 \item{pval.type}{String specifying how p-values are combined. Available options are the same as for scran::findMarkers, parameter pval.type Default pval.type="some".}
 
 \item{FDR.thresh}{Scalar specifying threshold of FDR to be considered as significant. Default FDR=0.01.}
+
+\item{...}{Additional arguments}
 }
 \value{
 

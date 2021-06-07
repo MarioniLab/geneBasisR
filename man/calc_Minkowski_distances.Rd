@@ -29,6 +29,8 @@ calc_Minkowski_distances(
 \item{genes.predict}{Character vector containing genes for which we want to calculate Minkowsky distances. Default genes.predict = rownames(sce).}
 
 \item{p.minkowski}{Order of Minkowski distance. Default p.minkowski=3.}
+
+\item{...}{Additional arguments}
 }
 \value{
 data.frame, field 'gene' to gene from genes.predict; field 'dist' corresponds to calculated Minkowski distance.

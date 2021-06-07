@@ -33,7 +33,7 @@ get_celltype_mapping(
 
 \item{which_genes_to_use}{String specifying whether celltype mapping should be performed only on DE (between celltypes) genes (= 'DE') or all inserted genes (= 'all'). Default option="all".}
 
-\item{...}{Additional arguments you can pass to get_DE_genes.}
+\item{...}{Additional arguments (e.g. the ones you can pass to get_DE_genes).}
 }
 \value{
 

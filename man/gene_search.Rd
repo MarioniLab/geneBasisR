@@ -36,7 +36,9 @@ gene_search(
 
 \item{verbose}{Boolean identifying whether intermediate print outputs should be returned. Default verbose=TRUE.}
 
-\item{stat_all}{If True graph and corresponding Minkowski distcances have been calculated prior to search, provide this data here. Ensure that colnames = gene, dist_all. Default stat_all=NULL - in case this info is not supplied.}
+\item{stat_all}{If True graph and corresponding Minkowski distances have been calculated prior to search, provide this data here.
+It can be useful if gene_search is desired to be recycled (e.g. for selecting multiple libraries with different inputs such as n_genes_total and genes_base)
+Ensure that colnames = c("gene", "dist_all"). Default stat_all=NULL - in case this info is not supplied.}
 }
 \value{
 data.frame containing selected genes and corresponding ranks. In case genes_base are supplied, rank among them will be assigned based on the order they are supplied in the corresponding string.

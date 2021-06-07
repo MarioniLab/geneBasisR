@@ -8,7 +8,7 @@ raw_to_sce(
   counts_dir,
   counts_type = "counts",
   transform_counts_to_logcounts = TRUE,
-  header = T,
+  header = TRUE,
   sep = "\\t",
   meta_dir = NULL,
   batch = NULL,

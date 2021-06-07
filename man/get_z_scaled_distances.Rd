@@ -9,7 +9,8 @@ get_z_scaled_distances(
   genes.all = rownames(sce),
   batch = NULL,
   n.neigh = 5,
-  nPC.all = 50
+  nPC.all = 50,
+  ...
 )
 }
 \arguments{
@@ -22,12 +23,16 @@ get_z_scaled_distances(
 \item{n.neigh}{Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
 
 \item{nPC.all}{Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.}
+
+\item{...}{Additional arguments.}
 }
 \value{
 kNN-graph with assigned neighbors and corresponding z-scored distances.
 }
 \description{
 For each cell: ranks all other cells based on the transcriptional similarity and returns ordered z-scaled distances (lower distance -- closer cell).
+It is an intermediate step for get_neighborhood_preservation_scores. It can be handy to calculate this part separately to be recycled multiple times
+to compare different seelctions.
 }
 \examples{
 require(SingleCellExperiment)
