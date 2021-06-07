@@ -1,6 +1,8 @@
 
 
-#' Main function of the package - returns library of the selected size.
+#' gene_search
+#'
+#' Main function of the package - returns optimal library of the selected size.
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
 #' @param genes_base Character vector specifying base genes to construct first Selection graph. Default=NULL in case no genes are supplied.
@@ -11,7 +13,9 @@
 #' @param nPC.selection Scalar specifying number of PCs to use for Selection Graphs. Default nPC=NULL.
 #' @param nPC.all Scalar specifying number of PCs to use for True Graph. Default nPC.all=50.
 #' @param verbose Boolean identifying whether intermediate print outputs should be returned. Default verbose=TRUE.
-#' @param stat_all If True graph and corresponding Minkowski distcances have been calculated prior to search, provide this data here. Ensure that colnames = gene, dist_all. Default stat_all=NULL in case this info is not supplied.
+#' @param stat_all If True graph and corresponding Minkowski distances have been calculated prior to search, provide this data here.
+#' It can be useful if gene_search is desired to be recycled (e.g. for selecting multiple libraries with different inputs such as n_genes_total and genes_base)
+#' Ensure that colnames = c("gene", "dist_all"). Default stat_all=NULL - in case this info is not supplied.
 #'
 #' @return data.frame containing selected genes and corresponding ranks. In case genes_base are supplied, rank among them will be assigned based on the order they are supplied in the corresponding string.
 #' @export
@@ -29,13 +33,22 @@
 #'
 gene_search = function(sce , genes_base = NULL, n_genes_total , batch = NULL, n.neigh = 5, p.minkowski = 3, nPC.selection = NULL, nPC.all = 50, verbose = TRUE, stat_all = NULL){
   sce = .prepare_sce(sce)
+  args = c(as.list(environment()))
+  out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes_base)
+
   # get baseline stat-all
   if (is.null(stat_all)){
     stat_all = suppressWarnings( calc_Minkowski_distances(sce, genes = rownames(sce), batch = batch, n.neigh = n.neigh, nPC = nPC.all,
-                                                  genes.predict = rownames(sce) , p.minkowski = p.minkowski) )
+                                                    genes.predict = rownames(sce) , p.minkowski = p.minkowski, check_args = FALSE) )
     colnames(stat_all) = c("gene" , "dist_all")
     if (verbose){
       cat("True graph is constructed.\n")
+    }
+  }
+  else {
+    if (!sum(c("gene" , "dist_all" ) %in% colnames(stat_all)) == 2){
+      stop("stat_all is of the wrong format - should contain fields gene and dist_all.")
+      return(F)
     }
   }
   # add first gene if selection is empty
@@ -70,7 +83,7 @@ gene_search = function(sce , genes_base = NULL, n_genes_total , batch = NULL, n.
 
 .add_gene_to_current_selection = function(sce , stat_all, genes = NULL , batch = NULL , n.neigh = 5, nPC = NULL, p.minkowski = 3){
   stat_genes = suppressWarnings( calc_Minkowski_distances(sce , genes = genes , batch = batch, n.neigh = n.neigh , nPC = nPC,
-                                                  genes.predict = rownames(sce) , p.minkowski = p.minkowski) )
+                                                  genes.predict = rownames(sce) , p.minkowski = p.minkowski, check_args = FALSE) )
   stat_genes = stat_genes[!stat_genes$gene %in% genes , ]
   stat_genes = merge(stat_genes , stat_all)
   stat_genes$dist_diff = stat_genes$dist - stat_genes$dist_all

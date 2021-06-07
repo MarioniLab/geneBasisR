@@ -1,6 +1,6 @@
 
-
-
+#' calc_Minkowski_distances
+#'
 #' Function returns Minkowski distances for kNN-graphs constructed from counts matrix in sce (stored in assay logcounts) using specified genes.
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
@@ -10,6 +10,7 @@
 #' @param nPC Scalar (or NULL) specifying number of PCs to use for kNN-graph. Default nPC=NULL (no PCA).
 #' @param genes.predict Character vector containing genes for which we want to calculate Minkowsky distances. Default genes.predict = rownames(sce).
 #' @param p.minkowski Order of Minkowski distance. Default p.minkowski=3.
+#' @param ... Additional arguments
 #'
 #' @return data.frame, field 'gene' to gene from genes.predict; field 'dist' corresponds to calculated Minkowski distance.
 #' @export
@@ -25,54 +26,37 @@
 #' genes = rownames(sce)
 #' out = calc_Minkowski_distances(sce, genes)
 #'
-calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , nPC = NULL , genes.predict = rownames(sce) , p.minkowski = 3,...){
-  args = c(as.list(environment()), list(...))
-  if (.check_genes_in_sce(sce , genes.predict) & .check_genes_in_sce(sce , genes) & .general_check_arguments(args) & .check_batch(sce , batch)){
-    if (!is.null(genes)){
-      neighs = .get_mapping(sce , genes = genes, batch = batch , n.neigh = n.neigh , nPC = nPC)
-      neighs = neighs$cells_mapped
-    }
-    else {
-      neighs = .initiate_random_mapping(sce , batch = batch , n.neigh = n.neigh)
-    }
-    counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
-    stat_predict = lapply(1:ncol(neighs) , function(j){
-      cells = neighs[,j]
-      current.stat_predict = counts_predict[, cells]
-      return(current.stat_predict)
-    })
-    stat_predict = Reduce("+", stat_predict) / length(stat_predict)
-    stat_real = counts_predict[, rownames(neighs)]
-    stat = lapply(1:nrow(counts_predict) , function(i){
-      out = data.frame(gene = rownames(counts_predict)[i] , dist = as.numeric(dist(rbind(stat_real[i,] , stat_predict[i,]) , method = "minkowski" , p = p.minkowski)))
-      return(out)
-    })
-    stat = do.call(rbind , stat)
-    return(stat)
-  }
-}
-
-
-#' @importFrom BiocNeighbors queryKNN
-.initiate_random_mapping = function(sce , batch = NULL, n.neigh = 5){
-  if (is.null(batch)){
-    batchFactor = factor(rep(1 , ncol(sce)))
+calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , nPC = NULL , genes.predict = rownames(sce) , p.minkowski = 3, ...){
+  args = c(as.list(environment()) , list(...))
+  if (!"check_args" %in% names(args)){
+    sce = .prepare_sce(sce)
+    out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.predict) & .check_genes_in_sce(sce , genes)
   }
   else {
-    meta = as.data.frame(colData(sce))
-    batchFactor = factor(meta[, colnames(meta) == batch])
+    if (args[[which(names(args) == "check_args")]]){
+      sce = .prepare_sce(sce)
+      out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.predict) & .check_genes_in_sce(sce , genes)
+    }
   }
-  initial_random_mtrx = suppressWarnings( abs(matrix(rnorm(10),2,ncol(sce))) )
-  colnames(initial_random_mtrx) = colnames(sce)
-  neighs = lapply(unique(batchFactor) , function(current.batch){
-    idx = which(batchFactor == current.batch)
-    counts = t( initial_random_mtrx[, idx] )
-    reference_cells = colnames(sce[,idx])
-    query_cells = colnames(sce[,idx])
-    out = .assign_neighbors(counts , reference_cells, query_cells, n.neigh = n.neigh, get.dist = F)
-    return(out$cells_mapped)
+  if (!is.null(genes)){
+    neighs = .get_mapping(sce , genes = genes, batch = batch , n.neigh = n.neigh , nPC = nPC)
+    neighs = neighs$cells_mapped
+  }
+  else {
+    neighs = .initiate_random_mapping(sce , batch = batch , n.neigh = n.neigh)
+  }
+  counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
+  stat_predict = lapply(1:ncol(neighs) , function(j){
+    cells = neighs[,j]
+    current.stat_predict = counts_predict[, cells]
+    return(current.stat_predict)
   })
-  neighs = do.call(rbind , neighs)
-  neighs = neighs[ match(colnames(sce), rownames(neighs)), ]
-  return(neighs)
+  stat_predict = Reduce("+", stat_predict) / length(stat_predict)
+  stat_real = counts_predict[, rownames(neighs)]
+  stat = lapply(1:nrow(counts_predict) , function(i){
+    out = data.frame(gene = rownames(counts_predict)[i] , dist = as.numeric(dist(rbind(stat_real[i,] , stat_predict[i,]) , method = "minkowski" , p = p.minkowski)))
+    return(out)
+  })
+  stat = do.call(rbind , stat)
+  return(stat)
 }

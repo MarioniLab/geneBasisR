@@ -1,5 +1,6 @@
 
-
+#' retain_informative_genes
+#'
 #' Function selects variable genes and retains them to represent counts matrix for downstream analysis. This is essentially a wrapper for scran::getTopHVGs +
 #' simple check for mt-genes.
 #'

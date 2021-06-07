@@ -151,7 +151,3 @@ plot_redundancy_stat = function(redundancy_stat, celltypes = unique(redundancy_s
   return(p)
 
 }
-
-
-
-

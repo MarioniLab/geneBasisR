@@ -2,7 +2,8 @@
 
 
 #' raw_to_sce
-#' Simply a parser of raw txt files into SingleCellExperiment object
+#'
+#' Simply a parser raw .txt files --> SingleCellExperiment object + adding logcounts
 #'
 #' @param counts_dir String specifying the directory for counts matrix (assuming counts where already calculated)
 #' @param counts_type String specifying whether raw data is stored as counts or log-counts. For geneBasis we recommend to work with log-counts.
@@ -16,7 +17,7 @@
 #' @return SingleCellExperiment object with gene counts/logcounts and meta-data (if applicable)
 #' @export
 #' @import SingleCellExperiment
-raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_logcounts = TRUE, header = T, sep = "\t" , meta_dir = NULL, batch = NULL,...){
+raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_logcounts = TRUE, header = TRUE, sep = "\t" , meta_dir = NULL, batch = NULL,...){
   if (!file.exists(counts_dir)){
     stop("Counts file does not exist")
   }
@@ -31,7 +32,7 @@ raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_lo
       colnames(counts) = c(1:ncol(sce))
     }
     if (!is.null(meta_dir)){
-      meta = read.table(meta_dir, header = T, sep = sep)
+      meta = read.table(meta_dir, header = TRUE, sep = sep)
       if (!"cell" %in% colnames(meta)){
         meta$cell = c(1:nrow(meta))
       }
@@ -39,10 +40,10 @@ raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_lo
       counts = counts[, order(colnames(counts))]
       if (nrow(meta) != ncol(counts)){
         stop("Mismatch in number of cells between counts matrix and meta-file.")
-        return(F)
+        return(FALSE)
       } else if (mean(meta$cell == colnames(counts)) < 1){
         stop("Mismatch in cell IDs between counts matrix and meta-file.")
-        return(F)
+        return(FALSE)
       } else {
         sce = SingleCellExperiment(assay = counts, colData = meta)
         names(assays(sce)) = counts_type

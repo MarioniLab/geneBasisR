@@ -1,5 +1,7 @@
 
 
+#' get_redundancy_stat
+#'
 #' Functions calculates relevance of each gene (within current selection) to celltype mapping.
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
@@ -25,12 +27,16 @@
 #' out = get_redundancy_stat(sce, genes, genes_to_assess = genes_to_assess)
 #'
 get_redundancy_stat = function(sce, genes, genes_to_assess = genes, batch = NULL, ...){
-  mapping_all = get_celltype_mapping(sce , genes , batch = batch, return.stat = T, ...)
+  args = c(as.list(environment()) , list(...))
+  sce = .prepare_sce(sce)
+  out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes) & .check_genes_in_sce(sce , genes_to_assess)
+
+  mapping_all = get_celltype_mapping(sce , genes , batch = batch, return.stat = TRUE, check_args = FALSE, ...)
   stat_all = mapping_all$stat
   colnames(stat_all) = c("celltype", "frac_correctly_mapped_all")
 
   stat_reduced = lapply(genes_to_assess, function(gene){
-    current.mapping = get_celltype_mapping(sce , setdiff(genes,gene) , batch = batch, return.stat = T, ...)
+    current.mapping = get_celltype_mapping(sce , setdiff(genes,gene) , batch = batch, return.stat = T, check_args = FALSE, ...)
     current.stat = current.mapping$stat
     current.stat$gene = gene
     return(current.stat)

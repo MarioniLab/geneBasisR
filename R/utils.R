@@ -180,45 +180,30 @@
   out = .check_argument_correct(dots, "FDR.thresh", is.numeric, "Check FDR.thresh - should be numeric")
   out = .check_argument_correct(dots, "var.thresh", is.numeric, "Check var.thresh - should be numeric")
   out = .check_argument_correct(dots, "corr_all.thresh", is.numeric, "Check corr_all.thresh - should be numeric")
-
-  # update this part later (like above args)
-  if ("library.size_type" %in% names(dots)){
-    if (!(dots$library.size_type %in% c("single", "series"))){
-      out = FALSE
-      stop("Check library.size_type - should be either 'single' or 'series'")
-    }
-  }
-
-  if ("method" %in% names(dots)){
-    if (!(dots$method %in% c("spearman", "pearson"))){
-      out = FALSE
-      stop("Check method - should be either 'spearman' or 'pearson'")
-    }
-  }
+  out = .check_argument_correct(dots, "library.size_type", function(x) .check_arg_within_options(x, c("single", "series")),
+                                "Check library.size_type - should be either 'single' or 'series'")
+  out = .check_argument_correct(dots, "method", function(x) .check_arg_within_options(x, c("spearman", "pearson")),
+                                "Check method - should be either 'spearman' or 'pearson'")
+  out = .check_argument_correct(dots, "test.type", function(x) .check_arg_within_options(x, c("binom", "wilcox", "t")),
+                                "Check test.type - should be either 'binom', 'wilcox' or 't'")
+  out = .check_argument_correct(dots, "pval.type", function(x) .check_arg_within_options(x, c("all", "some", "any")),
+                                "Check pval.type - should be either 'all', 'some' or 'any'")
+  out = .check_argument_correct(dots, "which_genes_to_use", function(x) .check_arg_within_options(x, c("all", "DE")),
+                                "Check which_genes_to_use - should be either 'all' or 'DE'")
   return(out)
+}
 
-  if ("test.type" %in% names(dots)){
-    if (!(dots$test.type %in% c("binom", "wilcox" , "t"))){
-      out = FALSE
-      stop("Check test.type - should be either 'binom', 'wilcox' or 't'")
-    }
-  }
 
-  if ("pval.type" %in% names(dots)){
-    if (!(dots$pval.type %in% c("all", "some" , "any"))){
-      out = FALSE
-      stop("Check pval.type - should be either 'all', 'some' or 'any'")
-    }
-  }
-
-  if ("which_genes_to_use" %in% names(dots)){
-    if (!(dots$which_genes_to_use %in% c("all", "DE"))){
-      out = FALSE
-      stop("Check which_genes_to_use - should be either 'all' or 'DE'")
-    }
+.check_arg_within_options = function(x , options){
+  out = TRUE
+  if (!x %in% options){
+    out = FALSE
   }
   return(out)
 }
+
+
+
 
 
 .check_integer = function(x){
