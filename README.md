@@ -30,7 +30,8 @@ Explore vignette and tutorials to get a grasp on the package and its functions.
 
 1. [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/am_geneBasis/main/analysis/make_tutorials_4_package/geneBasis_mouseEmbryo_extended.html)
 
-
+2. Add-on: illustration of `geneBasis` within an individual cell type + suggestion for how to preselect relevant genes.
+[Vignette of library design within brain cells, mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/am_geneBasis/main/analysis/make_tutorials_4_package/geneBasis_mouseEmbryo_within_celltype.html)
 
 
 
