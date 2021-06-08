@@ -22,7 +22,7 @@ Main functions of the package are `gene_search` and `evaluate_library`.
 
 1. `gene_search` takes as inputs scRNA-seq data and number of genes to select.
 
-Requirements for scRNA-seq data:
+Requirements for scRNA-seq data format:
 
 a) SingleCellExperiment object, containing assay 'logcounts' (henceforth referred to as sce).
 
