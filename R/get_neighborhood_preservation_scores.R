@@ -8,7 +8,7 @@
 #' @param genes.all String specifying genes to be used for construction of True kNN-graph.
 #' @param genes.selection String specifying genes to be used for construction of Selection kNN-graph.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
-#' @param n.neigh Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
+#' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC.all Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.
 #' @param nPC.selection Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.selection=NULL (no PCA).
 #' @param ... Additional arguments
@@ -112,7 +112,7 @@ get_neighborhood_preservation_scores = function(sce, neighs.all = NULL,  genes.a
 #' @param sce SingleCellExperiment object containing gene counts matrix.
 #' @param genes.all String specifying genes to be used for construction of True kNN-graph.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
-#' @param n.neigh Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
+#' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC.all Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.
 #' @param ... Additional arguments.
 #'

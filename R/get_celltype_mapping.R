@@ -7,7 +7,7 @@
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
 #' @param genes.selection Character vector specifying genes to be used for the construction of Selection kNN-graph.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
-#' @param n.neigh Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
+#' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC.selection Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC=NULL.
 #' @param cosine Boolean specifying if cosine normalization should be applied prior to constructing kNN-graph. Default cosine=FALSE.
 #' @param return.stat Boolean specifying if stat on the mapping should be returned alongside the mapping itself.
@@ -50,10 +50,6 @@ get_celltype_mapping = function(sce , genes.selection , batch = NULL, n.neigh = 
       genes.selection = intersect(as.character(markers$gene) , as.character(genes.selection))
       if (length(genes.selection) < 2){
         stop("Less than 2 genes are selected as DE between celltypes - celltype mapping is not possible. Consider option 'all' or change settings for identifying DE genes.")
-        return(F)
-      }
-      else {
-        return(genes.selection)
       }
     }
   }

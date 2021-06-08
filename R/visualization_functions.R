@@ -56,7 +56,8 @@ plot_mapping_heatmap = function(mapping , levels = unique(mapping$celltype) , ti
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
 #' @param genes Character vector containing gene names for which to plot UMAPs.
-#'
+#' @param size Size of dots for geom_point
+#' @param ncol Positive integer specifying number of columns for ggarrange
 #' @return For each gene: scater plot with UMAP-coordinates colored by gene expression
 #' @export
 #' @import tibble ggpubr ggplot2 viridis SingleCellExperiment

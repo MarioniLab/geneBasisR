@@ -8,7 +8,7 @@
 #' @param genes_base Character vector specifying base genes to construct first Selection graph. Default=NULL in case no genes are supplied.
 #' @param n_genes_total Scalar specifying total number of genes to be selected (this includes base genes).
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
-#' @param n.neigh Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
+#' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param p.minkowski Order of Minkowski distance. Default p.minkowski=3.
 #' @param nPC.selection Scalar specifying number of PCs to use for Selection Graphs. Default nPC=NULL.
 #' @param nPC.all Scalar specifying number of PCs to use for True Graph. Default nPC.all=50.
@@ -36,39 +36,43 @@ gene_search = function(sce , genes_base = NULL, n_genes_total , batch = NULL, n.
   args = c(as.list(environment()))
   out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes_base)
 
-  # get baseline stat-all
-  if (is.null(stat_all)){
-    stat_all = suppressWarnings( calc_Minkowski_distances(sce, genes = rownames(sce), batch = batch, n.neigh = n.neigh, nPC = nPC.all,
-                                                    genes.predict = rownames(sce) , p.minkowski = p.minkowski, check_args = FALSE) )
-    colnames(stat_all) = c("gene" , "dist_all")
-    if (verbose){
-      cat("True graph is constructed.\n")
-    }
+  if (n_genes_total >= nrow(sce)){
+    stop("Selected library size is bigger than number of genes in the counts matrix")
   }
   else {
-    if (!sum(c("gene" , "dist_all" ) %in% colnames(stat_all)) == 2){
-      stop("stat_all is of the wrong format - should contain fields gene and dist_all.")
-      return(F)
+    # get baseline stat-all
+    if (is.null(stat_all)){
+      stat_all = suppressWarnings( calc_Minkowski_distances(sce, genes = rownames(sce), batch = batch, n.neigh = n.neigh, nPC = nPC.all,
+                                                      genes.predict = rownames(sce) , p.minkowski = p.minkowski, check_args = FALSE) )
+      colnames(stat_all) = c("gene" , "dist_all")
+      if (verbose){
+        cat("True graph is constructed.\n")
+      }
     }
-  }
-  # add first gene if selection is empty
-  if (is.null(genes_base)){
-    K = 5
-    genes_base = .add_first_gene(sce , stat_all, batch = batch , n.neigh = n.neigh, p.minkowski = p.minkowski, K = K)
-    if (verbose){
-      cat(paste0("First gene is added: ", genes_base , ". " , n_genes_total - 1, " left.\n"))
+    else {
+      if (!sum(c("gene" , "dist_all" ) %in% colnames(stat_all)) == 2){
+        stop("stat_all is of the wrong format - should contain fields gene and dist_all.")
+      }
     }
-  }
-  genes_all = genes_base
-  while(length(genes_all) < n_genes_total){
-    gene = .add_gene_to_current_selection(sce , stat_all, genes = genes_all , batch = batch , n.neigh = n.neigh, nPC = nPC.selection, p.minkowski = p.minkowski)
-    genes_all = c(genes_all , as.character(gene))
-    if (verbose){
-      cat(paste0("New gene is added: ", as.character(gene) , ". " , n_genes_total - length(genes_all) , " left.\n"))
+    # add first gene if selection is empty
+    if (is.null(genes_base)){
+      K = 5
+      genes_base = .add_first_gene(sce , stat_all, batch = batch , n.neigh = n.neigh, p.minkowski = p.minkowski, K = K)
+      if (verbose){
+        cat(paste0("First gene is added: ", genes_base , ". " , n_genes_total - 1, " left.\n"))
+      }
     }
+    genes_all = genes_base
+    while(length(genes_all) < n_genes_total){
+      gene = .add_gene_to_current_selection(sce , stat_all, genes = genes_all , batch = batch , n.neigh = n.neigh, nPC = nPC.selection, p.minkowski = p.minkowski)
+      genes_all = c(genes_all , as.character(gene))
+      if (verbose){
+        cat(paste0("New gene is added: ", as.character(gene) , ". " , n_genes_total - length(genes_all) , " left.\n"))
+      }
+    }
+    out = data.frame(rank = c(1:length(genes_all)) , gene = genes_all)
+    return(out)
   }
-  out = data.frame(rank = c(1:length(genes_all)) , gene = genes_all)
-  return(out)
 }
 
 

@@ -101,6 +101,7 @@
 #' @import batchelor
 #'
 .get_MNN_corrected_mapping = function(sce , genes = rownames(sce), batch = NULL, n.neigh = 5, nPC = 50, cosine = F){
+  set.seed(32)
   if (is.null(batch)){
     out = .get_mapping(sce , genes = genes, batch = NULL, n.neigh = n.neigh, nPC = nPC , cosine = cosine)
   }

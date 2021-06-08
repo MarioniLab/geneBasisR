@@ -6,7 +6,7 @@
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
 #' @param genes Character vector containing genes that are used to construct kNN-graph.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
-#' @param n.neigh Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
+#' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC Scalar (or NULL) specifying number of PCs to use for kNN-graph. Default nPC=NULL (no PCA).
 #' @param genes.predict Character vector containing genes for which we want to calculate Minkowsky distances. Default genes.predict = rownames(sce).
 #' @param p.minkowski Order of Minkowski distance. Default p.minkowski=3.

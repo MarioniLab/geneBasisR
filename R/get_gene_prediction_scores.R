@@ -8,7 +8,7 @@
 #' @param genes.selection Character vector containing names of selected genes.
 #' @param genes.all Character vector containing names of all (potentially relevant/variable) genes.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
-#' @param n.neigh Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
+#' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC.all Scalar (or NULL) specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.
 #' @param nPC.selection Scalar (or NULL) specifying number of PCs to use for construction of Selection kNN-graph. Default nPC.selection=NULL (no PCA).
 #' @param genes.predict Character vector containing names of genes for which we want to calculate gene prediction score. Default = genes.all.
@@ -81,7 +81,7 @@ get_gene_prediction_scores = function(sce, genes.selection, genes.all = rownames
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
 #' @param genes Character vector containing names of selected genes.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
-#' @param n.neigh Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
+#' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC Scalar (or NULL) specifying number of PCs to use for construction of kNN-graph. Default nPC=NULL.
 #' @param genes.predict Character vector containing names of genes for which we want to calculate gene prediction score. Default = rownames(sce).
 #' @param method Character specifying method for correlation. Availbale options are c("spearman" , "pearson"). Default method="spearman".

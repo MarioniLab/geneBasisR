@@ -12,19 +12,26 @@
 #' @param sep the field separator string. Note it should be the same for logcounts_dir and meta_dir (if exists)
 #' @param meta_dir If not NULL, a string specifying the directory for meta-data (i.e. celltype, batch, UMAP-coordinates).
 #' @param batch If not NULL (no batch applied), string specifying a column in meta file that will be used as batchID. Please check that named column exists in meta-file.
-#' Note that UMAP coordinates should be named as x and y. Also, if meta contains field cell - this field will be used for cell IDs.
+#' @param ... Additional arguments.
+#' Note that UMAP coordinates (if passed in meta-data) should be named as x and y. Also, if meta contains field cell - this field will be used for cell IDs.
 #'
 #' @return SingleCellExperiment object with gene counts/logcounts and meta-data (if applicable)
 #' @export
 #' @import SingleCellExperiment
+#' @examples
+#' require(SingleCellExperiment)
+#' counts_dir = system.file("extdata", "raw_spleen.txt", package = "geneBasisR")
+#' meta_dir = system.file("extdata", "raw_spleen_meta.txt", package = "geneBasisR")
+#' out = raw_to_sce(counts_dir, counts_type = "logcounts", transform_counts_to_logcounts = FALSE, header = TRUE, sep = "\t" , meta_dir = meta_dir, batch = NULL)
+#'
 raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_logcounts = TRUE, header = TRUE, sep = "\t" , meta_dir = NULL, batch = NULL,...){
   if (!file.exists(counts_dir)){
+    return(FALSE)
     stop("Counts file does not exist")
   }
-  else if (!is.null(meta_dir)) {
-    if (!file.exists(meta_dir)) {
-      stop("Meta file does not exist")
-    }
+  else if (!is.null(meta_dir) & !file.exists(meta_dir)) {
+    return(FALSE)
+    stop("Meta file does not exist")
   }
   else {
     counts = read.table(counts_dir, header = header, sep = sep)
@@ -45,15 +52,14 @@ raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_lo
         stop("Mismatch in cell IDs between counts matrix and meta-file.")
         return(FALSE)
       } else {
-        sce = SingleCellExperiment(assay = counts, colData = meta)
+        sce = SingleCellExperiment(list(counts = counts), colData = meta)
         names(assays(sce)) = counts_type
       }
     }
     else {
-      sce = SingleCellExperiment(assay = counts)
+      sce = SingleCellExperiment(list(counts = counts))
       names(assays(sce)) = counts_type
     }
-
     if (counts_type == "counts" & transform_counts_to_logcounts){
       sce = .log_normalise(sce, batch,...)
     }

@@ -30,7 +30,7 @@
       if (is.null(colnames(sce))){
         colnames(sce) = c(1:ncol(sce))
       }
-      message("Using SCE colnames as cell IDs")
+      #message("Using SCE colnames as cell IDs")
       sce$cell = colnames(sce)
       meta$cell = colnames(sce)
     }
@@ -154,7 +154,7 @@
 .general_check_arguments = function(dots){
   out = TRUE
   out = .check_argument_correct(dots, "sce", .check_sce, "Check sce - something is wrong (gene names unique? logcounts assay exists?)")
-  out = .check_argument_correct(dots, "n.neigh", .check_integer_or_all, "Check n.neigh - should be all or integer")
+  out = .check_argument_correct(dots, "n.neigh", .check_n.neigh, "Check n.neigh - should be positive integer > 1")
   out = .check_argument_correct(dots, "nPC", .check_integer_or_null, "Check nPC - should be NULL or integer")
   out = .check_argument_correct(dots, "nPC.all", .check_integer_or_null, "Check nPC.all - should be NULL or integer")
   out = .check_argument_correct(dots, "nPC.selection", .check_integer_or_null, "Check nPC.selection - should be NULL or integer")
@@ -169,14 +169,15 @@
   out = .check_argument_correct(dots, "verbose", .check_boolean, "Check verbose - should be boolean")
   out = .check_argument_correct(dots, "get.dist", .check_boolean, "Check get.dist - should be boolean")
   out = .check_argument_correct(dots, "discard.mt", .check_boolean, "Check discard.mt - should be boolean")
+  out = .check_argument_correct(dots, "select.hvgs", .check_boolean, "Check select.hvgs - should be boolean")
   out = .check_argument_correct(dots, "return.cell_score_stat", .check_boolean, "Check return.cell_score_stat - should be boolean")
   out = .check_argument_correct(dots, "return.gene_score_stat", .check_boolean, "Check return.gene_score_stat - should be boolean")
   out = .check_argument_correct(dots, "return.celltype_stat", .check_boolean, "Check return.celltype_stat - should be boolean")
   out = .check_argument_correct(dots, "return.stat", .check_boolean, "Check return.stat - should be boolean")
-  out = .check_argument_correct(dots, "p.minkowski", .check_integer, "Check p.minkowski - should be positive integer")
-  out = .check_argument_correct(dots, "n_genes_total", .check_integer, "Check n_genes_total - should be positive integer")
-  out = .check_argument_correct(dots, "n_genes.step", .check_integer, "Check n_genes.step - should be positive integer")
-  out = .check_argument_correct(dots, "n", .check_integer, "Check n - should be positive integer")
+  out = .check_argument_correct(dots, "p.minkowski", .check_positive_integer, "Check p.minkowski - should be positive integer")
+  out = .check_argument_correct(dots, "n_genes_total", .check_positive_integer, "Check n_genes_total - should be positive integer")
+  out = .check_argument_correct(dots, "n_genes.step", .check_positive_integer, "Check n_genes.step - should be positive integer")
+  out = .check_argument_correct(dots, "n", .check_positive_integer_or_null, "Check n - should be positive integer")
   out = .check_argument_correct(dots, "FDR.thresh", is.numeric, "Check FDR.thresh - should be numeric")
   out = .check_argument_correct(dots, "var.thresh", is.numeric, "Check var.thresh - should be numeric")
   out = .check_argument_correct(dots, "corr_all.thresh", is.numeric, "Check corr_all.thresh - should be numeric")
@@ -203,10 +204,7 @@
 }
 
 
-
-
-
-.check_integer = function(x){
+.check_positive_integer = function(x){
   out = TRUE
   if (!is.numeric(x)){
     out = FALSE
@@ -216,6 +214,15 @@
   return(out)
 }
 
+.check_n.neigh = function(x){
+  out = TRUE
+  if (!is.numeric(x)){
+    out = FALSE
+  } else if (!x%%1 == 0 | x < 1){
+    out = FALSE
+  }
+  return(out)
+}
 
 
 .check_integer_or_all = function(x){
@@ -242,6 +249,17 @@
   return(out)
 }
 
+.check_positive_integer_or_null = function(x){
+  out = TRUE
+  if (!is.null(x)){
+    if (!is.numeric(x)){
+      out = FALSE
+    } else if (!x%%1 == 0 | x < 0){
+      out = FALSE
+    }
+  }
+  return(out)
+}
 
 .check_string_or_null = function(x){
   out = TRUE
