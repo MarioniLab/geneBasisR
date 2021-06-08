@@ -20,9 +20,15 @@ devtools::install_github("MarioniLab/geneBasisR", ref="devel")
 
 Main functions of the package are `gene_search` and `evaluate_library`.
 
-`gene_search` takes as inputs scRNA-seq data (as a SingleCellExperiment objects, using logcounts) and number of genes to select.
+1. `gene_search` takes as inputs scRNA-seq data and number of genes to select.
 
-`evaluate_library` takes as inputs scRNA-seq data (as a SingleCellExperiment objects, using logcounts) and charcter vector of gene names, and estimates the quality of the selected library at cell type, cell and gene levels. Note that this is independent from `gene_search` meaning that you can plug any selection you want and assess how ~complete it is.
+- Requirements for scRNA-seq data:
+a) SingleCellExperiment object, containing assay 'logcounts' (henceforth referred to as sce).
+b) Rownames of sce correspond to unique gene identifiers.
+c) If colData(sce) contains field 'cell', this field should correspond to unique identifiers of cell entries (if not, we use colnames(sce) instead).
+
+2. `evaluate_library` takes as inputs scRNA-seq data (as a SingleCellExperiment objects, using logcounts) and charcter vector of gene names, and estimates the quality of the selected library at cell type, cell and gene levels. Note that this is independent from `gene_search` meaning that you can plug any selection you want and assess how ~complete it is.
+
 
 Explore vignette and tutorials to get a grasp on the package and its functions.
 
@@ -31,10 +37,9 @@ Explore vignette and tutorials to get a grasp on the package and its functions.
 
 1. [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/am_geneBasis/main/analysis/make_tutorials_4_package/geneBasis_mouseEmbryo_extended.html)
 
-2. Add-on: illustration of `geneBasis` within an individual cell type + suggestion for how to pre-select relevant genes:
+2. Add-on: illustration of **geneBasis** within an individual cell type + suggestion for how to pre-select relevant genes:
 [Vignette of library design within brain cells, mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/am_geneBasis/main/analysis/make_tutorials_4_package/geneBasis_mouseEmbryo_within_celltype.html)
 
-
-
+3. [Vignette of library design for spleen dataset](https://rawcdn.githack.com/MarioniLab/am_geneBasis/main/analysis/make_tutorials_4_package/geneBasis_spleen.html) . Here we introduce how to create working sce object from raw .txt data and introduce a workflow to compare two independent selections.
 
 
