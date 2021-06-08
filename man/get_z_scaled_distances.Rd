@@ -20,7 +20,7 @@ get_z_scaled_distances(
 
 \item{batch}{Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.}
 
-\item{n.neigh}{Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
+\item{n.neigh}{Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
 
 \item{nPC.all}{Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.}
 

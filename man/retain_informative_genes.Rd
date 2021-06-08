@@ -4,7 +4,13 @@
 \alias{retain_informative_genes}
 \title{retain_informative_genes}
 \usage{
-retain_informative_genes(sce, n = NULL, var.thresh = 0, discard.mt = T)
+retain_informative_genes(
+  sce,
+  n = NULL,
+  var.thresh = 0,
+  select.hvgs = TRUE,
+  discard.mt = TRUE
+)
 }
 \arguments{
 \item{sce}{SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).}
@@ -12,6 +18,8 @@ retain_informative_genes(sce, n = NULL, var.thresh = 0, discard.mt = T)
 \item{n}{Scalar (or NULL, if not applied) specifying number of top HVGs to be return. Default=NULL.}
 
 \item{var.thresh}{Scalar (float) specifying threshold for variation to filter HVGs. Default=0.}
+
+\item{select.hvgs}{Boolean specifying if we want to discard not HVGs. Default=TRUE.}
 
 \item{discard.mt}{Boolean specifying if mitochondrial genes should be discarded. Default=TRUE.}
 }
@@ -30,6 +38,6 @@ sce = SingleCellExperiment(assays = list(logcounts = matrix(rnorm(n_row*n_col), 
 rownames(sce) = as.factor(1:n_row)
 colnames(sce) = c(1:n_col)
 sce$cell = colnames(sce)
-out = retain_informative_genes(sce, n = 100)
+out = retain_informative_genes(sce)
 
 }

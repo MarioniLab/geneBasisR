@@ -10,6 +10,8 @@ plot_umaps_w_counts(sce, genes, size = 0.25, ncol = NULL)
 \item{sce}{SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).}
 
 \item{genes}{Character vector containing gene names for which to plot UMAPs.}
+
+\item{ncol}{Positive integer specifying number of columns for ggarrange}
 }
 \value{
 For each gene: scater plot with UMAP-coordinates colored by gene expression

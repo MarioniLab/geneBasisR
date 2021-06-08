@@ -28,12 +28,21 @@ raw_to_sce(
 
 \item{meta_dir}{If not NULL, a string specifying the directory for meta-data (i.e. celltype, batch, UMAP-coordinates).}
 
-\item{batch}{If not NULL (no batch applied), string specifying a column in meta file that will be used as batchID. Please check that named column exists in meta-file.
-Note that UMAP coordinates should be named as x and y. Also, if meta contains field cell - this field will be used for cell IDs.}
+\item{batch}{If not NULL (no batch applied), string specifying a column in meta file that will be used as batchID. Please check that named column exists in meta-file.}
+
+\item{...}{Additional arguments.
+Note that UMAP coordinates (if passed in meta-data) should be named as x and y. Also, if meta contains field cell - this field will be used for cell IDs.}
 }
 \value{
 SingleCellExperiment object with gene counts/logcounts and meta-data (if applicable)
 }
 \description{
 Simply a parser raw .txt files --> SingleCellExperiment object + adding logcounts
+}
+\examples{
+require(SingleCellExperiment)
+counts_dir = system.file("extdata", "raw_spleen.txt", package = "geneBasisR")
+meta_dir = system.file("extdata", "raw_spleen_meta.txt", package = "geneBasisR")
+out = raw_to_sce(counts_dir, counts_type = "logcounts", transform_counts_to_logcounts = FALSE, header = TRUE, sep = "\t" , meta_dir = meta_dir, batch = NULL)
+
 }

@@ -26,7 +26,7 @@ gene_search(
 
 \item{batch}{Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.}
 
-\item{n.neigh}{Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
+\item{n.neigh}{Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
 
 \item{p.minkowski}{Order of Minkowski distance. Default p.minkowski=3.}
 

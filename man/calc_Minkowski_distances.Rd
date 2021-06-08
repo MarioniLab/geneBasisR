@@ -22,7 +22,7 @@ calc_Minkowski_distances(
 
 \item{batch}{Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.}
 
-\item{n.neigh}{Scalar specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
+\item{n.neigh}{Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
 
 \item{nPC}{Scalar (or NULL) specifying number of PCs to use for kNN-graph. Default nPC=NULL (no PCA).}
 
