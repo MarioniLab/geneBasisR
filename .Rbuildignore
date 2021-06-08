@@ -1,3 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^notes$
+^LICENSE\.md$
+^LICENSE$
