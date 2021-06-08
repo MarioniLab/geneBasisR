@@ -38,11 +38,11 @@ Explore vignette and tutorials to get a grasp on the package and its functions.
 
 ### Tutorials
 
-1. [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/am_geneBasis/main/analysis/make_tutorials_4_package/geneBasis_mouseEmbryo_extended.html)
+1. [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/ef2d83ae4eaf607c447037dc8981b18d4e7821af/geneBasis_mouseEmbryo_extended.html)
 
 2. Add-on: illustration of **geneBasis** within an individual cell type + suggestion for how to pre-select relevant genes:
-[Vignette of library design within brain cells, mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/am_geneBasis/main/analysis/make_tutorials_4_package/geneBasis_mouseEmbryo_within_celltype.html)
+[Vignette of library design within brain cells, mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/ef2d83ae4eaf607c447037dc8981b18d4e7821af/geneBasis_mouseEmbryo_within_celltype.html)
 
-3. [Vignette of library design for spleen dataset](https://rawcdn.githack.com/MarioniLab/am_geneBasis/main/analysis/make_tutorials_4_package/geneBasis_spleen.html) . Here we introduce how to create working sce object from raw .txt data and introduce a workflow to compare two independent selections.
+3. [Vignette of library design for spleen dataset](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/ef2d83ae4eaf607c447037dc8981b18d4e7821af/geneBasis_spleen.html) . Here we introduce how to create working sce object from raw .txt data and introduce a workflow to compare two independent selections.
 
 
