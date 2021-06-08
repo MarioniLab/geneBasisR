@@ -22,9 +22,12 @@ Main functions of the package are `gene_search` and `evaluate_library`.
 
 1. `gene_search` takes as inputs scRNA-seq data and number of genes to select.
 
-- Requirements for scRNA-seq data:
+Requirements for scRNA-seq data:
+
 a) SingleCellExperiment object, containing assay 'logcounts' (henceforth referred to as sce).
+
 b) Rownames of sce correspond to unique gene identifiers.
+
 c) If colData(sce) contains field 'cell', this field should correspond to unique identifiers of cell entries (if not, we use colnames(sce) instead).
 
 2. `evaluate_library` takes as inputs scRNA-seq data (as a SingleCellExperiment objects, using logcounts) and charcter vector of gene names, and estimates the quality of the selected library at cell type, cell and gene levels. Note that this is independent from `gene_search` meaning that you can plug any selection you want and assess how ~complete it is.
