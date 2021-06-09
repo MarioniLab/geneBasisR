@@ -28,7 +28,7 @@ test_that("Wrong input gives errors", {
                fixed=TRUE
   )
   # stat_all should be the right format
-  expect_error(gene_search(sce_1, n_genes_total = 1, stat_all = stat_all_2, n.neigh = 1),
+  expect_error(gene_search(sce_1, n_genes_total = 1, stat_all = stat_all_2, n.neigh = 2),
                "stat_all is of the wrong format - should contain fields gene and dist_all.",
                fixed=TRUE
   )
@@ -52,7 +52,7 @@ test_that("Wrong input gives errors", {
   )
 
   # n_genes_total should be bigger than nrow(sce)
-  expect_error(gene_search(sce_1, n_genes_total = 4, n.neigh = 1),
+  expect_error(gene_search(sce_1, n_genes_total = 4, n.neigh = 2),
                "Selected library size is bigger than number of genes in the counts matrix",
                fixed=TRUE
   )
