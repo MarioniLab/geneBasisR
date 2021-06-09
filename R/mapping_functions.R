@@ -35,21 +35,41 @@
 
 
 #' @importFrom BiocNeighbors queryKNN
-#'
-.assign_neighbors = function(counts , reference_cells , query_cells, n.neigh = 5, get.dist = F){
+#' @importFrom paleotree reverseList
+.assign_neighbors = function(counts , reference_cells , query_cells, n.neigh = 5, get.dist = F ){
   set.seed(32)
   if (is.numeric(n.neigh) & n.neigh > nrow(counts)-1){
     stop("Each batch should contain at least > n.neigh cells. Check your dataset or decrease n.neigh.")
   }
   else {
     knns = queryKNN( counts[reference_cells ,], counts[query_cells ,], k = (n.neigh+1), get.distance = get.dist)
-    cells_mapped = t( apply(knns$index, 1, function(x) reference_cells[x[2:(n.neigh+1)]]) )
-    rownames(cells_mapped) = query_cells
     if (!get.dist){
+      cells_mapped = lapply(1:length(query_cells), function(i){
+        current.neighs = knns$index[i, ]
+        current.neighs = current.neighs[!current.neighs == i]
+        current.neighs = current.neighs[1:n.neigh]
+        return(current.neighs)
+      })
+      cells_mapped = do.call(rbind, cells_mapped)
+      cells_mapped = t( apply(cells_mapped, 1, function(x) reference_cells[x]) )
+      rownames(cells_mapped) = query_cells
       out = list(cells_mapped = cells_mapped)
     }
-    if (get.dist){
-      distances = knns$distance[, 2:(n.neigh+1)]
+    else {
+      cells_mapped_w_dist = lapply(1:nrow(knns$index), function(i){
+        current.neighs = knns$index[i, ]
+        idx = which(!current.neighs == i)
+        current.neighs = current.neighs[idx]
+        current.neighs = current.neighs[1:n.neigh]
+        current.dist = knns$distance[i, idx]
+        current.dist = current.dist[1:n.neigh]
+        return(list(cells_mapped = current.neighs , distances = current.dist))
+      })
+      cells_mapped_w_dist = reverseList(cells_mapped_w_dist)
+      cells_mapped = do.call(rbind , cells_mapped_w_dist$cells_mapped)
+      cells_mapped = t( apply(cells_mapped, 1, function(x) reference_cells[x]) )
+      rownames(cells_mapped) = query_cells
+      distances = do.call(rbind , cells_mapped_w_dist$distances)
       rownames(distances) = query_cells
       out = list(cells_mapped = cells_mapped , distances = distances)
     }
@@ -167,3 +187,4 @@
   neighs = neighs[ match(colnames(sce), rownames(neighs)), ]
   return(neighs)
 }
+
