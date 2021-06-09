@@ -218,7 +218,7 @@
   out = TRUE
   if (!is.numeric(x)){
     out = FALSE
-  } else if (!x%%1 == 0 | x < 1){
+  } else if (!x%%1 == 0 | x <= 1){
     out = FALSE
   }
   return(out)
