@@ -27,7 +27,6 @@
 #' out = calc_Minkowski_distances(sce, genes)
 #'
 calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , nPC = NULL , genes.predict = rownames(sce) , p.minkowski = 3, ...){
-  set.seed(32)
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
     sce = .prepare_sce(sce)
