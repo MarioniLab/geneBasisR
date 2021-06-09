@@ -37,6 +37,7 @@
 #' @importFrom BiocNeighbors queryKNN
 #'
 .assign_neighbors = function(counts , reference_cells , query_cells, n.neigh = 5, get.dist = F){
+  set.seed(32)
   if (is.numeric(n.neigh) & n.neigh > nrow(counts)-1){
     stop("Each batch should contain at least > n.neigh cells. Check your dataset or decrease n.neigh.")
   }
