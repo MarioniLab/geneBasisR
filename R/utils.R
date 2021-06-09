@@ -4,7 +4,7 @@
 #' @import SingleCellExperiment
 .prepare_sce_counts = function(sce){
   if (!is(sce , "SingleCellExperiment")){
-    stop("Counts matrix should be a SingleCellExperiment object.")
+    stop("sce should be a SingleCellExperiment object.")
     return(F)
   } else if ("logcounts" %in% names(assays(sce))){
     return(sce)
@@ -21,7 +21,7 @@
 #' @import SingleCellExperiment
 .prepare_sce_cell_ids = function(sce){
   if (!is(sce , "SingleCellExperiment")){
-    stop("Counts matrix should be a SingleCellExperiment object.")
+    stop("sce should be a SingleCellExperiment object.")
     return(F)
   }
   else {
@@ -61,7 +61,7 @@
 #' @import SingleCellExperiment
 .check_sce = function(sce){
   if (!is(sce , "SingleCellExperiment")){
-    stop("Counts matrix should be a SingleCellExperiment object.")
+    stop("sce should be a SingleCellExperiment object.")
     return(F)
   } else if (!("logcounts" %in% names(assays(sce)))){
     stop("SCE should contain logcounts assay.")
