@@ -24,7 +24,7 @@ Main functions of the package are `gene_search` and `evaluate_library`.
 
 Requirements for scRNA-seq data format:
 
-a) SingleCellExperiment object, containing assay 'logcounts' (henceforth referred to as sce).
+a) SingleCellExperiment object, containing assay 'logcounts'. Henceforth this SingleCellExperiment object will be referred to as sce.
 
 b) Rownames of sce correspond to unique gene identifiers.
 
