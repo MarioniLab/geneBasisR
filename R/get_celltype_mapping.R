@@ -2,7 +2,7 @@
 
 #' get_celltype_mapping
 #'
-#' For each cell, returns actual and mapped (most common among neighbors in the Selection graph) celltype labels.
+#' For each cell, returns an estimate of its cell type based on cell type labels of neighbors in Selection graph.
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
 #' @param genes.selection Character vector specifying genes to be used for the construction of Selection kNN-graph.
@@ -13,7 +13,9 @@
 #' @param return.stat Boolean specifying if stat on the mapping should be returned alongside the mapping itself.
 #' @param which_genes_to_use String specifying whether celltype mapping should be performed only on DE (between celltypes) genes (= 'DE') or all inserted genes (= 'all'). Default option="all".
 #' @param ... Additional arguments (e.g. the ones you can pass to get_DE_genes).
-#' @return
+#' @return List, containing field 'mapping' - data.frame with cell IDs (column 'cell'), actual cell type (column 'celltype') and estimated cell type
+#' (column 'mapped_celltype'). If return.stat == TRUE, also returns field 'stat' - data.frame with cell type IDs (column 'celltype') and
+#' fraction of cells from this cell type that mapped correctly (column 'frac_correctly_mapped')
 #' @export
 #'
 #' @examples
