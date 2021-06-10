@@ -43,38 +43,43 @@ get_celltype_mapping = function(sce , genes.selection , batch = NULL, n.neigh = 
     }
   }
 
-  if (which_genes_to_use == "DE"){
-    markers = get_DE_genes(sce, check_args = FALSE, ...)
-    if (is.null(markers)){
-      stop("No DE genes discovered with these settings - consider option 'all' or tuning test, type and/or FDR threshold.")
-    }
-    else {
-      genes.selection = intersect(as.character(markers$gene) , as.character(genes.selection))
-      if (length(genes.selection) < 2){
-        stop("Less than 2 genes are selected as DE between celltypes - celltype mapping is not possible. Consider option 'all' or change settings for identifying DE genes.")
-      }
-    }
+  if (n.neigh > ncol(sce) - 1){
+    stop("n.neigh should be less than number of cells. Decrease n.neigh.")
   }
-  if (length(genes.selection) > 1){
-    neighs = suppressWarnings( .get_MNN_corrected_mapping(sce , genes = genes.selection, batch = batch, n.neigh = n.neigh, nPC = nPC.selection , cosine = cosine) )
-    neighs = neighs$cells_mapped
-    if (!is.null(neighs)){
-      meta = as.data.frame(colData(sce))
-      meta$celltype = as.character(meta$celltype)
-      mapping = data.frame(cell = rownames(neighs) ,
-                                   celltype = sapply(1:nrow(neighs) , function(i) meta$celltype[meta$cell == rownames(neighs)[i]]) ,
-                                   mapped_celltype = sapply(1:nrow(neighs), function(i) .getmode(meta$celltype[match(neighs[i,] , meta$cell)] , 1:n.neigh) ))
-      if (return.stat){
-        stat = .get_fraction_mapped_correctly(mapping)
-        out = list(mapping = mapping, stat = stat)
+  else {
+    if (which_genes_to_use == "DE"){
+      markers = get_DE_genes(sce, check_args = FALSE, ...)
+      if (is.null(markers)){
+        stop("No DE genes discovered with these settings - consider option 'all' or tuning test, type and/or FDR threshold.")
       }
       else {
-        out = list(mapping = mapping)
+        genes.selection = intersect(as.character(markers$gene) , as.character(genes.selection))
+        if (length(genes.selection) < 2){
+          stop("Less than 2 genes are selected as DE between celltypes - celltype mapping is not possible. Consider option 'all' or change settings for identifying DE genes.")
+        }
       }
-      return(out)
     }
-    else {
-      return(NULL)
+    if (length(genes.selection) > 1){
+      neighs = suppressWarnings( .get_MNN_corrected_mapping(sce , genes = genes.selection, batch = batch, n.neigh = n.neigh, nPC = nPC.selection , cosine = cosine) )
+      neighs = neighs$cells_mapped
+      if (!is.null(neighs)){
+        meta = as.data.frame(colData(sce))
+        meta$celltype = as.character(meta$celltype)
+        mapping = data.frame(cell = rownames(neighs) ,
+                                     celltype = sapply(1:nrow(neighs) , function(i) meta$celltype[meta$cell == rownames(neighs)[i]]) ,
+                                     mapped_celltype = sapply(1:nrow(neighs), function(i) .getmode(meta$celltype[match(neighs[i,] , meta$cell)] , 1:n.neigh) ))
+        if (return.stat){
+          stat = .get_fraction_mapped_correctly(mapping)
+          out = list(mapping = mapping, stat = stat)
+        }
+        else {
+          out = list(mapping = mapping)
+        }
+        return(out)
+      }
+      else {
+        return(NULL)
+      }
     }
   }
 }
