@@ -1,4 +1,4 @@
-context("Testing calc_Minkowski_distances")
+# context("Testing calc_Minkowski_distances")
 library(geneBasisR)
 
 ### set up inputs
@@ -30,7 +30,7 @@ data("sce_mouseEmbryo", package = "geneBasisR")
 test_that("Return is the correct class", {
   # right class
   out = calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct) , n.neigh = 2, p = 2)
-  expect_is(out, "data.frame")
+  expect_s3_class(out, "data.frame")
 
   # right colnames
   out = calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct) , n.neigh = 2, p = 2)
@@ -121,10 +121,16 @@ test_that("Wrong input, n.neigh", {
                fixed=TRUE
   )
   # n.neigh - positive scalar > 1
-  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct), n.neigh = "all"),
+  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct), n.neigh = "random"),
                "Check n.neigh - should be positive integer > 1",
                fixed=TRUE
   )
+
+  # internal check - n.neigh can be 'all' but not for users
+  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct), n.neigh = "all"),
+               NA
+  )
+
   # n.neigh should be < min(size(batch)) - 1
   expect_error(calc_Minkowski_distances(sce_correct_w_batch, genes = rownames(sce_correct), n.neigh = 3, batch = "batch"),
                "Each batch should contain at least > n.neigh cells. Check your dataset or decrease n.neigh.",

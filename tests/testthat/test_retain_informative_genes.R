@@ -1,4 +1,4 @@
-context("Testing retain_informative_genes")
+# context("Testing retain_informative_genes")
 library(geneBasisR)
 
 ### set up inputs

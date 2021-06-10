@@ -1,4 +1,4 @@
-context("Testing gene_search")
+# context("Testing gene_search")
 library(geneBasisR)
 
 ### set up inputs

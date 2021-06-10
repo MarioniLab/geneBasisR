@@ -1,4 +1,4 @@
-context("Testing get_DE_genes")
+# context("Testing get_DE_genes")
 library(geneBasisR)
 
 ### set up inputs
@@ -34,7 +34,7 @@ data("sce_mouseEmbryo", package = "geneBasisR")
 test_that("Return is the correct class", {
   # correct class
   out = get_DE_genes(sce_correct, genes = rownames(sce_correct) , test.type = "t")
-  expect_is(out, "data.frame")
+  expect_s3_class(out, "data.frame")
 
   # correct colnames
   out = get_DE_genes(sce_correct, genes = rownames(sce_correct) , test.type = "t", FDR.thresh = 1)
@@ -80,7 +80,7 @@ test_that("Wrong input, sce", {
                fixed=TRUE
   )
 
-  # sce shold contain field celltype
+  # sce should contain field celltype
   expect_error(get_DE_genes(sce_no_celltype_field),
                "'celltype' field should be in colData(sce)",
                fixed=TRUE
@@ -106,6 +106,11 @@ test_that("Wrong input, test.type", {
                "Check test.type - should be either 'binom', 'wilcox' or 't'",
                fixed=TRUE
   )
+
+  # genes should be a subset of rownames in sce_correct
+  expect_error(get_DE_genes(sce_correct, test.type = "t"),
+               NA
+  )
 })
 
 
@@ -127,6 +132,11 @@ test_that("Wrong input, pval.type", {
                "Check pval.type - should be either 'all', 'some' or 'any'",
                fixed=TRUE
   )
+  # genes should be a subset of rownames in sce_correct
+  expect_error(get_DE_genes(sce_correct, pval.type = "all"),
+               NA
+  )
+
 })
 
 
