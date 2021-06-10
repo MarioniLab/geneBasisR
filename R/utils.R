@@ -219,7 +219,7 @@
 
 .check_n.neigh = function(x){
   out = TRUE
-  if (!n.neigh == "all"){
+  if (!x == "all"){
     if (!is.numeric(x)){
       out = FALSE
     } else if (!x%%1 == 0 | x <= 1){
