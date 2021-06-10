@@ -95,7 +95,7 @@
     res = tryCatch(
       {
         if (!is.null(nPC)){
-          pcs = prcomp_irlba(t(counts) , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1)))
+          pcs = suppressWarnings( prcomp_irlba(t(counts) , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
           counts = pcs$x
           rownames(counts) = colnames(sce)
         } else {
