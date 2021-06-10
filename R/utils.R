@@ -219,12 +219,10 @@
 
 .check_n.neigh = function(x){
   out = TRUE
-  if (!x == "all"){
-    if (!is.numeric(x)){
-      out = FALSE
-    } else if (!x%%1 == 0 | x <= 1){
-      out = FALSE
-    }
+  if (!is.numeric(x)){
+    out = FALSE
+  } else if (!x%%1 == 0 | x <= 1){
+    out = FALSE
   }
   return(out)
 }
@@ -279,7 +277,7 @@
 
 .check_boolean = function(x){
   out = TRUE
-  if (!out %in% c(TRUE, FALSE)){
+  if (!x %in% c(TRUE, FALSE)){
     out = FALSE
   }
   return(out)
