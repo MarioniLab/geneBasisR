@@ -197,7 +197,10 @@
 
 .check_arg_within_options = function(x , options){
   out = TRUE
-  if (!x %in% options){
+  if (is.null(x)){
+    out = FALSE
+  }
+  else  if (!x %in% options){
     out = FALSE
   }
   return(out)
