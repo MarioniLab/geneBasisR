@@ -78,7 +78,7 @@
 .check_celltype_in_sce = function(sce){
   if (.check_sce(sce)){
     if (!("celltype" %in% colnames(colData(sce)))){
-      stop("celltype field should be in counts matrix")
+      stop("'celltype' field should be in colData(sce)")
       return(F)
     }
     else {
