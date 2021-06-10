@@ -52,6 +52,7 @@ get_DE_genes = function(sce , test.type = "binom", pval.type = "some", FDR.thres
   markers = do.call(rbind , markers)
   if (!is.null(FDR.thresh)){
     markers = markers[!is.na(markers$FDR) & markers$FDR <= FDR.thresh , ]
+    rownames(markers) = NULL
   }
   if (nrow(markers) < 1){
     message("No DE genes discovered with these settings - consider tuning test, type and/or FDR threshold.")
