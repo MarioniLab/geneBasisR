@@ -28,8 +28,16 @@ data("sce_mouseEmbryo", package = "geneBasisR")
 
 
 test_that("Return is the correct class", {
-  out = calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct) , n.neigh = 2, p = 1)
+  # right class
+  out = calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct) , n.neigh = 2, p = 2)
   expect_is(out, "data.frame")
+
+  # right colnames
+  out = calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct) , n.neigh = 2, p = 2)
+  out = colnames(out)
+  out_expect = c("gene" , "dist")
+  expect_identical(out, out_expect)
+
 })
 
 
