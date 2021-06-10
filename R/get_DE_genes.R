@@ -1,7 +1,8 @@
 
 #' get_DE_genes
 #'
-#' Essentially a wrapper for scran::findMarkers. Returns a data.frame with celltype and gene.
+#' Essentially a wrapper for scran::findMarkers. Returns a combined data.frame, each row corresponds
+#' to cell type and gene which found to be DE in the cell type (using designated FDR as a threshold).
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
 #' @param test.type String specifying which testing will be performed. Available options are the same as for scran::findMarkers, parameter test.use. Default test.type="binom".
@@ -50,7 +51,7 @@ get_DE_genes = function(sce , test.type = "binom", pval.type = "some", FDR.thres
   })
   markers = do.call(rbind , markers)
   if (!is.null(FDR.thresh)){
-    markers = markers[!is.na(markers$FDR) & markers$FDR < FDR.thresh , ]
+    markers = markers[!is.na(markers$FDR) & markers$FDR <= FDR.thresh , ]
   }
   if (nrow(markers) < 1){
     message("No DE genes discovered with these settings - consider tuning test, type and/or FDR threshold.")
