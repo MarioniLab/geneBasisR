@@ -13,6 +13,7 @@ Essentially, we attempt to identify all sources of heterogeneity driving transcr
 
 ```
 ## Install development version
+library(devtools)
 devtools::install_github("MarioniLab/geneBasisR") 
 ```
 
