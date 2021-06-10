@@ -155,9 +155,9 @@
   out = TRUE
   out = .check_argument_correct(dots, "sce", .check_sce, "Check sce - something is wrong (gene names unique? logcounts assay exists?)")
   out = .check_argument_correct(dots, "n.neigh", .check_n.neigh, "Check n.neigh - should be positive integer > 1")
-  out = .check_argument_correct(dots, "nPC", .check_positive_integer_or_null, "Check nPC - should be NULL or integer")
-  out = .check_argument_correct(dots, "nPC.all", .check_positive_integer_or_null, "Check nPC.all - should be NULL or integer")
-  out = .check_argument_correct(dots, "nPC.selection", .check_positive_integer_or_null, "Check nPC.selection - should be NULL or integer")
+  out = .check_argument_correct(dots, "nPC", .check_positive_integer_or_null, "Check nPC - should be NULL or positive integer")
+  out = .check_argument_correct(dots, "nPC.all", .check_positive_integer_or_null, "Check nPC.all - should be NULL or positive integer")
+  out = .check_argument_correct(dots, "nPC.selection", .check_positive_integer_or_null, "Check nPC.selection - should be NULL or positive integer")
   out = .check_argument_correct(dots, "batch", .check_string_or_null, "Check batch - should be NULL or string")
   out = .check_argument_correct(dots, "genes", .check_string_or_null, "Check genes - should be NULL or character vector")
   out = .check_argument_correct(dots, "genes_base", .check_string_or_null, "Check genes_base - should be NULL or character vector")
