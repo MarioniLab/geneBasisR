@@ -42,7 +42,7 @@
     stop("Each batch should contain at least > n.neigh cells. Check your dataset or decrease n.neigh.")
   }
   else {
-    knns = queryKNN( counts[reference_cells ,], counts[query_cells ,], k = (n.neigh+1), get.distance = get.dist)
+    knns = suppressWarnings( queryKNN( counts[reference_cells ,], counts[query_cells ,], k = (n.neigh+1), get.distance = get.dist) )
     if (!get.dist){
       cells_mapped = lapply(1:length(query_cells), function(i){
         current.neighs = knns$index[i, ]
