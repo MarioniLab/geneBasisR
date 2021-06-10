@@ -36,10 +36,12 @@ get_celltype_mapping(
 \item{...}{Additional arguments (e.g. the ones you can pass to get_DE_genes).}
 }
 \value{
-
+List, containing field 'mapping' - data.frame with cell IDs (column 'cell'), actual cell type (column 'celltype') and estimated cell type
+(column 'mapped_celltype'). If return.stat == TRUE, also returns field 'stat' - data.frame with cell type IDs (column 'celltype') and
+fraction of cells from this cell type that mapped correctly (column 'frac_correctly_mapped')
 }
 \description{
-For each cell, returns actual and mapped (most common among neighbors in the Selection graph) celltype labels.
+For each cell, returns an estimate of its cell type based on cell type labels of neighbors in Selection graph.
 }
 \examples{
 require(SingleCellExperiment)

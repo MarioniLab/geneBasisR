@@ -27,7 +27,8 @@ get_DE_genes(
 
 }
 \description{
-Essentially a wrapper for scran::findMarkers. Returns a data.frame with celltype and gene.
+Essentially a wrapper for scran::findMarkers. Returns a combined data.frame, each row corresponds
+to cell type and gene which found to be DE in the cell type (using designated FDR as a threshold).
 }
 \examples{
 require(SingleCellExperiment)
