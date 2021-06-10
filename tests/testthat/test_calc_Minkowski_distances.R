@@ -128,7 +128,8 @@ test_that("Wrong input, n.neigh", {
 
   # internal check - n.neigh can be 'all' but not for users
   expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct), n.neigh = "all"),
-               NA
+               "Check n.neigh - should be positive integer > 1",
+               fixed=TRUE
   )
 
   # n.neigh should be < min(size(batch)) - 1
@@ -154,12 +155,27 @@ test_that("Wrong input, nPC", {
                fixed=TRUE
   )
   # nPC - NULL or positive scalar
+  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct), n.neigh = 2 , nPC = 5.5),
+               "Check nPC - should be NULL or positive integer",
+               fixed=TRUE
+  )
+  # nPC - NULL or positive scalar
   expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct), n.neigh = 2 , nPC = "all"),
                "Check nPC - should be NULL or positive integer",
                fixed=TRUE
   )
 
+  # nPC -  NULL or positive scalar
+  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct), n.neigh = 2 , nPC = NULL),
+               NA)
 
+  # nPC -  NULL or positive scalar
+  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct), n.neigh = 2 , nPC = 3),
+               NA)
+
+  # nPC -  NULL or positive scalar
+  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct), n.neigh = 2 , nPC = 30000),
+               NA)
 })
 
 

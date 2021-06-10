@@ -186,14 +186,15 @@ test_that("Wrong input, n.neigh", {
                fixed=TRUE
   )
   # n.neigh - positive scalar > 1
-  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct), n.neigh = "random"),
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = "random"),
                "Check n.neigh - should be positive integer > 1",
                fixed=TRUE
   )
 
   # internal check - n.neigh can be 'all' but not for users
-  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct), n.neigh = "all"),
-               NA
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = "all"),
+               "Check n.neigh - should be positive integer > 1",
+               fixed=TRUE
   )
   # n.neigh should be < ncol(sce)
   expect_error(get_celltype_mapping(sce_correct_w_batch, genes.selection = rownames(sce_correct_w_batch), nPC.selection = NULL, n.neigh = 7, batch = NULL),
@@ -202,12 +203,102 @@ test_that("Wrong input, n.neigh", {
   )
 
   expect_error(get_celltype_mapping(sce_correct_w_batch, genes.selection = rownames(sce_correct_w_batch), nPC.selection = NULL, n.neigh = 6, batch = NULL),
-               NA
-  )
-
+               NA)
 
 })
 
+
+
+
+test_that("Wrong input, nPC.selection", {
+  # nPC - NULL or positive scalar
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = 0),
+               "Check nPC.selection - should be NULL or positive integer",
+               fixed=TRUE
+  )
+  # nPC - NULL or positive scalar
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = -10),
+               "Check nPC.selection - should be NULL or positive integer",
+               fixed=TRUE
+  )
+  # nPC - NULL or positive scalar
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = 5.5),
+               "Check nPC.selection - should be NULL or positive integer",
+               fixed=TRUE
+  )
+  # nPC - NULL or positive scalar
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = "all"),
+               "Check nPC.selection - should be NULL or positive integer",
+               fixed=TRUE
+  )
+  # nPC -  NULL or positive scalar
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = NULL),
+               NA)
+
+  # nPC -  NULL or positive scalar
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = 3),
+               NA)
+
+  # nPC -  NULL or positive scalar
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = 30000),
+               NA)
+
+})
+
+
+test_that("Wrong input, cosine", {
+  # cosine - boolean
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , cosine = .5),
+               "Check cosine - should be boolean",
+               fixed=TRUE
+  )
+  # cosine - boolean
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , cosine = NULL ),
+               "Check cosine - should be boolean",
+               fixed=TRUE
+  )
+  # cosine - boolean
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , cosine = "all"),
+               "Check cosine - should be boolean",
+               fixed=TRUE
+  )
+  # cosine - boolean
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , cosine = T),
+               NA)
+
+  # cosine -  boolean
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , cosine = F),
+               NA)
+
+})
+
+
+
+test_that("Wrong input, return.stat", {
+  # cosine - boolean
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , return.stat = .5),
+               "Check return.stat - should be boolean",
+               fixed=TRUE
+  )
+  # cosine - boolean
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , return.stat = NULL ),
+               "Check return.stat - should be boolean",
+               fixed=TRUE
+  )
+  # cosine - boolean
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , return.stat = "all"),
+               "Check return.stat - should be boolean",
+               fixed=TRUE
+  )
+  # cosine - boolean
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , return.stat = T),
+               NA)
+
+  # cosine -  boolean
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , return.stat = F),
+               NA)
+
+})
 
 
 
@@ -231,7 +322,6 @@ test_that("Wrong input, pval.type", {
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), FDR.thresh = 1, pval.type = "any"),
                NA
   )
-
 
   # test.type should be: all, some or any
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), which_genes_to_use = "DE" , FDR.thresh = 1, pval.type = NULL),
