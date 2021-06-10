@@ -254,7 +254,7 @@
   if (!is.null(x)){
     if (!is.numeric(x)){
       out = FALSE
-    } else if (!x%%1 == 0 | x < 0){
+    } else if (!x%%1 == 0 | x <= 0){
       out = FALSE
     }
   }
