@@ -277,7 +277,10 @@
 
 .check_boolean = function(x){
   out = TRUE
-  if (!x %in% c(TRUE, FALSE)){
+  if (is.null(x)){
+    out = FALSE
+  }
+  else if (!x %in% c(TRUE, FALSE)){
     out = FALSE
   }
   return(out)
