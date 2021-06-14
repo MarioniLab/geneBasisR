@@ -12,7 +12,7 @@
 #' @param nPC.all Scalar (or NULL) specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.
 #' @param nPC.selection Scalar (or NULL) specifying number of PCs to use for construction of Selection kNN-graph. Default nPC.selection=NULL (no PCA).
 #' @param genes.predict Character vector containing names of genes for which we want to calculate gene prediction score. Default = genes.all.
-#' @param method Character specifying method for correlation. Availbale options are c("spearman" , "pearson" , "kendall"). Default method="spearman".
+#' @param method Character specifying method for correlation. Availbale options are c("spearman", "pearson", "kendall"). Default method="spearman".
 #' @param corr_all.thresh Scalar specifying suitable threshold for correlation to consider (on True graph).
 #' @param gene_stat_all If correlation-stat is pre-calculated for True graph, pass it here (default stat_all=NULL). This is useful if this variable will be used re-used multiple times.
 #' @param ... Additional arguments
@@ -57,7 +57,7 @@ get_gene_prediction_scores = function(sce, genes.selection, genes.all = rownames
     }
   }
 
-  gene_stat_all = gene_stat_all[gene_stat_all$corr_all > corr_all.thresh , ]
+  gene_stat_all = gene_stat_all[gene_stat_all$corr_all > corr_all.thresh & gene_stat_all$gene %in% genes.predict, ]
   if (nrow(gene_stat_all) == 0){
     message("No genes are retained for this corr_all.thresh. Consider decreasing the threshold.")
     return(NULL)
@@ -84,7 +84,7 @@ get_gene_prediction_scores = function(sce, genes.selection, genes.all = rownames
 #' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC Scalar (or NULL) specifying number of PCs to use for construction of kNN-graph. Default nPC=NULL.
 #' @param genes.predict Character vector containing names of genes for which we want to calculate gene prediction score. Default = rownames(sce).
-#' @param method Character specifying method for correlation. Availbale options are c("spearman" , "pearson"). Default method="spearman".
+#' @param method Character specifying method for correlation. Availbale options are c("spearman", "pearson", "kendall"). Default method="spearman".
 #' @param ... Additional arguments.
 #'
 #' @return
