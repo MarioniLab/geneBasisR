@@ -162,6 +162,9 @@ get_z_scaled_distances = function(sce , genes.all = rownames(sce) , batch = NULL
   neighs.all = .get_mapping(sce , genes = genes.all, batch = NULL, n.neigh = "all", nPC = nPC.all , get.dist = T)
   distances = neighs.all$distances
   distances_scaled = t( apply(distances , 1 , function(x) scale(x)) )
+  # if there are NaNs (i.e. same distance to all neighbors, return 0) -- the final dist will be NaN which is ok for this cases
+  distances_scaled[is.na(distances_scaled)] = 0
+
   rownames(distances_scaled) = rownames(distances)
   neighs.all$distances = distances_scaled
   return(neighs.all)
