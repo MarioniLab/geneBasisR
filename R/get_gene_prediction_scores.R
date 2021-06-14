@@ -126,11 +126,16 @@ get_gene_correlation_scores = function(sce, genes, batch = NULL, n.neigh = 5, nP
   stat_predict = Reduce("+", stat_predict) / length(stat_predict)
   stat_real = counts_predict[, rownames(neighs)]
 
-  stat = lapply(1:nrow(counts_predict) , function(i){
-    out = data.frame(gene = rownames(counts_predict)[i] , corr = cor(stat_real[i,] , stat_predict[i,] , method = method))
-    return(out)
-  })
-  stat = do.call(rbind , stat)
+  if (nrow(counts_predict) > 1){
+    stat = lapply(1:nrow(counts_predict) , function(i){
+      out = data.frame(gene = rownames(counts_predict)[i] , corr = cor(stat_real[i,] , stat_predict[i,] , method = method))
+      return(out)
+    })
+    stat = do.call(rbind , stat)
+  }
+  else if (nrow(counts_predict) == 1){
+    stat = data.frame(gene = rownames(counts_predict)[1] , corr = cor(stat_real , stat_predict , method = method))
+  }
   stat$corr[is.na(stat$corr)] = eps
   stat$corr[stat$corr < eps] = eps
   return(stat)
