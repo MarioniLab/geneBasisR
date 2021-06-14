@@ -183,8 +183,8 @@
   out = .check_argument_correct(dots, "corr_all.thresh", is.numeric, "Check corr_all.thresh - should be numeric")
   out = .check_argument_correct(dots, "library.size_type", function(x) .check_arg_within_options(x, c("single", "series")),
                                 "Check library.size_type - should be either 'single' or 'series'")
-  out = .check_argument_correct(dots, "method", function(x) .check_arg_within_options(x, c("spearman", "pearson")),
-                                "Check method - should be either 'spearman' or 'pearson'")
+  out = .check_argument_correct(dots, "method", function(x) .check_arg_within_options(x, c("spearman", "pearson","kendall")),
+                                "Check method - should be either 'spearman', 'pearson' or 'kendall'")
   out = .check_argument_correct(dots, "test.type", function(x) .check_arg_within_options(x, c("binom", "wilcox", "t")),
                                 "Check test.type - should be either 'binom', 'wilcox' or 't'")
   out = .check_argument_correct(dots, "pval.type", function(x) .check_arg_within_options(x, c("all", "some", "any")),
