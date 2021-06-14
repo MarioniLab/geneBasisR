@@ -12,7 +12,7 @@
 #' @param nPC.all Scalar (or NULL) specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.
 #' @param nPC.selection Scalar (or NULL) specifying number of PCs to use for construction of Selection kNN-graph. Default nPC.selection=NULL (no PCA).
 #' @param genes.predict Character vector containing names of genes for which we want to calculate gene prediction score. Default = genes.all.
-#' @param method Character specifying method for correlation. Availbale options are c("spearman" , "pearson"). Default method="spearman".
+#' @param method Character specifying method for correlation. Availbale options are c("spearman" , "pearson" , "kendall"). Default method="spearman".
 #' @param corr_all.thresh Scalar specifying suitable threshold for correlation to consider (on True graph).
 #' @param gene_stat_all If correlation-stat is pre-calculated for True graph, pass it here (default stat_all=NULL). This is useful if this variable will be used re-used multiple times.
 #' @param ... Additional arguments
@@ -32,7 +32,7 @@
 #' out = get_gene_prediction_scores(sce, genes.selection)
 #'
 get_gene_prediction_scores = function(sce, genes.selection, genes.all = rownames(sce) , batch = NULL, n.neigh = 5, nPC.all = 50 , nPC.selection = NULL,
-                                      genes.predict = genes.all, method = "spearman" , corr_all.thresh = 0.25 , gene_stat_all = NULL, ...){
+                                      genes.predict = genes.all, method = "spearman", corr_all.thresh = 0.25 , gene_stat_all = NULL, ...){
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
     sce = .prepare_sce(sce)

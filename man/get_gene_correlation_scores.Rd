@@ -28,7 +28,7 @@ get_gene_correlation_scores(
 
 \item{genes.predict}{Character vector containing names of genes for which we want to calculate gene prediction score. Default = rownames(sce).}
 
-\item{method}{Character specifying method for correlation. Availbale options are c("spearman" , "pearson"). Default method="spearman".}
+\item{method}{Character specifying method for correlation. Availbale options are c("spearman", "pearson", "kendall"). Default method="spearman".}
 
 \item{...}{Additional arguments.}
 }
