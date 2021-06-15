@@ -87,14 +87,21 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
       colnames(gene_stat_all) = c("gene" , "corr_all")
       gene_score_stat = lapply(n_genes.grid, function(n_genes){
         current.stat = suppressWarnings( get_gene_prediction_scores(sce, genes.selection[1:n_genes], genes.all = genes.all, batch = batch, gene_stat_all = gene_stat_all, check_args = FALSE, ...) )
-        current.stat$n_genes = n_genes
+        if (!is.null(current.stat)){
+          current.stat$n_genes = n_genes
+        }
         if (verbose){
           cat(paste("Finished for the selection of" , n_genes , "genes.\n"))
         }
         return(current.stat)
       })
       gene_score_stat = do.call(rbind , gene_score_stat)
-      gene_score_stat$n_genes = factor(gene_score_stat$n_genes, levels = n_genes.grid)
+      if (!is.null(gene_score_stat)){
+        gene_score_stat$n_genes = factor(gene_score_stat$n_genes, levels = n_genes.grid)
+      }
+      else {
+        gene_score_stat = NaN
+      }
       out[[length(out) + 1]] = gene_score_stat
       names(out)[length(out)] = "gene_score_stat"
       if (verbose){
