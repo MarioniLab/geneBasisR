@@ -136,6 +136,40 @@
   }
 }
 
+
+.check_neighs.all_singleBatch = function(sce, neighs.all){
+  if ( !class(neighs.all) == "list" | !sum( c("cells_mapped" , "distances") %in% names(neighs.all) ) == 2) {
+    stop("Something is wrong with neighs.all argument. For each batch, neighs.all should be a list containing 'cells_mapped' and 'distances' entries; nrow for each entry == n-cells in the batch. Consider recalculating using get_z_scaled_distances function.")
+    return(FALSE)
+  }
+  else if ( is.null(dim(neighs.all$cells_mapped)) | is.null(dim(neighs.all$distances))){
+    stop("Something is wrong with neighs.all argument. For each batch, neighs.all should be a list containing 'cells_mapped' and 'distances' entries; nrow for each entry == n-cells in the batch. Consider recalculating using get_z_scaled_distances function.")
+    return(FALSE)
+  }
+  else if ( (!nrow(neighs.all$cells_mapped) == ncol(sce)) | (!nrow(neighs.all$distances) == ncol(sce)) ){
+    stop("Something is wrong with neighs.all argument. For each batch, neighs.all should be a list containing 'cells_mapped' and 'distances' entries; nrow for each entry == n-cells in the batch. Consider recalculating using get_z_scaled_distances function.")
+    return(FALSE)
+  }
+  else {
+    return(TRUE)
+  }
+}
+
+.check_neighs.all_multipleBatches = function(sce, batch, neighs.all){
+  meta = as.data.frame(colData(sce))
+  batchFactor = factor(meta[, colnames(meta) == batch])
+  names_neighs.all = sort(as.character(names(neighs.all)))
+  names_batchFactor = sort(as.character(unique(batchFactor)))
+  if (mean(names_neighs.all == names_batchFactor) < 1){
+    stop("Something is wrong with neighs.all argument. When batch is specified, it should be a list, named after batches. Consider recalculating using get_z_scaled_distances function.")
+    return(FALSE)
+  }
+  else {
+    return(TRUE)
+  }
+}
+
+
 .check_argument_correct = function(dots, arg_name , fun , message){
   if (arg_name %in% names(dots)){
     arg = dots[[which(names(dots) == arg_name)]]

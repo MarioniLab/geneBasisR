@@ -40,15 +40,18 @@ get_neighborhood_preservation_scores = function(sce, neighs.all = NULL,  genes.a
       out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.all) & .check_genes_in_sce(sce , genes.selection)
     }
   }
-
   if (is.null(batch)){
-    out = .get_neighborhood_preservation_scores_single_batch(sce , neighs.all = neighs.all, genes.all = genes.all,
+    score = .get_neighborhood_preservation_scores_single_batch(sce , neighs.all = neighs.all, genes.all = genes.all,
                                                              genes.selection = genes.selection, n.neigh = n.neigh , nPC.all = nPC.all , nPC.selection = nPC.selection)
-    return(out)
+    return(score)
   }
   else {
-    if (is.null(neighs.all)){
+    if (!is.null(neighs.all)){
+      out = .check_neighs.all_multipleBatches(sce , batch = batch , neighs.all = neighs.all)
+    }
+    else {
       neighs.all = get_z_scaled_distances(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh, nPC.all = nPC.all, check_args = FALSE)
+      out = .check_neighs.all_multipleBatches(sce , batch = batch , neighs.all = neighs.all)
     }
     meta = as.data.frame(colData(sce))
     batchFactor = factor(meta[, colnames(meta) == batch])
@@ -69,15 +72,14 @@ get_neighborhood_preservation_scores = function(sce, neighs.all = NULL,  genes.a
 #'
 .get_neighborhood_preservation_scores_single_batch = function(sce, neighs.all = NULL,  genes.all = rownames(sce),
                                                               genes.selection, n.neigh = 5, nPC.all = 50, nPC.selection = NULL){
-  if (is.null(neighs.all)){
-    neighs.all = get_z_scaled_distances(sce, genes.all = genes.all, batch = NULL, n.neigh = n.neigh, nPC.all = nPC.all)
+  if (!is.null(neighs.all)){
+    out = .check_neighs.all_singleBatch(sce ,  neighs.all = neighs.all)
   }
   else {
-    if (!class(neighs.all) == "list" | !sum(names(neighs.all) == c("cells_mapped" , "distances")) == 2){
-      stop("neighs.all is of the wrong format - should be a list, with elements names 'cells_mapped' and 'distances'.")
-      return(F)
-    }
+    neighs.all = get_z_scaled_distances(sce, genes.all = genes.all, batch = NULL, n.neigh = n.neigh, nPC.all = nPC.all)
+    out = .check_neighs.all_singleBatch(sce ,  neighs.all = neighs.all)
   }
+
   neighs.compare = .get_mapping(sce , genes = genes.selection, batch = NULL, n.neigh = n.neigh, nPC = nPC.selection)
   neighs.compare = neighs.compare$cells_mapped
   neighs.all.cells_mapped = neighs.all$cells_mapped
