@@ -97,6 +97,7 @@ get_neighborhood_preservation_scores = function(sce, neighs.all = NULL,  genes.a
   })
   score = do.call(rbind , score)
   score$cell = rownames(neighs.compare)
+  score = score[, c("cell", "cell_score")]
   return(score)
 }
 
