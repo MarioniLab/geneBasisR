@@ -37,6 +37,9 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
   sce = .prepare_sce(sce)
   args = c(as.list(environment()), list(...))
   out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.selection) & .check_genes_in_sce(sce, genes.all)
+  if (return.celltype_stat){
+    out = .check_celltype_in_sce(sce)
+  }
 
   if (library.size_type == "single"){
     n_genes.grid = c(length(genes.selection))
