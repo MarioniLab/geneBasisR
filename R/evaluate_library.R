@@ -144,8 +144,6 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
         final_stat[[length(final_stat) + 1]] = celltype_stat
         names(final_stat)[length(final_stat)] = "celltype_stat"
       }
-      final_stat[[length(final_stat) + 1]] = celltype_stat
-      names(final_stat)[length(final_stat)] = "celltype_stat"
       if (verbose){
         cat("Finished calculation of accuracy of cell type mappings.\n")
       }
