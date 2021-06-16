@@ -50,12 +50,14 @@ get_celltype_mapping = function(sce , genes.selection , batch = NULL, n.neigh = 
     if (which_genes_to_use == "DE"){
       markers = get_DE_genes(sce, check_args = FALSE, ...)
       if (is.null(markers)){
-        stop("No DE genes discovered with these settings - consider option 'all' or tuning test, type and/or FDR threshold.")
+        message("No DE genes discovered with these settings - consider option 'all' or tuning test, type and/or FDR threshold.")
+        return(NaN)
       }
       else {
         genes.selection = intersect(as.character(markers$gene) , as.character(genes.selection))
         if (length(genes.selection) < 2){
-          stop("Less than 2 genes are selected as DE between celltypes - celltype mapping is not possible. Consider option 'all' or change settings for identifying DE genes.")
+          message("Less than 2 genes are selected as DE between celltypes - celltype mapping is not possible. Consider option 'all' or change settings for identifying DE genes.")
+          return(NaN)
         }
       }
     }
@@ -80,6 +82,10 @@ get_celltype_mapping = function(sce , genes.selection , batch = NULL, n.neigh = 
       else {
         return(NULL)
       }
+    }
+    else {
+      message("Less than 2 genes are selected for celltype mapping - celltype mapping is not possible.")
+      return(NULL)
     }
   }
 }
