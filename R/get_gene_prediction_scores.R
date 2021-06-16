@@ -14,7 +14,7 @@
 #' @param genes.predict Character vector containing names of genes for which we want to calculate gene prediction score. Default = genes.all.
 #' @param method Character specifying method for correlation. Availbale options are c("spearman", "pearson", "kendall"). Default method="spearman".
 #' @param corr_all.thresh Scalar specifying suitable threshold for correlation to consider (on True graph).
-#' @param gene_stat_all If correlation-stat is pre-calculated for True graph, pass it here (default stat_all=NULL). This is useful if this variable will be used re-used multiple times.
+#' @param gene_stat_all If not NULL (NULL is default), gene_stat_all is pre-calculated stat for True graph. This is useful if this variable will be used re-used multiple times.
 #' @param ... Additional arguments
 #'
 #' @return data.frame, each row corresponds to gene, contains field gene_score = gene prediction score.
@@ -112,6 +112,9 @@ get_gene_correlation_scores = function(sce, genes, batch = NULL, n.neigh = 5, nP
       sce = .prepare_sce(sce)
       out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes) & .check_genes_in_sce(sce, genes.predict)
     }
+  }
+  if (length(genes.predict) < 1){
+    stop("Select at least one entry for genes.predict.")
   }
   eps = 0.00001
   neighs = .get_mapping(sce , genes = genes, batch = batch , n.neigh = n.neigh , nPC = nPC)
