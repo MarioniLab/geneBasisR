@@ -15,6 +15,8 @@ evaluate_library(
   return.gene_score_stat = T,
   return.celltype_stat = T,
   verbose = TRUE,
+  neighs.all = NULL,
+  gene_stat_all = NULL,
   ...
 )
 }
@@ -38,6 +40,10 @@ evaluate_library(
 \item{return.celltype_stat}{Boolean identifying whether stat on celltype mapping should be returned. Default return.celltype_stat=TRUE.}
 
 \item{verbose}{Boolean identifying whether intermediate print outputs should be returned. Default verbose=TRUE.}
+
+\item{neighs.all}{If not NULL (NULL is default), contains information about True kNN-graph (for each cell - ordered neighbors and distances). Useful to have a priori if cell score will be recalculated multiple times.}
+
+\item{gene_stat_all}{If not NULL (NULL is default), gene_stat_all is pre-calculated stat for True graph. This is useful if this variable will be used re-used multiple times.}
 
 \item{...}{Additional parameters}
 }
