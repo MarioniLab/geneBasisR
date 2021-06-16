@@ -36,11 +36,11 @@ get_gene_prediction_scores(
 
 \item{genes.predict}{Character vector containing names of genes for which we want to calculate gene prediction score. Default = genes.all.}
 
-\item{method}{Character specifying method for correlation. Availbale options are c("spearman" , "pearson" , "kendall"). Default method="spearman".}
+\item{method}{Character specifying method for correlation. Availbale options are c("spearman", "pearson", "kendall"). Default method="spearman".}
 
 \item{corr_all.thresh}{Scalar specifying suitable threshold for correlation to consider (on True graph).}
 
-\item{gene_stat_all}{If correlation-stat is pre-calculated for True graph, pass it here (default stat_all=NULL). This is useful if this variable will be used re-used multiple times.}
+\item{gene_stat_all}{If not NULL (NULL is default), gene_stat_all is pre-calculated stat for True graph. This is useful if this variable will be used re-used multiple times.}
 
 \item{...}{Additional arguments}
 }
