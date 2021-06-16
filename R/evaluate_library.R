@@ -83,7 +83,7 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
         return(current.stat)
       })
       cell_score_stat = do.call(rbind , cell_score_stat)
-      cell_score_stat$n_genes = factor(cell_score_stat$n_genes, levels = n_genes.grid)
+      cell_score_stat$n_genes = factor(cell_score_stat$n_genes, levels = sort(unique(gene_score_stat$n_genes)))
       final_stat[[length(final_stat) + 1]] = cell_score_stat
       names(final_stat)[length(final_stat)] = "cell_score_stat"
       if (verbose){
@@ -112,7 +112,7 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
       })
       gene_score_stat = do.call(rbind , gene_score_stat)
       if (!is.null(gene_score_stat)){
-        gene_score_stat$n_genes = factor(gene_score_stat$n_genes, levels = n_genes.grid)
+        gene_score_stat$n_genes = factor(gene_score_stat$n_genes, levels = sort(unique(gene_score_stat$n_genes)))
         final_stat[[length(final_stat) + 1]] = gene_score_stat
         names(final_stat)[length(final_stat)] = "gene_score_stat"
       }
@@ -140,7 +140,7 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
       })
       celltype_stat = do.call(rbind , celltype_stat)
       if (!is.null(celltype_stat)){
-        celltype_stat$n_genes = factor(celltype_stat$n_genes, levels = n_genes.grid)
+        celltype_stat$n_genes = factor(celltype_stat$n_genes, levels = sort(unique(gene_score_stat$n_genes)))
         final_stat[[length(final_stat) + 1]] = celltype_stat
         names(final_stat)[length(final_stat)] = "celltype_stat"
       }
