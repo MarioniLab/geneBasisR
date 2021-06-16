@@ -107,6 +107,7 @@ n_genes_total = 10
 genes_stat = gene_search(sce_mouseEmbryo , genes_base = c("Hba-x", "Acta2", "Ttr", "Crabp1" , "Hoxaas3"), n_genes_total = n_genes_total, batch = "sample", verbose = T)
 genes = genes_stat$gene
 
+
 ```
 
 # Evaluation of the library
