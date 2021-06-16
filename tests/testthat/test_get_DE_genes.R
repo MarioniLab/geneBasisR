@@ -122,17 +122,17 @@ test_that("Wrong input, pval.type", {
                "Check pval.type - should be either 'all', 'some' or 'any'",
                fixed=TRUE
   )
-  # genes should be a subset of rownames in sce_correct
+  # test.type should be: all, some or any
   expect_error(get_DE_genes(sce_correct, pval.type = 0),
                "Check pval.type - should be either 'all', 'some' or 'any'",
                fixed=TRUE
   )
-  # genes should be a subset of rownames in sce_correct
+  # test.type should be: all, some or any
   expect_error(get_DE_genes(sce_correct, pval.type = "random"),
                "Check pval.type - should be either 'all', 'some' or 'any'",
                fixed=TRUE
   )
-  # genes should be a subset of rownames in sce_correct
+  # test.type should be: all, some or any
   expect_error(get_DE_genes(sce_correct, pval.type = "all"),
                NA
   )
@@ -148,7 +148,7 @@ test_that("Wrong input, FDR.thresh", {
                "Check FDR.thresh - should be numeric",
                fixed=TRUE
   )
-  # genes should be a subset of rownames in sce_correct
+  # FDR.thresh should be numeric
   expect_error(get_DE_genes(sce_correct, FDR.thresh = "random"),
                "Check FDR.thresh - should be numeric",
                fixed=TRUE
