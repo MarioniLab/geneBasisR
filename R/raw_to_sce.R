@@ -12,7 +12,7 @@
 #' @param sep the field separator string. Note it should be the same for logcounts_dir and meta_dir (if exists)
 #' @param meta_dir If not NULL, a string specifying the directory for meta-data (i.e. celltype, batch, UMAP-coordinates).
 #' @param batch If not NULL (no batch applied), string specifying a column in meta file that will be used as batchID. Please check that named column exists in meta-file.
-#' @param ... Additional arguments.
+#' @param ... Additional arguments. This includes d and min.mean for scran::quickCluster - used to calculate size factors to compute normalised log-counts.
 #' Note that UMAP coordinates (if passed in meta-data) should be named as x and y. Also, if meta contains field cell - this field will be used for cell IDs.
 #'
 #' @return SingleCellExperiment object with gene counts/logcounts and meta-data (if applicable)
@@ -26,12 +26,10 @@
 #'
 raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_logcounts = TRUE, header = TRUE, sep = "\t" , meta_dir = NULL, batch = NULL,...){
   if (!file.exists(counts_dir)){
-    return(FALSE)
     stop("Counts file does not exist")
   }
   else if (!is.null(meta_dir) & !file.exists(meta_dir)) {
-    return(FALSE)
-    stop("Meta file does not exist")
+    stop("Meta file is supplied, but does not exist")
   }
   else {
     counts = read.table(counts_dir, header = header, sep = sep)
@@ -47,10 +45,8 @@ raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_lo
       counts = counts[, order(colnames(counts))]
       if (nrow(meta) != ncol(counts)){
         stop("Mismatch in number of cells between counts matrix and meta-file.")
-        return(FALSE)
       } else if (mean(meta$cell == colnames(counts)) < 1){
         stop("Mismatch in cell IDs between counts matrix and meta-file.")
-        return(FALSE)
       } else {
         sce = SingleCellExperiment(list(counts = counts), colData = meta)
         names(assays(sce)) = counts_type

@@ -30,7 +30,7 @@ raw_to_sce(
 
 \item{batch}{If not NULL (no batch applied), string specifying a column in meta file that will be used as batchID. Please check that named column exists in meta-file.}
 
-\item{...}{Additional arguments.
+\item{...}{Additional arguments. This includes d and min.mean for scran::quickCluster - used to calculate size factors to compute normalised log-counts.
 Note that UMAP coordinates (if passed in meta-data) should be named as x and y. Also, if meta contains field cell - this field will be used for cell IDs.}
 }
 \value{
