@@ -78,12 +78,12 @@ test_that("neighs.all matches number of batches", {
 test_that("Wrong input, sce", {
   # should be unique rownames
   expect_error(get_neighborhood_preservation_scores(sce_wrong_rownames, genes.selection = rownames(sce_correct)),
-               "SCE should have unique rownames.",
+               "sce should have unique rownames.",
                fixed=TRUE
   )
   # sce should be sce
   expect_error(get_neighborhood_preservation_scores(logcounts(sce_correct), genes.selection = rownames(sce_correct)),
-               "SCE should be a SingleCellExperiment object.",
+               "sce should be a SingleCellExperiment object.",
                fixed=TRUE
   )
 })

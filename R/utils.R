@@ -4,12 +4,12 @@
 #' @import SingleCellExperiment
 .prepare_sce_counts = function(sce){
   if (!is(sce , "SingleCellExperiment")){
-    stop("SCE should be a SingleCellExperiment object.")
+    stop("sce should be a SingleCellExperiment object.")
     return(F)
   } else if ("logcounts" %in% names(assays(sce))){
     return(sce)
   } else if (!"counts" %in% names(assays(sce))){
-    stop("SCE should contain either counts or logcounts.")
+    stop("sce should contain either counts or logcounts.")
     return(F)
   } else {
     message("Logcounts assay is not found. Counts will be used instead.")
@@ -21,7 +21,7 @@
 #' @import SingleCellExperiment
 .prepare_sce_cell_ids = function(sce){
   if (!is(sce , "SingleCellExperiment")){
-    stop("SCE should be a SingleCellExperiment object.")
+    stop("sce should be a SingleCellExperiment object.")
     return(F)
   }
   else {
@@ -49,7 +49,7 @@
   sce = .prepare_sce_cell_ids(sce)
   rownames(sce) = as.character(rownames(sce))
   if (!is(sce , "SingleCellExperiment")){
-    stop("SCE variable did not suffice must have properties.")
+    stop("sce variable did not suffice must have properties.")
     return(F)
   }
   else {
@@ -61,13 +61,13 @@
 #' @import SingleCellExperiment
 .check_sce = function(sce){
   if (!is(sce , "SingleCellExperiment")){
-    stop("SCE should be a SingleCellExperiment object.")
+    stop("sce should be a SingleCellExperiment object.")
     return(F)
   } else if (!("logcounts" %in% names(assays(sce)))){
-    stop("SCE should contain logcounts assay.")
+    stop("sce should contain logcounts assay.")
     return(F)
   } else if (length(unique(rownames(sce))) < nrow(sce) ){
-    stop("SCE should have unique rownames.")
+    stop("sce should have unique rownames.")
     return(F)
   } else {
     return(T)

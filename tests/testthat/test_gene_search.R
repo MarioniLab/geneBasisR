@@ -24,7 +24,7 @@ data("sce_mouseEmbryo", package = "geneBasisR")
 test_that("Wrong input gives errors", {
   # should be unique rownames
   expect_error(gene_search(sce_2),
-               "SCE should have unique rownames.",
+               "sce should have unique rownames.",
                fixed=TRUE
   )
   # stat_all should be the right format

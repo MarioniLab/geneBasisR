@@ -71,12 +71,12 @@ test_that("Return of the correct output", {
 test_that("Wrong input, sce", {
   # should be unique rownames
   expect_error(get_DE_genes(sce_wrong_rownames),
-               "SCE should have unique rownames.",
+               "sce should have unique rownames.",
                fixed=TRUE
   )
   # sce should be sce
   expect_error(get_DE_genes(logcounts(sce_correct)),
-               "SCE should be a SingleCellExperiment object.",
+               "sce should be a SingleCellExperiment object.",
                fixed=TRUE
   )
 

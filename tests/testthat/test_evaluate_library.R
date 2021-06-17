@@ -122,12 +122,12 @@ test_that("Return of the correct output, simple", {
 test_that("Wrong input, sce", {
   # should be unique rownames
   expect_error(evaluate_library(sce_wrong_rownames, genes.selection = rownames(sce_wrong_rownames), return.celltype_stat = F),
-               "SCE should have unique rownames.",
+               "sce should have unique rownames.",
                fixed=TRUE
   )
   # sce should be sce
   expect_error(evaluate_library(logcounts(sce_correct_w_celltype), genes.selection = rownames(sce_correct_w_celltype)),
-               "SCE should be a SingleCellExperiment object.",
+               "sce should be a SingleCellExperiment object.",
                fixed=TRUE
   )
 })

@@ -65,12 +65,12 @@ test_that("Return of the correct output, run 3", {
 test_that("Wrong input, sce", {
   # should be unique rownames
   expect_error(calc_Minkowski_distances(sce_wrong_rownames, genes = rownames(sce_wrong_rownames)),
-               "SCE should have unique rownames.",
+               "sce should have unique rownames.",
                fixed=TRUE
   )
   # sce should be sce
   expect_error(calc_Minkowski_distances(logcounts(sce_correct), genes = rownames(sce_correct)),
-               "SCE should be a SingleCellExperiment object.",
+               "sce should be a SingleCellExperiment object.",
                fixed=TRUE
   )
 })

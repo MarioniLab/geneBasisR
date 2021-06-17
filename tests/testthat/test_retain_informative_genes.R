@@ -23,7 +23,7 @@ test_that("Wrong input gives errors", {
 
   # should be unique rownames
   expect_error(retain_informative_genes(sce_2),
-               "SCE should have unique rownames.",
+               "sce should have unique rownames.",
                fixed=TRUE
   )
   # not good for scran's modelGeneVar

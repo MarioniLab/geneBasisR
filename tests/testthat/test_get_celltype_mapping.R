@@ -25,16 +25,13 @@ colnames(sce_no_celltype_field) = c(1:7)
 rownames(sce_no_celltype_field) = c(1:5)
 sce_no_celltype_field$Celltype = c(1,1,"2","2",1,1,"2")
 
-
 sce_correct_w_batch = SingleCellExperiment(list(logcounts = counts))
 colnames(sce_correct_w_batch) = c(1:7)
 rownames(sce_correct_w_batch) = c(1:5)
 sce_correct_w_batch$celltype = c(1,1,"2","2","1","1","2")
 sce_correct_w_batch$batch = c(4,4,4,1,1,1,1)
 
-
 test_that("Return is the correct class", {
-
   # correct class, return.stat = T
   out = get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct) , n.neigh = 2, return.stat = T)
   expect_type(out, "list")
@@ -54,7 +51,6 @@ test_that("Return is the correct class", {
   out = get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct) , n.neigh = 2, return.stat = F)
   out = length(out)
   expect_equal(out, 1)
-
 
   #correct colnames
   out = get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct) , n.neigh = 2, return.stat = T)
@@ -76,29 +72,41 @@ test_that("Return is the correct class", {
   out = colnames(out)
   out_expect = c("cell" , "celltype" , "mapped_celltype")
   expect_identical(out, out_expect)
+
+  # gonna be NULL if genes are not sufficient for celltype mapping
+  out = get_celltype_mapping(sce_correct, genes.selection = "3" , n.neigh = 2, return.stat = F)
+  expect_equal(out, NULL)
+
+  # gonna be NULL if genes are not sufficient for celltype mapping
+  out = get_celltype_mapping(sce_correct, genes.selection = "5" , n.neigh = 2, return.stat = T)
+  expect_equal(out, NULL)
+
+  # gonna be NULL if DE option swipes all genes
+  out = get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct) , n.neigh = 2, return.stat = F,
+                             which_genes_to_use = "DE" , FDR.thresh = 0.0001)
+  expect_equal(out, NULL)
+  # works w batch too
+  expect_error(get_celltype_mapping(sce_correct_w_batch, genes.selection = rownames(sce_correct), n.neigh = 2, batch = "batch"),
+               NA
+  )
 })
 
 
 
 test_that("Change in FDR does not affect the option 'all' but does affect the option 'DE'", {
-  expect_error( get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct) , n.neigh = 2, return.stat = F, FDR = .1) , NA)
-  #expect_error( get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct) , n.neigh = 2,
-  #                                   return.stat = F, FDR = .1 , which_genes_to_use = "DE") ,
-  #              "No DE genes discovered with these settings - consider option 'all' or tuning test, type and/or FDR threshold.",
-  #              fixed = TRUE)
-  expect_error( get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct) , n.neigh = 2, test.type = "t" , return.stat = F, FDR = .1) , NA)
+  out = get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct) , n.neigh = 2, return.stat = T, FDR = .1)
+  out = out$stat
+  out_expect = data.frame(celltype = as.character(c(1,2)) , frac_correctly_mapped = c(0.75, 1))
+  expect_equal(out , out_expect)
 
+  out = get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct) , n.neigh = 2,
+                                    return.stat = F, FDR = .1 , which_genes_to_use = "DE")
+  expect_equal(out , NULL)
 })
 
 
 
 test_that("Return of the correct output", {
-
-  # generally works
-  expect_error(get_celltype_mapping(sce_correct_w_batch, genes.selection = rownames(sce_correct), n.neigh = 2, batch = "batch"),
-               NA
-  )
-
   # n.neigh = 2
   out = get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), nPC.selection = NULL, n.neigh = 2)
   out = out$mapping$mapped_celltype
@@ -110,20 +118,18 @@ test_that("Return of the correct output", {
   out = out$mapping$mapped_celltype
   out_expect = as.character(rep(1,7))
   expect_equal(out, out_expect)
-
-
 })
 
 
 test_that("Wrong input, sce", {
   # should be unique rownames
   expect_error(get_celltype_mapping(sce_wrong_rownames, genes.selection = rownames(sce_wrong_rownames)),
-               "SCE should have unique rownames.",
+               "sce should have unique rownames.",
                fixed=TRUE
   )
   # sce should be sce
   expect_error(get_celltype_mapping(logcounts(sce_correct), genes.selection = rownames(sce_correct)),
-               "SCE should be a SingleCellExperiment object.",
+               "sce should be a SingleCellExperiment object.",
                fixed=TRUE
   )
 
@@ -134,8 +140,6 @@ test_that("Wrong input, sce", {
   )
 
 })
-
-
 
 
 test_that("Wrong input, genes.selection", {
