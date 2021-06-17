@@ -6,16 +6,18 @@
 #' Simply a parser raw .txt files --> SingleCellExperiment object + adding logcounts
 #'
 #' @param counts_dir String specifying the directory for counts matrix (assuming counts where already calculated)
-#' @param counts_type String specifying whether raw data is stored as counts or log-counts. For geneBasis we recommend to work with log-counts.
-#' @param transform_counts_to_logcounts In case, raw data are counts, Boolean specifying whether we should perform log-normalization.
+#' @param counts_type String specifying whether raw data is stored as counts or log-counts (= 'counts' and 'logcounts' respectively).
+#' For geneBasis we recommend to work with log-counts. If you do not have log-counts precomputed, they can be computed within this function.
+#' @param transform_counts_to_logcounts In case, raw data are counts (as opposed to log-counts), Boolean specifying whether we should perform log-normalization.
 #' @param header Boolean specifying if logcounts_dir file has cell IDs stored in colnames.
-#' @param sep the field separator string. Note it should be the same for logcounts_dir and meta_dir (if exists)
+#' @param sep the field separator string. Note it should be the same for logcounts_dir and meta_dir (if latter exists).
 #' @param meta_dir If not NULL, a string specifying the directory for meta-data (i.e. celltype, batch, UMAP-coordinates).
-#' @param batch If not NULL (no batch applied), string specifying a column in meta file that will be used as batchID. Please check that named column exists in meta-file.
-#' @param ... Additional arguments. This includes d and min.mean for scran::quickCluster - used to calculate size factors to compute normalised log-counts.
-#' Note that UMAP coordinates (if passed in meta-data) should be named as x and y. Also, if meta contains field cell - this field will be used for cell IDs.
+#' Store UMAP-coordinates as 'x' and 'y' (relevant for plotting functions).
+#' Also, if meta contains field cell - this field will be used for cell IDs (so ensure the values are unique).
+#' @param batch If not NULL (i.e. no batch), string specifying a column in meta file that will be used as batchID. Please check that specified batch name exists in meta-file.
+#' @param ... Additional arguments. This includes d and min.mean for scran::quickCluster - used to calculate size factors to compute normalized log-counts.
 #'
-#' @return SingleCellExperiment object with gene counts/logcounts and meta-data (if applicable)
+#' @return SingleCellExperiment object with gene counts/logcounts and meta-data (if supplied) stored in colData.
 #' @export
 #' @import SingleCellExperiment
 #' @examples
