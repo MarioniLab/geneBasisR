@@ -72,11 +72,11 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
         }
       }
       else {
-        neighs.all = suppressWarnings( get_z_scaled_distances(sce , genes.all = genes.all , batch = batch, ...) )
+        neighs.all = suppressWarnings( get_z_scaled_distances(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh, ...) )
       }
       cell_score_stat = lapply(n_genes.grid, function(n_genes){
         current.stat = suppressWarnings( get_neighborhood_preservation_scores(sce, neighs.all = neighs.all,  genes.all = genes.all,
-                                                                       genes.selection = genes.selection[1:n_genes], batch = batch, check_args = FALSE, ...) )
+                                                                       genes.selection = genes.selection[1:n_genes], batch = batch, n.neigh = n.neigh, check_args = FALSE, ...) )
         current.stat$n_genes = n_genes
         if (verbose){
           cat(paste("Finished for the selection of" , n_genes , "genes.\n"))
@@ -98,11 +98,12 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
         cat("Calculating gene prediction scores.\n")
       }
       if (is.null(gene_stat_all)){
-        gene_stat_all = suppressWarnings( get_gene_correlation_scores(sce, genes.all, batch = batch, ...) )
+        gene_stat_all = suppressWarnings( get_gene_correlation_scores(sce, genes.all, batch = batch, n.neigh = n.neigh, ...) )
         colnames(gene_stat_all) = c("gene" , "corr_all")
       }
       gene_score_stat = lapply(n_genes.grid, function(n_genes){
-        current.stat = suppressWarnings( get_gene_prediction_scores(sce, genes.selection[1:n_genes], genes.all = genes.all, batch = batch, gene_stat_all = gene_stat_all, check_args = FALSE, ...) )
+        current.stat = suppressWarnings( get_gene_prediction_scores(sce, genes.selection[1:n_genes], genes.all = genes.all, batch = batch,
+                                                                    n.neigh = n.neigh, gene_stat_all = gene_stat_all, check_args = FALSE, ...) )
         if (!is.null(current.stat)){
           current.stat$n_genes = n_genes
         }
@@ -129,7 +130,7 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
         cat("Calculating accuracy of cell type mappings.\n")
       }
       celltype_stat = lapply(n_genes.grid, function(n_genes){
-        current.stat = get_celltype_mapping(sce , genes.selection[1:n_genes] , batch = batch, return.stat = T, check_args = FALSE, ...)
+        current.stat = get_celltype_mapping(sce , genes.selection[1:n_genes] , batch = batch, n.neigh = n.neigh, return.stat = T, check_args = FALSE, ...)
         if (!is.null(current.stat)){
           current.stat = current.stat$stat
           current.stat$n_genes = n_genes
