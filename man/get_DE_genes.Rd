@@ -17,9 +17,9 @@ get_DE_genes(
 
 \item{test.type}{String specifying which testing will be performed. Available options are the same as for scran::findMarkers, parameter test.use. Default test.type="binom".}
 
-\item{pval.type}{String specifying how p-values are combined. Available options are the same as for scran::findMarkers, parameter pval.type Default pval.type="some".}
+\item{pval.type}{String specifying how p-values are combined. Available options are the same as for scran::findMarkers, parameter pval.type. Default pval.type="some".}
 
-\item{FDR.thresh}{Scalar specifying threshold of FDR to be considered as significant. Default FDR=0.01.}
+\item{FDR.thresh}{Positive scalar specifying threshold for FDR. Default FDR=0.01.}
 
 \item{...}{Additional arguments}
 }
@@ -27,8 +27,8 @@ get_DE_genes(
 
 }
 \description{
-Essentially a wrapper for scran::findMarkers. Returns a combined data.frame, each row corresponds
-to cell type and gene which found to be DE in the cell type (using designated FDR as a threshold).
+Essentially a wrapper for scran::findMarkers. Returns an aggregated stat across all cell types in a form of data.frame:
+each row corresponds to cell type and gene which is found to be DE in this cell type (using designated FDR as a threshold for significance), FDR and summary.logFC.
 }
 \examples{
 require(SingleCellExperiment)

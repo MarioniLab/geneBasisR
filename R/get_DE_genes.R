@@ -1,13 +1,13 @@
 
 #' get_DE_genes
 #'
-#' Essentially a wrapper for scran::findMarkers. Returns a combined data.frame, each row corresponds
-#' to cell type and gene which found to be DE in the cell type (using designated FDR as a threshold).
+#' Essentially a wrapper for scran::findMarkers. Returns an aggregated stat across all cell types in a form of data.frame:
+#' each row corresponds to cell type and gene which is found to be DE in this cell type (using designated FDR as a threshold for significance), FDR and summary.logFC.
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
 #' @param test.type String specifying which testing will be performed. Available options are the same as for scran::findMarkers, parameter test.use. Default test.type="binom".
-#' @param pval.type String specifying how p-values are combined. Available options are the same as for scran::findMarkers, parameter pval.type Default pval.type="some".
-#' @param FDR.thresh Scalar specifying threshold of FDR to be considered as significant. Default FDR=0.01.
+#' @param pval.type String specifying how p-values are combined. Available options are the same as for scran::findMarkers, parameter pval.type. Default pval.type="some".
+#' @param FDR.thresh Positive scalar specifying threshold for FDR. Default FDR=0.01.
 #' @param ... Additional arguments
 #'
 #' @return
@@ -40,7 +40,6 @@ get_DE_genes = function(sce , test.type = "binom", pval.type = "some", FDR.thres
   }
 
   sce$celltype = as.character(sce$celltype)
-  # get potential relevant genes
   markers = findMarkers(sce , groups=sce$celltype, direction = "up", pval.type=pval.type, test = test.type, assay.type = "logcounts")
   markers = lapply(1:length(markers) , function(i) {
     current.markers = as.data.frame(markers[[i]])
