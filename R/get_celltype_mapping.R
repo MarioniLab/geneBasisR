@@ -3,17 +3,18 @@
 #' get_celltype_mapping
 #'
 #' For each cell, returns an estimate of its cell type based on cell type labels of neighbors in Selection graph.
+#' Requires at least 2 genes for the Selection graph. If cell type mapping for the Selection graph is not possible, returns NULL.
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
-#' @param genes.selection Character vector specifying genes to be used for the construction of Selection kNN-graph.
+#' @param genes.selection Character vector specifying genes (at least 2 genes) to be used for the construction of Selection kNN-graph.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
 #' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
-#' @param nPC.selection Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC=NULL.
+#' @param nPC.selection Positive integer (or NULL, if no PCA to be applied) specifying number of PCs to use for construction of True kNN-graph. Default nPC.selection=NULL.
 #' @param cosine Boolean specifying if cosine normalization should be applied prior to constructing kNN-graph. Default cosine=FALSE.
-#' @param return.stat Boolean specifying if stat on the mapping should be returned alongside the mapping itself.
-#' @param which_genes_to_use String specifying whether celltype mapping should be performed only on DE (between celltypes) genes (= 'DE') or all inserted genes (= 'all'). Default option="all".
+#' @param return.stat Boolean specifying if stat for the mapping (= diagonal values for the cell type confusion matrix) should be returned alongside the mapping.
+#' @param which_genes_to_use String specifying whether cell type mapping should be performed only on differentially expressed (between cell types) genes (= 'DE') or all selected genes (= 'all'). Default which_genes_to_use="all".
 #' @param ... Additional arguments (e.g. the ones you can pass to get_DE_genes).
-#' @return List, containing field 'mapping' - data.frame with cell IDs (column 'cell'), actual cell type (column 'celltype') and estimated cell type
+#' @return List, containing field 'mapping' - data.frame with cell IDs (column 'cell'), originally assigned cell type labels (column 'celltype') and estimated cell type labels
 #' (column 'mapped_celltype'). If return.stat == TRUE, also returns field 'stat' - data.frame with cell type IDs (column 'celltype') and
 #' fraction of cells from this cell type that mapped correctly (column 'frac_correctly_mapped')
 #' @export
