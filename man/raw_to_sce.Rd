@@ -39,7 +39,8 @@ Also, if meta contains field cell - this field will be used for cell IDs (so ens
 SingleCellExperiment object with gene counts/logcounts and meta-data (if supplied) stored in colData.
 }
 \description{
-Simply a parser raw .txt files --> SingleCellExperiment object + adding logcounts
+Essentially a parser for raw .txt counts file into SingleCellExperiment object of the right format. If raw counts are passed, log-normalization is performed
+(optional but recommended) and logcounts will be used downstream.
 }
 \examples{
 require(SingleCellExperiment)

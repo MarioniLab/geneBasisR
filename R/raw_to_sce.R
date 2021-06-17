@@ -3,7 +3,8 @@
 
 #' raw_to_sce
 #'
-#' Simply a parser raw .txt files --> SingleCellExperiment object + adding logcounts
+#' Essentially a parser for raw .txt counts file into SingleCellExperiment object of the right format. If raw counts are passed, log-normalization is performed
+#' (optional but recommended) and logcounts will be used downstream.
 #'
 #' @param counts_dir String specifying the directory for counts matrix (assuming counts where already calculated)
 #' @param counts_type String specifying whether raw data is stored as counts or log-counts (= 'counts' and 'logcounts' respectively).
@@ -93,7 +94,5 @@ raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_lo
   sce = computeSumFactors(sce, clusters=clusters)
   return(sce)
 }
-
-
 
 
