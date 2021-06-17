@@ -54,7 +54,9 @@ evaluate_library(
 
 }
 \description{
-A wrapper to return the estimates of the library quality (at cell, gene and/or celltype levels) as a function of number of genes.
+For the selected library, returns estimates of the library quality (at cell, gene and/or celltype levels) as a function of number of genes.
+Grid of number of genes is specified with 'library.size_type' and 'n_genes.step' arguments. For each type of stat (cell, gene and/or celltype) returns data.frame
+with calculated statistics, and field 'n_genes' correspond to number of genes used.
 }
 \examples{
 require(SingleCellExperiment)

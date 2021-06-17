@@ -2,8 +2,9 @@
 
 #' evaluate_library
 #'
-#' A wrapper to return the estimates of the library quality (at cell, gene and/or celltype levels) as a function of number of genes.
-#'
+#' For the selected library, returns estimates of the library quality (at cell, gene and/or celltype levels) as a function of number of genes.
+#' Grid of number of genes is specified with 'library.size_type' and 'n_genes.step' arguments. For each type of stat (cell, gene and/or celltype) returns data.frame
+#' with calculated statistics, and field 'n_genes' correspond to number of genes used.
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
 #' @param genes.selection Character vector specifying genes to be used for the construction of Selection kNN-graph.
 #' @param genes.all Character vector specifying genes to be used for the construction of True kNN-graph.
