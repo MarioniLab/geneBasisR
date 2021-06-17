@@ -31,8 +31,10 @@ raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_lo
   if (!file.exists(counts_dir)){
     stop("Counts file does not exist")
   }
-  else if (!is.null(meta_dir) & !file.exists(meta_dir)) {
-    stop("Meta file is supplied, but does not exist")
+  else if (!is.null(meta_dir)) {
+    if( !file.exists(meta_dir) ){
+      stop("Meta file is supplied, but does not exist")
+    }
   }
   else {
     counts = read.table(counts_dir, header = header, sep = sep)
