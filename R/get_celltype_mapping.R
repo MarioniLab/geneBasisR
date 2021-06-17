@@ -72,12 +72,12 @@ get_celltype_mapping = function(sce , genes.selection , batch = NULL, n.neigh = 
                                      mapped_celltype = sapply(1:nrow(neighs), function(i) .getmode(meta$celltype[match(neighs[i,] , meta$cell)] , 1:n.neigh) ))
         if (return.stat){
           stat = .get_fraction_mapped_correctly(mapping)
-          out = list(mapping = mapping, stat = stat)
+          final_stat = list(mapping = mapping, stat = stat)
         }
         else {
-          out = list(mapping = mapping)
+          final_stat = list(mapping = mapping)
         }
-        return(out)
+        return(final_stat)
       }
       else {
         return(NULL)
