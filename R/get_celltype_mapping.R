@@ -32,6 +32,8 @@
 #' out = get_celltype_mapping(sce, genes.selection = genes.selection)
 #'
 get_celltype_mapping = function(sce , genes.selection , batch = NULL, n.neigh = 5 , nPC.selection = NULL, cosine = F, return.stat = T, which_genes_to_use = "all", ...){
+
+  # checks that inputs are eligible
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
     sce = .prepare_sce(sce)
@@ -43,49 +45,48 @@ get_celltype_mapping = function(sce , genes.selection , batch = NULL, n.neigh = 
       out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_celltype_in_sce(sce) & .check_genes_in_sce(sce , genes.selection)
     }
   }
-
   if (n.neigh > ncol(sce) - 1){
     stop("n.neigh should be less than number of cells. Decrease n.neigh.")
   }
+  if (length(genes.selection) < 2){
+    message("Less than 2 genes are selected for celltype mapping - celltype mapping is not possible.")
+    return(NULL)
+  }
+
+  # run mapping
   else {
     if (which_genes_to_use == "DE"){
       markers = get_DE_genes(sce, check_args = FALSE, ...)
       if (is.null(markers)){
-        message("No DE genes discovered with these settings - consider option 'all' or tuning test, type and/or FDR threshold.")
-        return(NaN)
+        message("Consider set which_genes_to_use = 'all' or tune settings for DE testings.")
+        return(NULL)
       }
       else {
         genes.selection = intersect(as.character(markers$gene) , as.character(genes.selection))
         if (length(genes.selection) < 2){
           message("Less than 2 genes are selected as DE between celltypes - celltype mapping is not possible. Consider option 'all' or change settings for identifying DE genes.")
-          return(NaN)
+          return(NULL)
         }
       }
     }
-    if (length(genes.selection) > 1){
-      neighs = suppressWarnings( .get_MNN_corrected_mapping(sce , genes = genes.selection, batch = batch, n.neigh = n.neigh, nPC = nPC.selection , cosine = cosine) )
-      neighs = neighs$cells_mapped
-      if (!is.null(neighs)){
-        meta = as.data.frame(colData(sce))
-        meta$celltype = as.character(meta$celltype)
-        mapping = data.frame(cell = rownames(neighs) ,
-                                     celltype = sapply(1:nrow(neighs) , function(i) meta$celltype[meta$cell == rownames(neighs)[i]]) ,
-                                     mapped_celltype = sapply(1:nrow(neighs), function(i) .getmode(meta$celltype[match(neighs[i,] , meta$cell)] , 1:n.neigh) ))
-        if (return.stat){
-          stat = .get_fraction_mapped_correctly(mapping)
-          final_stat = list(mapping = mapping, stat = stat)
-        }
-        else {
-          final_stat = list(mapping = mapping)
-        }
-        return(final_stat)
+    neighs = suppressWarnings( .get_MNN_corrected_mapping(sce , genes = genes.selection, batch = batch, n.neigh = n.neigh, nPC = nPC.selection , cosine = cosine) )
+    neighs = neighs$cells_mapped
+    if (!is.null(neighs)){
+      meta = as.data.frame(colData(sce))
+      meta$celltype = as.character(meta$celltype)
+      mapping = data.frame(cell = rownames(neighs) ,
+                                   celltype = sapply(1:nrow(neighs) , function(i) meta$celltype[meta$cell == rownames(neighs)[i]]) ,
+                                   mapped_celltype = sapply(1:nrow(neighs), function(i) .getmode(meta$celltype[match(neighs[i,] , meta$cell)] , 1:n.neigh) ))
+      if (return.stat){
+        stat = .get_fraction_mapped_correctly(mapping)
+        final_stat = list(mapping = mapping, stat = stat)
       }
       else {
-        return(NULL)
+        final_stat = list(mapping = mapping)
       }
+      return(final_stat)
     }
     else {
-      message("Less than 2 genes are selected for celltype mapping - celltype mapping is not possible.")
       return(NULL)
     }
   }
@@ -93,27 +94,24 @@ get_celltype_mapping = function(sce , genes.selection , batch = NULL, n.neigh = 
 
 
 .get_fraction_mapped_correctly = function(mapping){
-    cluster.id = "celltype"
-    cluster_mapped.id = "mapped_celltype"
-    tab = table(mapping[, cluster.id] , mapping[, cluster_mapped.id])
-    tab = sweep(tab, 1, rowSums(tab), "/" )
-    tab = as.data.frame(tab)
-    colnames(tab) = c("cluster" , "mapped_cluster" , "frac")
+  tab = table(mapping$celltype , mapping$mapped_celltype)
+  tab = sweep(tab, 1, rowSums(tab), "/" )
+  tab = as.data.frame(tab)
+  colnames(tab) = c("celltype" , "mapped_celltype" , "frac")
 
-    clusters = as.character(unique(tab$cluster))
-    stat = lapply(clusters, function(cluster){
-      current.tab = tab[tab$cluster == cluster , ]
-      if (cluster %in% current.tab$mapped_cluster){
-        out = data.frame(cluster = cluster , frac_correctly_mapped = current.tab$frac[current.tab$mapped_cluster == cluster])
-      }
-      else {
-        out = data.frame(cluster = cluster , frac_correctly_mapped = 0)
-      }
-      return(out)
-    })
-    stat = do.call(rbind, stat)
-    colnames(stat) = c(cluster.id , "frac_correctly_mapped")
-    return(stat)
+  celltypes = as.character(unique(tab$celltype))
+  stat = lapply(celltypes, function(celltype){
+    current.tab = tab[tab$celltype == celltype , ]
+    if (celltype %in% current.tab$mapped_celltype){
+      out = data.frame(celltype = celltype , frac_correctly_mapped = current.tab$frac[current.tab$mapped_celltype == celltype])
+    }
+    else {
+      out = data.frame(celltype = celltype , frac_correctly_mapped = 0)
+    }
+    return(out)
+  })
+  stat = do.call(rbind, stat)
+  return(stat)
 }
 
 
