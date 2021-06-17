@@ -8,6 +8,7 @@
 #' @param genes.selection Character vector specifying genes to be used for the construction of Selection kNN-graph.
 #' @param genes.all Character vector specifying genes to be used for the construction of True kNN-graph.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
+#' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param library.size_type String identifying whether evaluation should be performed only on the whole inserted library (= 'single') or on a series of subsets of the library (= 'series'). Default library.size_type="single".
 #' @param n_genes.step In case library.size_type == "series", a scalar identifying the step of the grid for library subsets. Default n_genes.step=10.
 #' @param return.cell_score_stat Boolean identifying whether stat on cell neighborhood preservation score should be returned. Default return.cell_score_stat=TRUE.
@@ -33,7 +34,7 @@
 #' genes.selection = sample(rownames(sce) , 20)
 #' out = evaluate_library(sce, genes.selection)
 #'
-evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), batch = NULL,
+evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), batch = NULL, n.neigh = 5,
                             library.size_type = "single" , n_genes.step = 10,
                             return.cell_score_stat = T, return.gene_score_stat = T, return.celltype_stat = T, verbose = TRUE,
                             neighs.all = NULL, gene_stat_all = NULL, ...){

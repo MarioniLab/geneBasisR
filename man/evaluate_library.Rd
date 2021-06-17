@@ -9,6 +9,7 @@ evaluate_library(
   genes.selection,
   genes.all = rownames(sce),
   batch = NULL,
+  n.neigh = 5,
   library.size_type = "single",
   n_genes.step = 10,
   return.cell_score_stat = T,
@@ -28,6 +29,8 @@ evaluate_library(
 \item{genes.all}{Character vector specifying genes to be used for the construction of True kNN-graph.}
 
 \item{batch}{Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.}
+
+\item{n.neigh}{Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
 
 \item{library.size_type}{String identifying whether evaluation should be performed only on the whole inserted library (= 'single') or on a series of subsets of the library (= 'series'). Default library.size_type="single".}
 
