@@ -31,35 +31,40 @@ raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_lo
   if (!file.exists(counts_dir)){
     stop("Counts file does not exist")
   }
-  else if (!is.null(meta_dir)) {
-    if( !file.exists(meta_dir) ){
-      stop("Meta file is supplied, but does not exist")
-    }
-  }
   else {
     counts = read.table(counts_dir, header = header, sep = sep)
     if (!header){
       colnames(counts) = c(1:ncol(sce))
     }
-    if (!is.null(meta_dir)){
-      meta = read.table(meta_dir, header = TRUE, sep = sep)
-      if (!"cell" %in% colnames(meta)){
-        meta$cell = c(1:nrow(meta))
-      }
-      meta = meta[order(meta$cell) , ]
-      counts = counts[, order(colnames(counts))]
-      if (nrow(meta) != ncol(counts)){
-        stop("Mismatch in number of cells between counts matrix and meta-file.")
-      } else if (mean(meta$cell == colnames(counts)) < 1){
-        stop("Mismatch in cell IDs between counts matrix and meta-file.")
-      } else {
-        sce = SingleCellExperiment(list(counts = counts), colData = meta)
-        names(assays(sce)) = counts_type
-      }
-    }
-    else {
+    if (is.null(meta_dir)){
       sce = SingleCellExperiment(list(counts = counts))
       names(assays(sce)) = counts_type
+    }
+    else {
+      if(!file.exists(meta_dir) ){
+        stop("Meta file is supplied, but does not exist")
+      }
+      else {
+        meta = read.table(meta_dir, header = TRUE, sep = sep)
+        if (!"cell" %in% colnames(meta)){
+          meta$cell = c(1:nrow(meta))
+        }
+        if (!is.null(batch)){
+          if (!batch %in% colnames(meta)){
+            stop("Batch should be one the colnames in meta.")
+          }
+        }
+        meta = meta[order(meta$cell) , ]
+        counts = counts[, order(colnames(counts))]
+        if (nrow(meta) != ncol(counts)){
+          stop("Mismatch in number of cells between counts matrix and meta-file.")
+        } else if (mean(meta$cell == colnames(counts)) < 1){
+          stop("Mismatch in cell IDs between counts matrix and meta-file.")
+        } else {
+          sce = SingleCellExperiment(list(counts = counts), colData = meta)
+          names(assays(sce)) = counts_type
+        }
+      }
     }
     if (counts_type == "counts" & transform_counts_to_logcounts){
       sce = .log_normalise(sce, batch,...)
