@@ -11,6 +11,8 @@ plot_umaps_w_counts(sce, genes, size = 0.25, ncol = NULL)
 
 \item{genes}{Character vector containing gene names for which to plot UMAPs.}
 
+\item{size}{Size of dots for geom_point}
+
 \item{ncol}{Positive integer specifying number of columns for ggarrange}
 }
 \value{
