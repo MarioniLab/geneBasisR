@@ -44,6 +44,7 @@
   }
 }
 
+#' @import SingleCellExperiment
 .prepare_sce = function(sce){
   sce = .prepare_sce_counts(sce)
   sce = .prepare_sce_cell_ids(sce)
@@ -207,12 +208,16 @@
   out = .check_argument_correct(dots, "return.cell_score_stat", .check_boolean, "Check return.cell_score_stat - should be boolean")
   out = .check_argument_correct(dots, "return.gene_score_stat", .check_boolean, "Check return.gene_score_stat - should be boolean")
   out = .check_argument_correct(dots, "return.celltype_stat", .check_boolean, "Check return.celltype_stat - should be boolean")
+  out = .check_argument_correct(dots, "header", .check_boolean, "Check header - should be boolean")
+  out = .check_argument_correct(dots, "transform_counts_to_logcounts", .check_boolean, "Check transform_counts_to_logcounts - should be boolean")
   out = .check_argument_correct(dots, "return.stat", .check_boolean, "Check return.stat - should be boolean")
   out = .check_argument_correct(dots, "p.minkowski", .check_positive_integer, "Check p.minkowski - should be positive integer")
   out = .check_argument_correct(dots, "n_genes_total", .check_positive_integer, "Check n_genes_total - should be positive integer")
   out = .check_argument_correct(dots, "n_genes.step", .check_positive_integer, "Check n_genes.step - should be positive integer")
+  out = .check_argument_correct(dots, "d", .check_positive_integer, "Check d - should be positive integer")
   out = .check_argument_correct(dots, "n", .check_positive_integer_or_null, "Check n - should be positive integer")
   out = .check_argument_correct(dots, "FDR.thresh", is.numeric, "Check FDR.thresh - should be numeric")
+  out = .check_argument_correct(dots, "min.mean", is.numeric, "Check min.mean - should be numeric")
   out = .check_argument_correct(dots, "var.thresh", is.numeric, "Check var.thresh - should be numeric")
   out = .check_argument_correct(dots, "corr_all.thresh", is.numeric, "Check corr_all.thresh - should be numeric")
   out = .check_argument_correct(dots, "library.size_type", function(x) .check_arg_within_options(x, c("single", "series")),
@@ -225,6 +230,8 @@
                                 "Check pval.type - should be either 'all', 'some' or 'any'")
   out = .check_argument_correct(dots, "which_genes_to_use", function(x) .check_arg_within_options(x, c("all", "DE")),
                                 "Check which_genes_to_use - should be either 'all' or 'DE'")
+  out = .check_argument_correct(dots, "counts_type", function(x) .check_arg_within_options(x, c("counts", "logcounts")),
+                                "Check counts_type - should be either 'counts' or 'logcounts'")
   return(out)
 }
 
