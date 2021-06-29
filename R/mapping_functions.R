@@ -10,6 +10,7 @@
     meta = as.data.frame(colData(sce))
     batchFactor = factor(meta[, colnames(meta) == batch])
     neighs = lapply(unique(batchFactor) , function(current.batch){
+      #print(current.batch)
       idx = which(batchFactor == current.batch)
       current.neighs = .get_mapping_single_batch(sce[, idx] , genes = genes, n.neigh = n.neigh, nPC = nPC , get.dist = get.dist, cosine = cosine)
       return(current.neighs)
@@ -90,17 +91,33 @@
     if (cosine){
       logcounts(sce) = cosineNorm(logcounts(sce))
     }
-    counts = as.matrix( logcounts(sce) )
+
     meta = as.data.frame(colData(sce))
     res = tryCatch(
       {
+        counts = t(as.matrix(logcounts(sce)))
         if (!is.null(nPC)){
-          pcs = suppressWarnings( prcomp_irlba(t(counts) , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
+          pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
           counts = pcs$x
-          rownames(counts) = colnames(sce)
-        } else {
-          counts = t(counts)
         }
+        rownames(counts) = colnames(sce)
+        reference_cells = colnames(sce)
+        query_cells = colnames(sce)
+        if (n.neigh == "all"){
+          n.neigh = length(reference_cells) - 1
+        }
+        out = .assign_neighbors(counts , reference_cells, query_cells, n.neigh = n.neigh, get.dist = get.dist)
+        print("neighs done")
+        return(out)
+      },
+      error = function(dummy){
+        message("Count matrix is too big - we will be working with sparse matrices.")
+        counts = t(logcounts(sce))
+        if (!is.null(nPC)){
+          pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
+          counts = pcs$x
+        }
+        rownames(counts) = colnames(sce)
         reference_cells = colnames(sce)
         query_cells = colnames(sce)
         if (n.neigh == "all"){
@@ -160,7 +177,6 @@
     return(res)
   }
 }
-
 
 
 

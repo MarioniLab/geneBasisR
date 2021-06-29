@@ -12,6 +12,7 @@
 #'
 #' @return Reduced sce with prefiltered set of genes.
 #' @export
+#' @import SingleCellExperiment
 #'
 #' @examples
 #' require(SingleCellExperiment)
