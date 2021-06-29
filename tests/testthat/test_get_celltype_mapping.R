@@ -31,6 +31,10 @@ rownames(sce_correct_w_batch) = c(1:5)
 sce_correct_w_batch$celltype = c(1,1,"2","2","1","1","2")
 sce_correct_w_batch$batch = c(4,4,4,1,1,1,1)
 
+
+# load mouse ds
+data("sce_mouseEmbryo", package = "geneBasisR")
+
 test_that("Return is the correct class", {
   # correct class, return.stat = T
   out = get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct) , n.neigh = 2, return.stat = T)
@@ -92,6 +96,15 @@ test_that("Return is the correct class", {
 })
 
 
+test_that("Celltypes in stat are a subset of celltypes in sce", {
+  out = get_celltype_mapping(sce_mouseEmbryo, genes.selection = rownames(sce_mouseEmbryo), nPC.selection = 20, n.neigh = 5, return.stat = T)
+  out.mapping = out$mapping
+  out.stat = out$stat
+  expect_equal(mean( unique(out.mapping$celltype) %in% unique(sce_mouseEmbryo$celltype)) , 1)
+  expect_equal(mean( unique(out.mapping$mapped_celltype) %in% unique(sce_mouseEmbryo$celltype)) , 1)
+  expect_equal(mean( unique(out.stat$celltype) %in% unique(sce_mouseEmbryo$celltype)) , 1)
+})
+
 
 test_that("Change in FDR does not affect the option 'all' but does affect the option 'DE'", {
   out = get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct) , n.neigh = 2, return.stat = T, FDR = .1)
@@ -103,7 +116,6 @@ test_that("Change in FDR does not affect the option 'all' but does affect the op
                                     return.stat = F, FDR = .1 , which_genes_to_use = "DE")
   expect_equal(out , NULL)
 })
-
 
 
 test_that("Return of the correct output", {
@@ -132,13 +144,11 @@ test_that("Wrong input, sce", {
                "sce should be a SingleCellExperiment object.",
                fixed=TRUE
   )
-
   # sce should contain field celltype
   expect_error(get_celltype_mapping(sce_no_celltype_field, genes.selection = rownames(sce_no_celltype_field)),
                "'celltype' field should be in colData(sce)",
                fixed=TRUE
   )
-
 })
 
 
@@ -158,9 +168,7 @@ test_that("Wrong input, genes.selection", {
                "Some gene names are missing from SCE.",
                fixed=TRUE
   )
-
 })
-
 
 
 test_that("Wrong input, batch", {
@@ -175,7 +183,6 @@ test_that("Wrong input, batch", {
                fixed=TRUE
   )
 })
-
 
 
 test_that("Wrong input, n.neigh", {
@@ -194,7 +201,6 @@ test_that("Wrong input, n.neigh", {
                "Check n.neigh - should be positive integer > 1",
                fixed=TRUE
   )
-
   # internal check - n.neigh can be 'all' but not for users
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = "all"),
                "Check n.neigh - should be positive integer > 1",
@@ -205,44 +211,34 @@ test_that("Wrong input, n.neigh", {
                "n.neigh should be less than number of cells. Decrease n.neigh.",
                fixed=TRUE
   )
-
   expect_error(get_celltype_mapping(sce_correct_w_batch, genes.selection = rownames(sce_correct_w_batch), nPC.selection = NULL, n.neigh = 6, batch = NULL),
                NA)
-
 })
-
-
 
 
 test_that("Wrong input, nPC.selection", {
   # nPC - NULL or positive scalar
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = 0),
                "Check nPC.selection - should be NULL or positive integer",
-               fixed=TRUE
-  )
+               fixed=TRUE)
   # nPC - NULL or positive scalar
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = -10),
                "Check nPC.selection - should be NULL or positive integer",
-               fixed=TRUE
-  )
+               fixed=TRUE)
   # nPC - NULL or positive scalar
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = 5.5),
                "Check nPC.selection - should be NULL or positive integer",
-               fixed=TRUE
-  )
+               fixed=TRUE)
   # nPC - NULL or positive scalar
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = "all"),
                "Check nPC.selection - should be NULL or positive integer",
-               fixed=TRUE
-  )
+               fixed=TRUE)
   # nPC -  NULL or positive scalar
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = NULL),
                NA)
-
   # nPC -  NULL or positive scalar
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = 3),
                NA)
-
   # nPC -  NULL or positive scalar
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , nPC.selection = 30000),
                NA)
@@ -254,26 +250,21 @@ test_that("Wrong input, cosine", {
   # cosine - boolean
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , cosine = .5),
                "Check cosine - should be boolean",
-               fixed=TRUE
-  )
+               fixed=TRUE)
   # cosine - boolean
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , cosine = NULL ),
                "Check cosine - should be boolean",
-               fixed=TRUE
-  )
+               fixed=TRUE)
   # cosine - boolean
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , cosine = "all"),
                "Check cosine - should be boolean",
-               fixed=TRUE
-  )
+               fixed=TRUE)
   # cosine - boolean
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , cosine = T),
                NA)
-
   # cosine -  boolean
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), n.neigh = 2 , cosine = F),
                NA)
-
 })
 
 
@@ -346,23 +337,27 @@ test_that("Wrong input, pval.type", {
   expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), which_genes_to_use = "DE" , FDR.thresh = 1, pval.type = "any"),
                NA
   )
-
 })
 
 
+test_that("Wrong input, FDR.thresh", {
+  # FDR.thresh should be numeric
+  expect_error(get_DE_genes(sce_correct, FDR.thresh = NULL),
+               "Check FDR.thresh - should be numeric",
+               fixed=TRUE)
+  # FDR.thresh should be numeric
+  expect_error(get_DE_genes(sce_correct, FDR.thresh = "random"),
+               "Check FDR.thresh - should be numeric",
+               fixed=TRUE)
+  # FDR.thresh should be numeric
+  expect_error(get_DE_genes(sce_correct, FDR.thresh = -1),
+               NA)
+  # FDR.thresh should be numeric
+  expect_error(get_DE_genes(sce_correct, FDR.thresh = 0),
+               NA)
+  # FDR.thresh should be numeric
+  expect_error(get_DE_genes(sce_correct, FDR.thresh = 1),
+               NA)
+})
 
 
-# test_that("Wrong input, FDR.thresh", {
-#   # FDR.thresh should be numeric
-#   expect_error(get_DE_genes(sce_correct, FDR.thresh = NULL),
-#                "Check FDR.thresh - should be numeric",
-#                fixed=TRUE
-#   )
-#   # genes should be a subset of rownames in sce_correct
-#   expect_error(get_DE_genes(sce_correct, FDR.thresh = "random"),
-#                "Check FDR.thresh - should be numeric",
-#                fixed=TRUE
-#   )
-# })
-#
-#

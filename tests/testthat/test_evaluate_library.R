@@ -118,18 +118,37 @@ test_that("Return of the correct output, simple", {
 })
 
 
+test_that("Return the right ds for celltype mapping", {
+  out = evaluate_library(sce_correct_w_celltype, genes.selection = rownames(sce_correct_w_celltype) , n.neigh = 2, library.size_type = "series" , n_genes.step = 1,
+                         return.cell_score_stat = F , return.gene_score_stat = F)
+  out = out$celltype_stat
+  out = sort(unique(as.character(out$n_genes)))
+  out_expect = as.character(c(2,3,4,5))
+  expect_equal(out, out_expect)
+})
+
+
+test_that("Return the right ds for gene score", {
+  out = evaluate_library(sce_correct_w_celltype, genes.selection = rownames(sce_correct_w_celltype) , n.neigh = 2, library.size_type = "series" , n_genes.step = 1,
+                         return.cell_score_stat = F , return.celltype_stat = F)
+  out = out$gene_score_stat
+  out = sort(unique(as.character(out$n_genes)))
+  out_expect = as.character(c(1,2,3,4,5))
+  expect_equal(out, out_expect)
+})
+
+
+
 
 test_that("Wrong input, sce", {
   # should be unique rownames
   expect_error(evaluate_library(sce_wrong_rownames, genes.selection = rownames(sce_wrong_rownames), return.celltype_stat = F),
                "sce should have unique rownames.",
-               fixed=TRUE
-  )
+               fixed=TRUE)
   # sce should be sce
   expect_error(evaluate_library(logcounts(sce_correct_w_celltype), genes.selection = rownames(sce_correct_w_celltype)),
                "sce should be a SingleCellExperiment object.",
-               fixed=TRUE
-  )
+               fixed=TRUE)
 })
 
 
@@ -137,13 +156,11 @@ test_that("Wrong input, genes.selection", {
   # genes.selection should be character
   expect_error(evaluate_library(sce_correct_w_celltype, genes.selection = c(1,2,3)),
                "Check genes.selection - should be character vector",
-               fixed=TRUE
-  )
+               fixed=TRUE)
   # genes.selection should be a subset of rownames in sce_correct
   expect_error(evaluate_library(sce_correct_w_celltype, genes.selection = as.character(c(1,2,3,6))),
                "Some gene names are missing from SCE.",
-               fixed=TRUE
-  )
+               fixed=TRUE)
   # genes.selection is not NULL
   expect_error(evaluate_library(sce_correct_w_celltype, genes.selection = NULL),
                "Check genes.selection - should be character vector",
