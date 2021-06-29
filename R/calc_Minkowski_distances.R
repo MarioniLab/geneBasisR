@@ -38,7 +38,7 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
       out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.predict) & .check_genes_in_sce(sce , genes)
     }
   }
-  cat(1)
+
   if (!is.null(genes)){
     neighs = .get_mapping(sce , genes = genes, batch = batch , n.neigh = n.neigh , nPC = nPC)
     neighs = neighs$cells_mapped
@@ -79,7 +79,6 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
         cells = neighs[,j]
         stat_predict = stat_predict + counts_predict[, cells]
       }
-
       stat_predict = stat_predict / n.neigh
       stat_real = counts_predict[, rownames(neighs)]
       stat = lapply(1:nrow(counts_predict) , function(i){
