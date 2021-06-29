@@ -38,6 +38,7 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
       out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.predict) & .check_genes_in_sce(sce , genes)
     }
   }
+  cat(1)
   if (!is.null(genes)){
     neighs = .get_mapping(sce , genes = genes, batch = batch , n.neigh = n.neigh , nPC = nPC)
     neighs = neighs$cells_mapped
@@ -45,18 +46,55 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
   else {
     neighs = .initiate_random_mapping(sce , batch = batch , n.neigh = n.neigh)
   }
-  counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
-  stat_predict = lapply(1:ncol(neighs) , function(j){
-    cells = neighs[,j]
-    current.stat_predict = counts_predict[, cells]
-    return(current.stat_predict)
-  })
-  stat_predict = Reduce("+", stat_predict) / length(stat_predict)
-  stat_real = counts_predict[, rownames(neighs)]
-  stat = lapply(1:nrow(counts_predict) , function(i){
-    out = data.frame(gene = rownames(counts_predict)[i] , dist = as.numeric(dist(rbind(stat_real[i,] , stat_predict[i,]) , method = "minkowski" , p = p.minkowski)))
-    return(out)
-  })
-  stat = do.call(rbind , stat)
-  return(stat)
+
+  # try with matrix - runs faster but can cup out of memory ~quickly;
+  # if latter happens - run with dgCMatrix. This will be slower though.
+  res = tryCatch(
+    {
+      counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
+      stat_predict = matrix( 0L, nrow = dim(counts_predict)[1], ncol = dim(counts_predict)[2])
+      for (j in c(1:n.neigh)){
+        cells = neighs[,j]
+        stat_predict = stat_predict + counts_predict[, cells]
+      }
+
+      stat_predict = stat_predict / n.neigh
+      stat_real = counts_predict[, rownames(neighs)]
+      stat = lapply(1:nrow(counts_predict) , function(i){
+        out = data.frame(dist = as.numeric(dist(rbind(stat_real[i,] , stat_predict[i,]) , method = "minkowski" , p = p.minkowski)))
+        return(out)
+      })
+      stat = do.call(rbind , stat)
+      stat$gene = as.character(rownames(counts_predict))
+      stat = stat[, c("gene", "dist")]
+      return(stat)
+    },
+    error = function(dump){
+      message("Count matrix is too big - we will be working with sparse matrices.")
+      counts_predict = logcounts(sce[genes.predict , ])
+      stat_predict = counts_predict
+      stat_predict[!stat_predict == 0] = 0
+
+      for (j in c(1:n.neigh)){
+        cells = neighs[,j]
+        stat_predict = stat_predict + counts_predict[, cells]
+      }
+
+      stat_predict = stat_predict / n.neigh
+      stat_real = counts_predict[, rownames(neighs)]
+      stat = lapply(1:nrow(counts_predict) , function(i){
+        out = data.frame(dist = as.numeric(dist(rbind(stat_real[i,] , stat_predict[i,]) , method = "minkowski" , p = p.minkowski)))
+        return(out)
+      })
+      stat = do.call(rbind , stat)
+      stat$gene = as.character(rownames(counts_predict))
+      stat = stat[, c("gene", "dist")]
+      return(stat)
+    },
+    error = function(dump){
+      message("Memory exhausted. Try lower number of cells, lower n.neigh or lower number of genes.")
+      return(NA)
+    }
+  )
+  return(res)
 }
