@@ -40,6 +40,9 @@ gene_search = function(sce , genes_base = NULL, n_genes_total , batch = NULL, n.
     stop("Selected library size is bigger than number of genes in the counts matrix")
   }
   else {
+    if (verbose){
+      cat("Constructing the True graph.\n")
+    }
     # get baseline stat-all
     if (is.null(stat_all)){
       stat_all = suppressWarnings( calc_Minkowski_distances(sce, genes = rownames(sce), batch = batch, n.neigh = n.neigh, nPC = nPC.all,
