@@ -12,6 +12,9 @@ raw_to_sce(
   sep = "\\t",
   meta_dir = NULL,
   batch = NULL,
+  verbose = TRUE,
+  d = 50,
+  min.mean = 0.1,
   ...
 )
 }
@@ -27,11 +30,17 @@ For geneBasis we recommend to work with log-counts. If you do not have log-count
 
 \item{sep}{the field separator string. Note it should be the same for logcounts_dir and meta_dir (if latter exists).}
 
-\item{meta_dir}{If not NULL, a string specifying the directory for meta-data (i.e. celltype, batch, UMAP-coordinates).
+\item{meta_dir}{If not NULL (NULL is default), a string specifying the directory for meta-data (i.e. celltype, batch, UMAP-coordinates).
 Store UMAP-coordinates as 'x' and 'y' (relevant for plotting functions).
 Also, if meta contains field cell - this field will be used for cell IDs (so ensure the values are unique).}
 
-\item{batch}{If not NULL (i.e. no batch), string specifying a column in meta file that will be used as batchID. Please check that specified batch name exists in meta-file.}
+\item{batch}{If not NULL (i.e. no batch, NULL is default), string specifying a column in meta file that will be used as batchID. Please check that specified batch name exists in meta-file.}
+
+\item{verbose}{Boolean identifying whether intermediate print outputs should be returned. Default verbose=TRUE.}
+
+\item{d}{Only used for log-normalization: an integer scalar specifying the number of principal components to retain.}
+
+\item{min.mean}{Only used for log-normalization: a numeric scalar specifying the filter to be applied on the average count for each filter prior to computing ranks.}
 
 \item{...}{Additional arguments. This includes d and min.mean for scran::quickCluster - used to calculate size factors to compute normalized log-counts.}
 }
@@ -39,8 +48,11 @@ Also, if meta contains field cell - this field will be used for cell IDs (so ens
 SingleCellExperiment object with gene counts/logcounts and meta-data (if supplied) stored in colData.
 }
 \description{
-Essentially a parser for raw .txt counts file into SingleCellExperiment object of the right format. If raw counts are passed, log-normalization is performed
-(optional but recommended) and logcounts will be used downstream.
+Essentially a parser: raw counts (or log-normalized counts) stored in a file (e.g. .txt) -> SingleCellExperiment object of the right format.
+If raw counts are passed, log-normalization is performed (optional but recommended) and logcounts will be used downstream.
+If no batch is supplied, size factors are calculated using scran::quickCluster (arguments d and min.mean regulate the coarsity of clustering) and then caluclated
+size factors are supplied to scuttle::logNormCounts to calulcate log-normalized counts.
+If batch is supplied, size factors are calculated per within batch and then size factors are supplied to batchelor::multiBatchNorm.
 }
 \examples{
 require(SingleCellExperiment)
