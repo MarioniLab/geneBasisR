@@ -78,6 +78,10 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
       for (j in c(1:n.neigh)){
         cells = neighs[,j]
         stat_predict = stat_predict + counts_predict[, cells]
+
+        print(object.size(stat_predict))
+        print(nrow(stat_predict))
+        print(ncol(stat_predict))
       }
       stat_predict = stat_predict / n.neigh
       stat_real = counts_predict[, rownames(neighs)]
