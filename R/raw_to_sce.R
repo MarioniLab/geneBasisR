@@ -26,6 +26,7 @@
 #' @return SingleCellExperiment object with gene counts/logcounts and meta-data (if supplied) stored in colData.
 #' @export
 #' @import SingleCellExperiment
+#' @importFrom scuttle readSparseCounts
 #' @examples
 #' require(SingleCellExperiment)
 #' counts_dir = system.file("extdata", "raw_spleen.txt", package = "geneBasisR")
@@ -44,7 +45,7 @@ raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_lo
     if (verbose){
       cat("Counts matrix is being processed.\n")
     }
-    counts = read.table(counts_dir, header = header, sep = sep)
+    counts = readSparseCounts(counts_dir, sep = sep, row.names = TRUE, col.names = header)
     if (!header){
       colnames(counts) = c(1:ncol(sce))
     }
