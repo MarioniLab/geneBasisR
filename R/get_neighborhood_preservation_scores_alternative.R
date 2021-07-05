@@ -25,7 +25,7 @@
 #' genes.selection = sample(rownames(sce) , 20)
 #' out = get_neighborhood_preservation_scores_alternative(sce, genes.selection = genes.selection)
 #'
-get_neighborhood_preservation_scores_alternative = function(sce, neighs.all = NULL,  genes.all = rownames(sce),
+get_neighborhood_preservation_scores_alternative = function(sce, counts = NULL, neighs.all = NULL, genes.all = rownames(sce),
                                                 genes.selection, batch = NULL, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, ...){
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
@@ -39,18 +39,25 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all = NU
     }
   }
   if (is.null(batch)){
-    score = .get_neighborhood_preservation_scores_single_batch_alternative(sce , genes.all = genes.all,
+    score = .get_neighborhood_preservation_scores_single_batch_alternative(sce , counts = counts, neighs.all = neighs.all, genes.all = genes.all,
                                                                genes.selection = genes.selection, n.neigh = n.neigh ,
                                                                nPC.all = nPC.all , nPC.selection = nPC.selection)
     return(score)
   }
   else {
+    if (is.null(counts)){
+      neighs.all_stat = get_neighs.all_stat(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh , nPC.all = nPC.all)
+    }
     meta = as.data.frame(colData(sce))
     batchFactor = factor(meta[, colnames(meta) == batch])
     score = lapply(unique(batchFactor) , function(current.batch){
       idx = which(batchFactor == current.batch)
       current.sce = sce[, idx]
-      current.score = .get_neighborhood_preservation_scores_single_batch_alternative(current.sce , genes.all = genes.all ,
+      current.neighs.all_stat = neighs.all_stat[[which(names(neighs.all_stat) == current.batch)]]
+      current.counts = current.neighs.all_stat$counts
+      current.neighs.all = current.neighs.all_stat$neighs.all
+      current.score = .get_neighborhood_preservation_scores_single_batch_alternative(current.sce , counts = current.counts, neighs.all = current.neighs.all,
+                                                               genes.all = genes.all ,
                                                                genes.selection = genes.selection, n.neigh = n.neigh ,
                                                                nPC.all = nPC.all, nPC.selection = nPC.selection)
       return(current.score)
@@ -63,19 +70,19 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all = NU
 
 #' @import Rfast
 #' @importFrom irlba prcomp_irlba
-.get_neighborhood_preservation_scores_single_batch_alternative = function(sce, genes.all = rownames(sce),
+.get_neighborhood_preservation_scores_single_batch_alternative = function(sce, counts = NULL, neighs.all = NULL, genes.all = rownames(sce),
                                                               genes.selection, n.neigh = 5, nPC.all = 50, nPC.selection = NULL){
   set.seed(32)
   sce = sce[genes.all , ]
-  counts = t(as.matrix(logcounts(sce)))
-  pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC.all, (nrow(counts)-1) , (ncol(counts) - 1))) )
-  counts = pcs$x
-  rownames(counts) = colnames(sce)
+
+  if (is.null(counts)){
+    neighs.all_stat = get_neighs.all_stat(sce , genes.all = genes.all , batch = NULL, n.neigh = n.neigh , nPC.all = nPC.all)
+    counts = neighs.all_stat$counts
+    neighs.all = neighs.all_stat$neighs.all
+  }
 
   neighs.compare = .get_mapping(sce , genes = genes.selection, batch = NULL, n.neigh = n.neigh, nPC = nPC.selection)
   neighs.compare = neighs.compare$cells_mapped
-  neighs.all = .get_mapping(sce , genes = genes.all, batch = NULL, n.neigh = n.neigh, nPC = nPC.all)
-  neighs.all = neighs.all$cells_mapped
   cells_random = sample(colnames(sce), min(100, ncol(sce)))
 
   counts = counts[order(rownames(counts)),]
@@ -94,4 +101,49 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all = NU
   score = score[, c("cell", "cell_score")]
   return(score)
 }
+
+
+#' get_neighs.all_stat
+#' @param sce SingleCellExperiment object containing gene counts matrix.
+#' @param genes.all String specifying genes to be used for construction of True kNN-graph.
+#' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
+#' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
+#' @param nPC.all Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.
+#' @param ... Additional arguments.
+#'
+#' @return kNN-graph with assigned neighbors and corresponding z-scored distances.
+#' @export
+#'
+get_neighs.all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n.neigh = 5 , nPC.all = 50){
+  if (is.null(batch)){
+    out = .get_neighs.all_stat_single_batch(sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
+    return(out)
+  }
+  else {
+    meta = as.data.frame(colData(sce))
+    batchFactor = factor(meta[, colnames(meta) == batch])
+    neighs.all = lapply(unique(batchFactor) , function(current.batch){
+      idx = which(batchFactor == current.batch)
+      current.sce = sce[, idx]
+      out =  .get_neighs.all_stat_single_batch(current.sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
+    })
+    names(neighs.all) = unique(batchFactor)
+    return(neighs.all)
+  }
+}
+
+.get_neighs.all_stat_single_batch = function(sce , genes.all = rownames(sce) , n.neigh = 5 , nPC.all = 50){
+
+  counts = t(as.matrix(logcounts(sce)))
+  pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC.all, (nrow(counts)-1) , (ncol(counts) - 1))) )
+  counts = pcs$x
+  rownames(counts) = colnames(sce)
+
+  neighs.all = .get_mapping(sce , genes = genes.all, batch = NULL, n.neigh = n.neigh, nPC = nPC.all , get.dist = F)
+  neighs.all = neighs.all$cells_mapped
+
+  out = list(counts = counts, neighs.all = neighs.all)
+  return(out)
+}
+
 
