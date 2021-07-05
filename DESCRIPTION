@@ -24,6 +24,7 @@ Imports:
     ggpubr,
     irlba,
     paleotree,
+    Rfast,
     scran,
     scuttle,
     SingleCellExperiment,
