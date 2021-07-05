@@ -109,7 +109,6 @@
           n.neigh = length(reference_cells) - 1
         }
         out = .assign_neighbors(counts , reference_cells, query_cells, n.neigh = n.neigh, get.dist = get.dist)
-        print("neighs done")
         return(out)
       },
       error = function(dummy){
