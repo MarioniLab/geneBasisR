@@ -79,6 +79,8 @@
 }
 
 
+
+
 #' @importFrom irlba prcomp_irlba
 #'
 .get_mapping_single_batch = function(sce , genes = rownames(sce), n.neigh = 5, nPC = 50 , get.dist = F , cosine = F){
@@ -127,12 +129,75 @@
         return(out)
       },
       error = function(dump){
-        message("Features you selected can not be used for pca")
+        message("Either memory is cupped or features you selected can not be used for pca")
         return(NULL)
       }
     )
     return(res)
   }
+}
+
+
+#' @importFrom irlba prcomp_irlba
+#'
+.get_mapping_all_neighbours = function(sce , genes = rownames(sce), nPC = 50){
+  set.seed(32)
+  sce = sce[genes , ]
+  reference_cells = colnames(sce)
+  query_cells = colnames(sce)
+  n.neigh = length(reference_cells) - 1
+
+  res = tryCatch(
+    {
+      counts = t(as.matrix(logcounts(sce)))
+      if (!is.null(nPC)){
+        pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
+        counts = pcs$x
+      }
+      rownames(counts) = colnames(sce)
+      out = .assign_neighbors(counts , reference_cells, query_cells, n.neigh = n.neigh, get.dist = TRUE)
+      return(list(stat = out, n_chunks = 1))
+    },
+    error = function(dummy){
+      message("Count matrix is too big - we will be working with sparse matrices and splitting query cells by chunks.")
+      counts = t(logcounts(sce))
+      if (!is.null(nPC)){
+        pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
+        counts = pcs$x
+      }
+      rownames(counts) = colnames(sce)
+      query_cells.binned = split(query_cells, ceiling(seq_along(query_cells)/500))
+      out = lapply(query_cells.binned , function(current.query_cells){
+        print("proc")
+        current.out = .assign_neighbors(counts , reference_cells, current.query_cells, n.neigh = n.neigh, get.dist = TRUE)
+        return(current.out)
+      })
+      print("done")
+      return(list(stat = out, n_chunks = length(query_cells.binned)))
+    },
+    error = function(dummy){
+      message("Count matrix is too big - we will be working with sparse matrices and splitting query cells by chunks.")
+      counts = t(logcounts(sce))
+      if (!is.null(nPC)){
+        pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
+        counts = pcs$x
+      }
+      rownames(counts) = colnames(sce)
+      query_cells.binned = split(query_cells, ceiling(seq_along(query_cells)/100))
+      out = lapply(query_cells.binned , function(current.query_cells){
+        print("proc")
+        current.out = .assign_neighbors(counts , reference_cells, current.query_cells, n.neigh = n.neigh, get.dist = TRUE)
+        return(current.out)
+      })
+      print("done")
+      return(list(stat = out, n_chunks = length(query_cells.binned)))
+    },
+    error = function(dump){
+      message("Either memory cupped or features you selected can not be used for pca")
+      return(NULL)
+    }
+  )
+  return(res)
 }
 
 
