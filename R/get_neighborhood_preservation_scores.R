@@ -1,4 +1,3 @@
-
 #' get_neighborhood_preservation_scores
 #'
 #' Calculates cell neighborhood preservation scores by comparing neighbors from True and Selection k-NN graphs.
@@ -28,7 +27,7 @@
 #' out = get_neighborhood_preservation_scores(sce, genes.selection = genes.selection)
 #'
 get_neighborhood_preservation_scores = function(sce, neighs.all = NULL,  genes.all = rownames(sce),
-                                  genes.selection, batch = NULL, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, ...){
+                                                genes.selection, batch = NULL, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, ...){
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
     sce = .prepare_sce(sce)
@@ -42,7 +41,7 @@ get_neighborhood_preservation_scores = function(sce, neighs.all = NULL,  genes.a
   }
   if (is.null(batch)){
     score = .get_neighborhood_preservation_scores_single_batch(sce , neighs.all = neighs.all, genes.all = genes.all,
-                                                             genes.selection = genes.selection, n.neigh = n.neigh , nPC.all = nPC.all , nPC.selection = nPC.selection)
+                                                               genes.selection = genes.selection, n.neigh = n.neigh , nPC.all = nPC.all , nPC.selection = nPC.selection)
     return(score)
   }
   else {
