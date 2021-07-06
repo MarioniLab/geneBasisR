@@ -51,6 +51,7 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all_stat
     meta = as.data.frame(colData(sce))
     batchFactor = factor(meta[, colnames(meta) == batch])
     score = lapply(unique(batchFactor) , function(current.batch){
+      print(current.batch)
       idx = which(batchFactor == current.batch)
       current.sce = sce[, idx]
       current.neighs.all_stat = neighs.all_stat[[which(names(neighs.all_stat) == current.batch)]]
@@ -76,21 +77,26 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all_stat
   if (is.null(neighs.all_stat)){
     neighs.all_stat = get_neighs.all_stat(sce , genes.all = genes.all , batch = NULL, n.neigh = n.neigh , nPC.all = nPC.all)
   }
+
   counts = neighs.all_stat$counts
   neighs.all = neighs.all_stat$neighs.all
+  mean_dist = neighs.all_stat$mean_dist
+
+
   neighs.compare = .get_mapping(sce , genes = genes.selection, batch = NULL, n.neigh = n.neigh, nPC = nPC.selection)
   neighs.compare = neighs.compare$cells_mapped
-  cells_random = sample(colnames(sce), min(100, ncol(sce)))
+
 
   counts = counts[order(rownames(counts)),]
   neighs.all = neighs.all[order(rownames(neighs.all)),]
   neighs.compare = neighs.compare[order(rownames(neighs.compare)),]
+  mean_dist = mean_dist[order(names(mean_dist))]
 
-  score = lapply(rownames(counts) , function(cell){
-    dist_neighs.all_coords = median(dista(t(counts[cell, ]), counts[neighs.all[cell,], ]))
-    dist_neighs.compare_coords = median(dista(t(counts[cell, ]), counts[neighs.compare[cell,], ]))
-    dist_random_coords = median(dista(t(counts[cell, ]), counts[cells_random, ]))
-    current_score = ( dist_random_coords - dist_neighs.compare_coords )/( dist_random_coords - dist_neighs.all_coords )
+
+  score = lapply(1:nrow(counts), function(i){
+    dist_neighs.all_coords = median(dista(t(counts[i, ]), counts[neighs.all[i,], ]))
+    dist_neighs.compare_coords = median(dista(t(counts[i, ]), counts[neighs.compare[i,], ]))
+    current_score = ( mean_dist[i] - dist_neighs.compare_coords )/( mean_dist[i] - dist_neighs.all_coords )
     out = data.frame(cell_score = current_score )
   })
   score = do.call(rbind , score)
@@ -111,6 +117,7 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all_stat
 #' @return kNN-graph with assigned neighbors and corresponding z-scored distances.
 #' @export
 #'
+#'
 get_neighs.all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n.neigh = 5 , nPC.all = 50){
   if (is.null(batch)){
     out = .get_neighs.all_stat_single_batch(sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
@@ -129,18 +136,66 @@ get_neighs.all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
   }
 }
 
+
+#' @importFrom irlba prcomp_irlba
+#' @import Matrix
+#' @importFrom Rfast dista
+#'
 .get_neighs.all_stat_single_batch = function(sce , genes.all = rownames(sce) , n.neigh = 5 , nPC.all = 50){
+  set.seed(32)
+  sce = sce[genes.all, ]
+  res = tryCatch(
+    {
+      counts = t(as.matrix(logcounts(sce)))
+      if (!is.null(nPC.all)){
+        pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC.all, (nrow(counts)-1) , (ncol(counts) - 1))) )
+        counts = pcs$x
+      }
+      rownames(counts) = colnames(sce)
 
-  counts = t(as.matrix(logcounts(sce)))
-  pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC.all, (nrow(counts)-1) , (ncol(counts) - 1))) )
-  counts = pcs$x
-  rownames(counts) = colnames(sce)
+      # get neighs.all
+      neighs.all = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh, get.dist = FALSE)
+      neighs.all = neighs.all$cells_mapped
 
-  neighs.all = .get_mapping(sce , genes = genes.all, batch = NULL, n.neigh = n.neigh, nPC = nPC.all , get.dist = F)
-  neighs.all = neighs.all$cells_mapped
+      # get mean
+      mean_dist = sapply(rownames(counts), function(cell){
+        out = mean(dista(t(counts[cell, ]), counts[setdiff(rownames(counts), cell) , ]))
+        return(out)
+      })
+      names(mean_dist) = rownames(counts)
 
-  out = list(counts = counts, neighs.all = neighs.all)
-  return(out)
+      out = list(counts = counts, neighs.all = neighs.all, mean_dist = mean_dist)
+      return(out)
+    },
+    error = function(dummy){
+      message("Count matrix is too big - we will be working with sparse matrices.")
+      counts = Matrix::t(logcounts(sce))
+      if (!is.null(nPC.all)){
+        pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC.all, (nrow(counts)-1) , (ncol(counts) - 1))) )
+        counts = pcs$x
+      }
+      rownames(counts) = colnames(sce)
+
+      # get neighs.all
+      neighs.all = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh, get.dist = FALSE)
+      neighs.all = neighs.all$cells_mapped
+
+      # get mean
+      mean_dist = sapply(rownames(counts), function(cell){
+        out = mean(dista(t(counts[cell, ]), counts[setdiff(rownames(counts), cell) , ]))
+        return(out)
+      })
+      names(mean_dist) = rownames(counts)
+
+      out = list(counts = counts, neighs.all = neighs.all, mean_dist = mean_dist)
+      return(out)
+    },
+    error = function(dump){
+      message("Either memory cupped or features you selected can not be used for pca")
+      return(NULL)
+    }
+  )
+  return(res)
 }
 
 
