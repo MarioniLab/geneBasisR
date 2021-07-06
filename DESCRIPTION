@@ -23,6 +23,7 @@ Imports:
     ggplot2,
     ggpubr,
     irlba,
+    Matrix,
     paleotree,
     Rfast,
     scran,
