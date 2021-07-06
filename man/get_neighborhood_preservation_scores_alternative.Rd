@@ -7,7 +7,7 @@
 \usage{
 get_neighborhood_preservation_scores_alternative(
   sce,
-  neighs.all = NULL,
+  neighs.all_stat = NULL,
   genes.all = rownames(sce),
   genes.selection,
   batch = NULL,
