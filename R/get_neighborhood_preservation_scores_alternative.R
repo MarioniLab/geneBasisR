@@ -46,7 +46,7 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all_stat
   }
   else {
     if (is.null(neighs.all_stat)){
-      neighs.all_stat = get_neighs.all_stat(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh , nPC.all = nPC.all)
+      neighs.all_stat = get_neighs_all_stat(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh , nPC.all = nPC.all)
     }
     meta = as.data.frame(colData(sce))
     batchFactor = factor(meta[, colnames(meta) == batch])
@@ -75,7 +75,7 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all_stat
   sce = sce[genes.all , ]
 
   if (is.null(neighs.all_stat)){
-    neighs.all_stat = get_neighs.all_stat(sce , genes.all = genes.all , batch = NULL, n.neigh = n.neigh , nPC.all = nPC.all)
+    neighs.all_stat = get_neighs_all_stat(sce , genes.all = genes.all , batch = NULL, n.neigh = n.neigh , nPC.all = nPC.all)
   }
 
   counts = neighs.all_stat$counts
@@ -118,9 +118,9 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all_stat
 #' @export
 #'
 #'
-get_neighs.all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n.neigh = 5 , nPC.all = 50){
+get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n.neigh = 5 , nPC.all = 50){
   if (is.null(batch)){
-    out = .get_neighs.all_stat_single_batch(sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
+    out = .get_neighs_all_stat_single_batch(sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
     return(out)
   }
   else {
@@ -129,7 +129,7 @@ get_neighs.all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
     neighs.all = lapply(unique(batchFactor) , function(current.batch){
       idx = which(batchFactor == current.batch)
       current.sce = sce[, idx]
-      out =  .get_neighs.all_stat_single_batch(current.sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
+      out =  .get_neighs_all_stat_single_batch(current.sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
     })
     names(neighs.all) = unique(batchFactor)
     return(neighs.all)
@@ -141,7 +141,7 @@ get_neighs.all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
 #' @import Matrix
 #' @importFrom Rfast dista
 #'
-.get_neighs.all_stat_single_batch = function(sce , genes.all = rownames(sce) , n.neigh = 5 , nPC.all = 50){
+.get_neighs_all_stat_single_batch = function(sce , genes.all = rownames(sce) , n.neigh = 5 , nPC.all = 50){
   set.seed(32)
   sce = sce[genes.all, ]
   res = tryCatch(
