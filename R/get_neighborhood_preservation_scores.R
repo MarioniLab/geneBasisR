@@ -25,7 +25,7 @@
 #' genes.selection = sample(rownames(sce) , 20)
 #' out = get_neighborhood_preservation_scores_alternative(sce, genes.selection = genes.selection)
 #'
-get_neighborhood_preservation_scores_alternative = function(sce, neighs.all_stat = NULL, genes.all = rownames(sce),
+get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, genes.all = rownames(sce),
                                                             genes.selection, batch = NULL, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, ...){
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
@@ -39,7 +39,7 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all_stat
     }
   }
   if (is.null(batch)){
-    score = .get_neighborhood_preservation_scores_single_batch_alternative(sce , neighs.all_stat = neighs.all_stat, genes.all = genes.all,
+    score = .get_neighborhood_preservation_scores_single_batch(sce , neighs.all_stat = neighs.all_stat, genes.all = genes.all,
                                                                            genes.selection = genes.selection, n.neigh = n.neigh ,
                                                                            nPC.all = nPC.all , nPC.selection = nPC.selection)
     return(score)
@@ -55,7 +55,7 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all_stat
       idx = which(batchFactor == current.batch)
       current.sce = sce[, idx]
       current.neighs.all_stat = neighs.all_stat[[which(names(neighs.all_stat) == current.batch)]]
-      current.score = .get_neighborhood_preservation_scores_single_batch_alternative(current.sce , neighs.all_stat = current.neighs.all_stat,
+      current.score = .get_neighborhood_preservation_scores_single_batch(current.sce , neighs.all_stat = current.neighs.all_stat,
                                                                                      genes.all = genes.all ,
                                                                                      genes.selection = genes.selection, n.neigh = n.neigh ,
                                                                                      nPC.all = nPC.all, nPC.selection = nPC.selection)
@@ -69,7 +69,7 @@ get_neighborhood_preservation_scores_alternative = function(sce, neighs.all_stat
 
 #' @import Rfast
 #' @importFrom irlba prcomp_irlba
-.get_neighborhood_preservation_scores_single_batch_alternative = function(sce, neighs.all_stat = NULL, genes.all = rownames(sce),
+.get_neighborhood_preservation_scores_single_batch = function(sce, neighs.all_stat = NULL, genes.all = rownames(sce),
                                                                           genes.selection, n.neigh = 5, nPC.all = 50, nPC.selection = NULL){
   set.seed(32)
   sce = sce[genes.all , ]
