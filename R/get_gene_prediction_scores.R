@@ -118,7 +118,6 @@ get_gene_correlation_scores = function(sce, genes, batch = NULL, n.neigh = 5, nP
   }
   eps = 0.00001
   neighs = .get_mapping(sce , genes = genes, batch = batch , n.neigh = n.neigh , nPC = nPC)
-  neighs = neighs$cells_mapped
 
   counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
   stat_predict = lapply(1:ncol(neighs) , function(j){
