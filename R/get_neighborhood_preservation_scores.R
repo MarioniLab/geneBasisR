@@ -126,13 +126,13 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
   else {
     meta = as.data.frame(colData(sce))
     batchFactor = factor(meta[, colnames(meta) == batch])
-    neighs.all = lapply(unique(batchFactor) , function(current.batch){
+    neighs.all_stat = lapply(unique(batchFactor) , function(current.batch){
       idx = which(batchFactor == current.batch)
       current.sce = sce[, idx]
       out =  .get_neighs_all_stat_single_batch(current.sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
     })
-    names(neighs.all) = unique(batchFactor)
-    return(neighs.all)
+    names(neighs.all_stat) = unique(batchFactor)
+    return(neighs.all_stat)
   }
 }
 
