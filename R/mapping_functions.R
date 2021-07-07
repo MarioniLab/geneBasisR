@@ -16,7 +16,7 @@
     })
     cells_mapped = do.call(rbind , neighs)
     cells_mapped = cells_mapped[ match(colnames(sce), rownames(cells_mapped)), ]
-    out = as.data.frame(cells_mapped)
+    out = cells_mapped
   }
   return(out)
 }
