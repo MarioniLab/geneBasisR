@@ -150,7 +150,7 @@
     reference_cells = colnames(sce[,idx])
     query_cells = colnames(sce[,idx])
     out = .assign_neighbors(counts , reference_cells, query_cells, n.neigh = n.neigh)
-    return(out$cells_mapped)
+    return(out)
   })
   neighs = do.call(rbind , neighs)
   neighs = neighs[ match(colnames(sce), rownames(neighs)), ]
