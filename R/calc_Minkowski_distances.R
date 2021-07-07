@@ -41,7 +41,6 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
 
   if (!is.null(genes)){
     neighs = .get_mapping(sce , genes = genes, batch = batch , n.neigh = n.neigh , nPC = nPC)
-    neighs = neighs$cells_mapped
   }
   else {
     neighs = .initiate_random_mapping(sce , batch = batch , n.neigh = n.neigh)

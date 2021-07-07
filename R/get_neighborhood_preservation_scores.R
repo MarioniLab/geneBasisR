@@ -154,8 +154,7 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
       rownames(counts) = colnames(sce)
 
       # get neighs.all
-      neighs.all = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh, get.dist = FALSE)
-      neighs.all = neighs.all$cells_mapped
+      neighs.all = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh)
 
       # get mean
       mean_dist = sapply(rownames(counts), function(cell){
@@ -177,8 +176,7 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
       rownames(counts) = colnames(sce)
 
       # get neighs.all
-      neighs.all = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh, get.dist = FALSE)
-      neighs.all = neighs.all$cells_mapped
+      neighs.all = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh)
 
       # get mean
       mean_dist = sapply(rownames(counts), function(cell){
