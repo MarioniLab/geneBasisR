@@ -70,7 +70,6 @@ get_celltype_mapping = function(sce , genes.selection , batch = NULL, n.neigh = 
       }
     }
     neighs = suppressWarnings( .get_MNN_corrected_mapping(sce , genes = genes.selection, batch = batch, n.neigh = n.neigh, nPC = nPC.selection , cosine = cosine) )
-    neighs = neighs$cells_mapped
     if (!is.null(neighs)){
       meta = as.data.frame(colData(sce))
       meta$celltype = as.character(meta$celltype)
