@@ -2,9 +2,9 @@
 
 #' @importFrom paleotree reverseList
 #'
-.get_mapping = function(sce , genes = rownames(sce), batch = NULL, n.neigh = 5, nPC = 50 , get.dist = F, cosine = F){
+.get_mapping = function(sce , genes = rownames(sce), batch = NULL, n.neigh = 5, nPC = 50 , cosine = F){
   if (is.null(batch)){
-    out = .get_mapping_single_batch(sce , genes = genes, n.neigh = n.neigh, nPC = nPC , get.dist = get.dist, cosine = cosine)
+    out = .get_mapping_single_batch(sce , genes = genes, n.neigh = n.neigh, nPC = nPC , cosine = cosine)
   }
   else {
     meta = as.data.frame(colData(sce))
@@ -12,69 +12,35 @@
     neighs = lapply(unique(batchFactor) , function(current.batch){
       #print(current.batch)
       idx = which(batchFactor == current.batch)
-      current.neighs = .get_mapping_single_batch(sce[, idx] , genes = genes, n.neigh = n.neigh, nPC = nPC , get.dist = get.dist, cosine = cosine)
+      current.neighs = .get_mapping_single_batch(sce[, idx] , genes = genes, n.neigh = n.neigh, nPC = nPC , cosine = cosine)
       return(current.neighs)
     })
-    if (!get.dist){
-      neighs = reverseList(neighs)
-      cells_mapped = do.call(rbind , neighs[[1]])
-
-      cells_mapped = cells_mapped[ match(colnames(sce), rownames(cells_mapped)), ]
-      out = list(cells_mapped = as.data.frame(cells_mapped))
-    }
-    else {
-      neighs = reverseList(neighs)
-      cells_mapped = do.call(rbind , neighs[[1]])
-      cells_mapped = cells_mapped[ match(colnames(sce), rownames(cells_mapped)), ]
-      distances = do.call(rbind , neighs[[2]])
-      distances = distances[ match(colnames(sce), rownames(distances)), ]
-      out = list(cells_mapped = as.data.frame(cells_mapped) , distances = as.data.frame(distances))
-    }
+    cells_mapped = do.call(rbind , neighs)
+    cells_mapped = cells_mapped[ match(colnames(sce), rownames(cells_mapped)), ]
+    out = as.data.frame(cells_mapped)
   }
   return(out)
 }
 
 
 #' @importFrom BiocNeighbors queryKNN
-#' @importFrom paleotree reverseList
-.assign_neighbors = function(counts , reference_cells , query_cells, n.neigh = 5, get.dist = F ){
+.assign_neighbors = function(counts , reference_cells , query_cells, n.neigh = 5){
   set.seed(32)
   if (is.numeric(n.neigh) & n.neigh > nrow(counts)-1){
     stop("Each batch should contain at least > n.neigh cells. Check your dataset or decrease n.neigh.")
   }
   else {
-    knns = suppressWarnings( queryKNN( counts[reference_cells ,], counts[query_cells ,], k = (n.neigh+1), get.distance = get.dist) )
-    if (!get.dist){
-      cells_mapped = lapply(1:length(query_cells), function(i){
-        current.neighs = knns$index[i, ]
-        current.neighs = current.neighs[!current.neighs == i]
-        current.neighs = current.neighs[1:n.neigh]
-        return(current.neighs)
-      })
-      cells_mapped = do.call(rbind, cells_mapped)
-      cells_mapped = t( apply(cells_mapped, 1, function(x) reference_cells[x]) )
-      rownames(cells_mapped) = query_cells
-      out = list(cells_mapped = cells_mapped)
-    }
-    else {
-      cells_mapped_w_dist = lapply(1:nrow(knns$index), function(i){
-        current.neighs = knns$index[i, ]
-        idx = which(!current.neighs == i)
-        current.neighs = current.neighs[idx]
-        current.neighs = current.neighs[1:n.neigh]
-        current.dist = knns$distance[i, idx]
-        current.dist = current.dist[1:n.neigh]
-        return(list(cells_mapped = current.neighs , distances = current.dist))
-      })
-      cells_mapped_w_dist = reverseList(cells_mapped_w_dist)
-      cells_mapped = do.call(rbind , cells_mapped_w_dist$cells_mapped)
-      cells_mapped = t( apply(cells_mapped, 1, function(x) reference_cells[x]) )
-      rownames(cells_mapped) = query_cells
-      distances = do.call(rbind , cells_mapped_w_dist$distances)
-      rownames(distances) = query_cells
-      out = list(cells_mapped = cells_mapped , distances = distances)
-    }
-    return(out)
+    knns = suppressWarnings( queryKNN( counts[reference_cells ,], counts[query_cells ,], k = (n.neigh+1), get.distance = FALSE) )
+    cells_mapped = lapply(1:length(query_cells), function(i){
+      current.neighs = knns$index[i, ]
+      current.neighs = current.neighs[!current.neighs == i]
+      current.neighs = current.neighs[1:n.neigh]
+      return(current.neighs)
+    })
+    cells_mapped = do.call(rbind, cells_mapped)
+    cells_mapped = t( apply(cells_mapped, 1, function(x) reference_cells[x]) )
+    rownames(cells_mapped) = query_cells
+    return(cells_mapped)
   }
 }
 
@@ -83,7 +49,7 @@
 
 #' @importFrom irlba prcomp_irlba
 #'
-.get_mapping_single_batch = function(sce , genes = rownames(sce), n.neigh = 5, nPC = 50 , get.dist = F , cosine = F){
+.get_mapping_single_batch = function(sce , genes = rownames(sce), n.neigh = 5, nPC = 50 , cosine = F){
   if (is.numeric(n.neigh) & n.neigh > ncol(sce)-1){
     stop("Each batch should contain at least > n.neigh cells. Check your dataset or decrease n.neigh.")
   }
@@ -93,7 +59,6 @@
     if (cosine){
       logcounts(sce) = cosineNorm(logcounts(sce))
     }
-
     meta = as.data.frame(colData(sce))
     res = tryCatch(
       {
@@ -103,12 +68,7 @@
           counts = pcs$x
         }
         rownames(counts) = colnames(sce)
-        reference_cells = colnames(sce)
-        query_cells = colnames(sce)
-        if (n.neigh == "all"){
-          n.neigh = length(reference_cells) - 1
-        }
-        out = .assign_neighbors(counts , reference_cells, query_cells, n.neigh = n.neigh, get.dist = get.dist)
+        out = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh)
         return(out)
       },
       error = function(dummy){
@@ -119,12 +79,7 @@
           counts = pcs$x
         }
         rownames(counts) = colnames(sce)
-        reference_cells = colnames(sce)
-        query_cells = colnames(sce)
-        if (n.neigh == "all"){
-          n.neigh = length(reference_cells) - 1
-        }
-        out = .assign_neighbors(counts , reference_cells, query_cells, n.neigh = n.neigh, get.dist = get.dist)
+        out = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh)
         return(out)
       },
       error = function(dump){
@@ -137,67 +92,6 @@
 }
 
 
-#' @importFrom irlba prcomp_irlba
-#'
-.get_mapping_all_neighbours = function(sce , genes = rownames(sce), nPC = 50){
-  set.seed(32)
-  sce = sce[genes , ]
-  reference_cells = colnames(sce)
-  query_cells = colnames(sce)
-  n.neigh = length(reference_cells) - 1
-
-  res = tryCatch(
-    {
-      counts = t(as.matrix(logcounts(sce)))
-      if (!is.null(nPC)){
-        pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
-        counts = pcs$x
-      }
-      rownames(counts) = colnames(sce)
-      out = .assign_neighbors(counts , reference_cells, query_cells, n.neigh = n.neigh, get.dist = TRUE)
-      return(list(stat = out, n_chunks = 1))
-    },
-    error = function(dummy){
-      message("Count matrix is too big - we will be working with sparse matrices and splitting query cells by chunks.")
-      counts = t(logcounts(sce))
-      if (!is.null(nPC)){
-        pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
-        counts = pcs$x
-      }
-      rownames(counts) = colnames(sce)
-      query_cells.binned = split(query_cells, ceiling(seq_along(query_cells)/500))
-      out = lapply(query_cells.binned , function(current.query_cells){
-        print("proc")
-        current.out = .assign_neighbors(counts , reference_cells, current.query_cells, n.neigh = n.neigh, get.dist = TRUE)
-        return(current.out)
-      })
-      print("done")
-      return(list(stat = out, n_chunks = length(query_cells.binned)))
-    },
-    error = function(dummy){
-      message("Count matrix is too big - we will be working with sparse matrices and splitting query cells by chunks.")
-      counts = t(logcounts(sce))
-      if (!is.null(nPC)){
-        pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
-        counts = pcs$x
-      }
-      rownames(counts) = colnames(sce)
-      query_cells.binned = split(query_cells, ceiling(seq_along(query_cells)/100))
-      out = lapply(query_cells.binned , function(current.query_cells){
-        print("proc")
-        current.out = .assign_neighbors(counts , reference_cells, current.query_cells, n.neigh = n.neigh, get.dist = TRUE)
-        return(current.out)
-      })
-      print("done")
-      return(list(stat = out, n_chunks = length(query_cells.binned)))
-    },
-    error = function(dump){
-      message("Either memory cupped or features you selected can not be used for pca")
-      return(NULL)
-    }
-  )
-  return(res)
-}
 
 
 #' @import batchelor
@@ -225,12 +119,7 @@
           counts = fastMNN(counts , batch = batchFactor , d = NA)
           counts = reducedDim(counts , "corrected")
         }
-        reference_cells = colnames(sce)
-        query_cells = colnames(sce)
-        if (n.neigh == "all"){
-          n.neigh = length(reference_cells) - 1
-        }
-        out = .assign_neighbors(counts , reference_cells , query_cells, n.neigh = n.neigh)
+        out = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh)
         return(out)
       },
       error = function(dump){
@@ -260,7 +149,7 @@
     counts = t( initial_random_mtrx[, idx] )
     reference_cells = colnames(sce[,idx])
     query_cells = colnames(sce[,idx])
-    out = .assign_neighbors(counts , reference_cells, query_cells, n.neigh = n.neigh, get.dist = F)
+    out = .assign_neighbors(counts , reference_cells, query_cells, n.neigh = n.neigh)
     return(out$cells_mapped)
   })
   neighs = do.call(rbind , neighs)
