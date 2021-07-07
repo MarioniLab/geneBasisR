@@ -38,7 +38,7 @@
 evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), batch = NULL, n.neigh = 5,
                             library.size_type = "single" , n_genes.step = 10,
                             return.cell_score_stat = T, return.gene_score_stat = T, return.celltype_stat = T, verbose = TRUE,
-                            neighs.all = NULL, gene_stat_all = NULL, ...){
+                            neighs.all_stat = NULL, gene_stat_all = NULL, ...){
   sce = .prepare_sce(sce)
   args = c(as.list(environment()), list(...))
   out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.selection) & .check_genes_in_sce(sce, genes.all)
@@ -69,14 +69,15 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
       }
       if (!is.null(neighs.all)){
         if (!is.null(batch)){
-          out = .check_neighs.all_multipleBatches(sce , batch = batch , neighs.all = neighs.all)
+          #out = .check_neighs.all_multipleBatches(sce , batch = batch , neighs.all = neighs.all)
+          out = T
         }
       }
       else {
-        neighs.all = suppressWarnings( get_z_scaled_distances(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh, ...) )
+        neighs.all_stat = suppressWarnings( get_neighs_all_stat(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh, ...) )
       }
       cell_score_stat = lapply(n_genes.grid, function(n_genes){
-        current.stat = suppressWarnings( get_neighborhood_preservation_scores(sce, neighs.all = neighs.all,  genes.all = genes.all,
+        current.stat = suppressWarnings( get_neighborhood_preservation_scores(sce, neighs.all_stat = neighs.all_stat,  genes.all = genes.all,
                                                                        genes.selection = genes.selection[1:n_genes], batch = batch, n.neigh = n.neigh, check_args = FALSE, ...) )
         current.stat$n_genes = n_genes
         if (verbose){
