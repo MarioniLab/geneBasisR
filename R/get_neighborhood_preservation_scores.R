@@ -3,7 +3,6 @@
 #' Calculates cell neighborhood preservation scores by comparing neighbors from True and Selection k-NN graphs.
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
-#' @param neighs.all If not NULL, contains information about True kNN-graph (for each cell - ordered neighbors and distances). Useful to have a priori if cell score will be recalculated multiple times.
 #' @param genes.all String specifying genes to be used for construction of True kNN-graph.
 #' @param genes.selection String specifying genes to be used for construction of Selection kNN-graph.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
@@ -24,10 +23,10 @@
 #' colnames(sce) = c(1:n_col)
 #' sce$cell = colnames(sce)
 #' genes.selection = sample(rownames(sce) , 20)
-#' out = get_neighborhood_preservation_scores(sce, genes.selection = genes.selection)
+#' out = get_neighborhood_preservation_scores_alternative(sce, genes.selection = genes.selection)
 #'
-get_neighborhood_preservation_scores = function(sce, neighs.all = NULL,  genes.all = rownames(sce),
-                                                genes.selection, batch = NULL, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, ...){
+get_neighborhood_preservation_scores_alternative = function(sce, neighs.all_stat = NULL, genes.all = rownames(sce),
+                                                            genes.selection, batch = NULL, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, ...){
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
     sce = .prepare_sce(sce)
@@ -40,27 +39,27 @@ get_neighborhood_preservation_scores = function(sce, neighs.all = NULL,  genes.a
     }
   }
   if (is.null(batch)){
-    score = .get_neighborhood_preservation_scores_single_batch(sce , neighs.all = neighs.all, genes.all = genes.all,
-                                                               genes.selection = genes.selection, n.neigh = n.neigh , nPC.all = nPC.all , nPC.selection = nPC.selection)
+    score = .get_neighborhood_preservation_scores_single_batch_alternative(sce , neighs.all_stat = neighs.all_stat, genes.all = genes.all,
+                                                                           genes.selection = genes.selection, n.neigh = n.neigh ,
+                                                                           nPC.all = nPC.all , nPC.selection = nPC.selection)
     return(score)
   }
   else {
-    if (!is.null(neighs.all)){
-      out = .check_neighs.all_multipleBatches(sce , batch = batch , neighs.all = neighs.all)
-    }
-    else {
-      neighs.all = get_z_scaled_distances(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh, nPC.all = nPC.all, check_args = FALSE)
-      out = .check_neighs.all_multipleBatches(sce , batch = batch , neighs.all = neighs.all)
+    if (is.null(neighs.all_stat)){
+      neighs.all_stat = get_neighs_all_stat(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh , nPC.all = nPC.all)
     }
     meta = as.data.frame(colData(sce))
     batchFactor = factor(meta[, colnames(meta) == batch])
     score = lapply(unique(batchFactor) , function(current.batch){
+      print(current.batch)
       idx = which(batchFactor == current.batch)
       current.sce = sce[, idx]
-      current.neighs.all = neighs.all[[which(names(neighs.all) == current.batch)]]
-      out = .get_neighborhood_preservation_scores_single_batch(current.sce , neighs.all = current.neighs.all , genes.all = genes.all ,
-                                                               genes.selection = genes.selection, n.neigh = n.neigh , nPC.all = nPC.all, nPC.selection = nPC.selection)
-      return(out)
+      current.neighs.all_stat = neighs.all_stat[[which(names(neighs.all_stat) == current.batch)]]
+      current.score = .get_neighborhood_preservation_scores_single_batch_alternative(current.sce , neighs.all_stat = current.neighs.all_stat,
+                                                                                     genes.all = genes.all ,
+                                                                                     genes.selection = genes.selection, n.neigh = n.neigh ,
+                                                                                     nPC.all = nPC.all, nPC.selection = nPC.selection)
+      return(current.score)
     })
     score = do.call(rbind, score)
     return(score)
@@ -68,33 +67,37 @@ get_neighborhood_preservation_scores = function(sce, neighs.all = NULL,  genes.a
 }
 
 
-#'
-.get_neighborhood_preservation_scores_single_batch = function(sce, neighs.all = NULL,  genes.all = rownames(sce),
-                                                              genes.selection, n.neigh = 5, nPC.all = 50, nPC.selection = NULL){
-  if (!is.null(neighs.all)){
-    out = .check_neighs.all_singleBatch(sce ,  neighs.all = neighs.all)
+#' @import Rfast
+#' @importFrom irlba prcomp_irlba
+.get_neighborhood_preservation_scores_single_batch_alternative = function(sce, neighs.all_stat = NULL, genes.all = rownames(sce),
+                                                                          genes.selection, n.neigh = 5, nPC.all = 50, nPC.selection = NULL){
+  set.seed(32)
+  sce = sce[genes.all , ]
+
+  if (is.null(neighs.all_stat)){
+    neighs.all_stat = get_neighs_all_stat(sce , genes.all = genes.all , batch = NULL, n.neigh = n.neigh , nPC.all = nPC.all)
   }
-  else {
-    neighs.all = get_z_scaled_distances(sce, genes.all = genes.all, batch = NULL, n.neigh = n.neigh, nPC.all = nPC.all)
-    out = .check_neighs.all_singleBatch(sce ,  neighs.all = neighs.all)
-  }
+
+  counts = neighs.all_stat$counts
+  neighs.all = neighs.all_stat$neighs.all
+  mean_dist = neighs.all_stat$mean_dist
+
 
   neighs.compare = .get_mapping(sce , genes = genes.selection, batch = NULL, n.neigh = n.neigh, nPC = nPC.selection)
   neighs.compare = neighs.compare$cells_mapped
-  neighs.all.cells_mapped = neighs.all$cells_mapped
-  neighs.all.distances = neighs.all$distances
-  n.cells = ncol(sce)
 
-  score = lapply(1:nrow(neighs.compare) , function(i){
-    cells = neighs.all.cells_mapped[i,]
-    idx_all = c(1:n.neigh)
-    idx_compare = which(cells %in% neighs.compare[i,] )
 
-    dist_all = neighs.all.distances[i, idx_all]
-    dist_compare = neighs.all.distances[i, idx_compare]
-    current.score = median(-dist_compare)/median(-dist_all)
-    out = data.frame(cell_score = current.score )
-    return(out)
+  counts = counts[order(rownames(counts)),]
+  neighs.all = neighs.all[order(rownames(neighs.all)),]
+  neighs.compare = neighs.compare[order(rownames(neighs.compare)),]
+  mean_dist = mean_dist[order(names(mean_dist))]
+
+
+  score = lapply(1:nrow(counts), function(i){
+    dist_neighs.all_coords = median(dista(t(counts[i, ]), counts[neighs.all[i,], ]))
+    dist_neighs.compare_coords = median(dista(t(counts[i, ]), counts[neighs.compare[i,], ]))
+    current_score = ( mean_dist[i] - dist_neighs.compare_coords )/( mean_dist[i] - dist_neighs.all_coords )
+    out = data.frame(cell_score = current_score )
   })
   score = do.call(rbind , score)
   score$cell = rownames(neighs.compare)
@@ -103,14 +106,7 @@ get_neighborhood_preservation_scores = function(sce, neighs.all = NULL,  genes.a
 }
 
 
-
-
-#' get_z_scaled_distances
-#'
-#' For each cell: ranks all other cells based on the transcriptional similarity and returns ordered z-scaled distances (lower distance -- closer cell).
-#' It is an intermediate step for get_neighborhood_preservation_scores. It can be handy to calculate this part separately to be recycled multiple times
-#' to compare different seelctions.
-#'
+#' get_neighs.all_stat
 #' @param sce SingleCellExperiment object containing gene counts matrix.
 #' @param genes.all String specifying genes to be used for construction of True kNN-graph.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
@@ -121,29 +117,10 @@ get_neighborhood_preservation_scores = function(sce, neighs.all = NULL,  genes.a
 #' @return kNN-graph with assigned neighbors and corresponding z-scored distances.
 #' @export
 #'
-#' @examples
-#' require(SingleCellExperiment)
-#' n_row = 1000
-#' n_col = 100
-#' sce = SingleCellExperiment(assays = list(logcounts = matrix(rnorm(n_row*n_col), ncol=n_col)))
-#' rownames(sce) = as.factor(1:n_row)
-#' colnames(sce) = c(1:n_col)
-#' sce$cell = colnames(sce)
-#' out = get_z_scaled_distances(sce)
-get_z_scaled_distances = function(sce , genes.all = rownames(sce) , batch = NULL, n.neigh = 5 , nPC.all = 50, ...){
-  args = c(as.list(environment()) , list(...))
-  if (!"check_args" %in% names(args)){
-    sce = .prepare_sce(sce)
-    out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.all)
-  }
-  else {
-    if (args[[which(names(args) == "check_args")]]){
-      sce = .prepare_sce(sce)
-      out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.all)
-    }
-  }
+#'
+get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n.neigh = 5 , nPC.all = 50){
   if (is.null(batch)){
-    out = .get_z_scaled_distances_single_batch(sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
+    out = .get_neighs_all_stat_single_batch(sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
     return(out)
   }
   else {
@@ -152,7 +129,7 @@ get_z_scaled_distances = function(sce , genes.all = rownames(sce) , batch = NULL
     neighs.all = lapply(unique(batchFactor) , function(current.batch){
       idx = which(batchFactor == current.batch)
       current.sce = sce[, idx]
-      out =  .get_z_scaled_distances_single_batch(current.sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
+      out =  .get_neighs_all_stat_single_batch(current.sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
     })
     names(neighs.all) = unique(batchFactor)
     return(neighs.all)
@@ -160,14 +137,65 @@ get_z_scaled_distances = function(sce , genes.all = rownames(sce) , batch = NULL
 }
 
 
-.get_z_scaled_distances_single_batch = function(sce , genes.all = rownames(sce) , n.neigh = 5 , nPC.all = 50){
-  neighs.all = .get_mapping(sce , genes = genes.all, batch = NULL, n.neigh = "all", nPC = nPC.all , get.dist = T)
-  distances = neighs.all$distances
-  distances_scaled = t( apply(distances , 1 , function(x) scale(x)) )
-  # if there are NaNs (i.e. same distance to all neighbors, return 0) -- the final dist will be NaN which is ok for this cases
-  distances_scaled[is.na(distances_scaled)] = 0
+#' @importFrom irlba prcomp_irlba
+#' @import Matrix
+#' @importFrom Rfast dista
+#'
+.get_neighs_all_stat_single_batch = function(sce , genes.all = rownames(sce) , n.neigh = 5 , nPC.all = 50){
+  set.seed(32)
+  sce = sce[genes.all, ]
+  res = tryCatch(
+    {
+      counts = t(as.matrix(logcounts(sce)))
+      if (!is.null(nPC.all)){
+        pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC.all, (nrow(counts)-1) , (ncol(counts) - 1))) )
+        counts = pcs$x
+      }
+      rownames(counts) = colnames(sce)
 
-  rownames(distances_scaled) = rownames(distances)
-  neighs.all$distances = distances_scaled
-  return(neighs.all)
+      # get neighs.all
+      neighs.all = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh, get.dist = FALSE)
+      neighs.all = neighs.all$cells_mapped
+
+      # get mean
+      mean_dist = sapply(rownames(counts), function(cell){
+        out = mean(dista(t(counts[cell, ]), counts[setdiff(rownames(counts), cell) , ]))
+        return(out)
+      })
+      names(mean_dist) = rownames(counts)
+
+      out = list(counts = counts, neighs.all = neighs.all, mean_dist = mean_dist)
+      return(out)
+    },
+    error = function(dummy){
+      message("Count matrix is too big - we will be working with sparse matrices.")
+      counts = Matrix::t(logcounts(sce))
+      if (!is.null(nPC.all)){
+        pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC.all, (nrow(counts)-1) , (ncol(counts) - 1))) )
+        counts = pcs$x
+      }
+      rownames(counts) = colnames(sce)
+
+      # get neighs.all
+      neighs.all = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh, get.dist = FALSE)
+      neighs.all = neighs.all$cells_mapped
+
+      # get mean
+      mean_dist = sapply(rownames(counts), function(cell){
+        out = mean(dista(t(counts[cell, ]), counts[setdiff(rownames(counts), cell) , ]))
+        return(out)
+      })
+      names(mean_dist) = rownames(counts)
+
+      out = list(counts = counts, neighs.all = neighs.all, mean_dist = mean_dist)
+      return(out)
+    },
+    error = function(dump){
+      message("Either memory cupped or features you selected can not be used for pca")
+      return(NULL)
+    }
+  )
+  return(res)
 }
+
+
