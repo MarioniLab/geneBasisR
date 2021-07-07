@@ -10,6 +10,7 @@
 #' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC.all Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.
 #' @param nPC.selection Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.selection=NULL (no PCA).
+#' @param option String specifying how average distance for each cell should be calculated. If = 'exact', all other cells are taken into account. If = 'approx', the random subset of 10000 cells will be used. 'exact' is default and 'approx' is recommended for big datasets.
 #' @param ... Additional arguments
 #'
 #' @return data.frame, each row corresponds to cell from counts matrix, contains field cell_score = cell neighborhood preservation score
@@ -28,7 +29,7 @@
 #' out = get_neighborhood_preservation_scores(sce, genes.selection = genes.selection)
 #'
 get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, genes.all = rownames(sce),
-                                                            genes.selection, batch = NULL, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, option = "approx", ...){
+                                                            genes.selection, batch = NULL, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, option = "exact", ...){
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
     sce = .prepare_sce(sce)
@@ -40,16 +41,45 @@ get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, gen
       out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.all) & .check_genes_in_sce(sce , genes.selection)
     }
   }
+  if (is.null(batch)){
+    score = .get_neighborhood_preservation_scores_single_batch(sce , neighs.all_stat = neighs.all_stat, genes.all = genes.all,
+                                                               genes.selection = genes.selection, n.neigh = n.neigh , nPC.all = nPC.all , nPC.selection = nPC.selection,
+                                                               option = option)
+    return(score)
+  }
+  else {
+    if (is.null(neighs.all_stat)){
+      neighs.all_stat = get_neighs_all_stat(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh, nPC.all = nPC.all, option = option, check_args = FALSE)
+    }
+    meta = as.data.frame(colData(sce))
+    batchFactor = factor(meta[, colnames(meta) == batch])
+    score = lapply(unique(batchFactor) , function(current.batch){
+      idx = which(batchFactor == current.batch)
+      current.sce = sce[, idx]
+      current.neighs.all_stat = neighs.all_stat[[which(names(neighs.all_stat) == current.batch)]]
+      out = .get_neighborhood_preservation_scores_single_batch(current.sce , neighs.all_stat = current.neighs.all_stat , genes.all = genes.all ,
+                                                               genes.selection = genes.selection, n.neigh = n.neigh , nPC.all = nPC.all, nPC.selection = nPC.selection, option = option)
+      return(out)
+    })
+    score = do.call(rbind, score)
+    return(score)
+  }
+}
+
+
+.get_neighborhood_preservation_scores_single_batch = function(sce, neighs.all_stat = NULL,  genes.all = rownames(sce),
+                                                              genes.selection, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, option = "exact"){
   if (!is.null(neighs.all_stat)){
     out = .check_neighs.all_stat(neighs.all_stat)
   }
   else {
-    neighs.all_stat = get_neighs_all_stat(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh , nPC.all = nPC.all, option = option)
+    neighs.all_stat = get_neighs_all_stat(sce, genes.all = genes.all, batch = NULL, n.neigh = n.neigh, nPC.all = nPC.all, option = option)
+    out = .check_neighs.all_stat(neighs.all_stat)
   }
   counts = neighs.all_stat$counts
   neighs.all = neighs.all_stat$neighs.all
   mean_dist = neighs.all_stat$mean_dist
-  neighs.compare = .get_mapping(sce , genes = genes.selection, batch = batch, n.neigh = n.neigh, nPC = nPC.selection)
+  neighs.compare = .get_mapping(sce , genes = genes.selection, batch = NULL, n.neigh = n.neigh, nPC = nPC.selection)
   # order
   counts = counts[order(rownames(counts)),]
   neighs.all = neighs.all[order(rownames(neighs.all)),]
@@ -70,8 +100,6 @@ get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, gen
 }
 
 
-
-
 #' get_neighs.all_stat
 #'
 #' Calculates intermediate stats relevant for cell neighborhoud preservation score that can be recycled for different selection.
@@ -81,14 +109,25 @@ get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, gen
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
 #' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC.all Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.
-#' @param option String specifying how average distance for each cell should be calculated. If = 'exact', all other cells are taken into account. If = 'approx', the random subset of 10000 cells will be used. Approx is default and recommended for big datasets.
+#' @param option String specifying how average distance for each cell should be calculated. If = 'exact', all other cells are taken into account. If = 'approx', the random subset of 10000 cells will be used. 'exact' is default and 'approx' is recommended for big datasets.
 #' @param ... Additional arguments.
 #'
 #' @return List containing fields 'counts' - PC coordinates for cells in True graph; 'neighs.all' - kNN-graph with assigned neighbors in True graph; 'mean_dist' - vector (for each cell) containing mean distance to other cells.
 #' @export
 #' @importFrom paleotree reverseList
 #'
-get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n.neigh = 5 , nPC.all = 50 , option = "approx"){
+get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n.neigh = 5 , nPC.all = 50 , option = "exact", ...){
+  args = c(as.list(environment()) , list(...))
+  if (!"check_args" %in% names(args)){
+    sce = .prepare_sce(sce)
+    out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.all)
+  }
+  else {
+    if (args[[which(names(args) == "check_args")]]){
+      sce = .prepare_sce(sce)
+      out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.all)
+    }
+  }
   if (is.null(batch)){
     out = .get_neighs_all_stat_single_batch(sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all)
     return(out)
@@ -99,13 +138,9 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
     neighs.all_stat = lapply(unique(batchFactor) , function(current.batch){
       idx = which(batchFactor == current.batch)
       current.sce = sce[, idx]
-      out =  .get_neighs_all_stat_single_batch(current.sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all, option = option)
+      out = .get_neighs_all_stat_single_batch(current.sce , genes.all = genes.all , n.neigh = n.neigh , nPC.all = nPC.all, option = option)
     })
-    neighs.all_stat = reverseList(neighs.all_stat)
-    counts = do.call(rbind , neighs.all_stat$counts)
-    neighs.all = do.call(rbind , neighs.all_stat$neighs.all)
-    mean_dist = do.call(rbind, neighs.all_stat$mean_dist)
-    neighs.all_stat = list(counts = counts, neighs.all = neighs.all , mean_dist = mean_dist)
+    names(neighs.all_stat) = unique(batchFactor)
     return(neighs.all_stat)
   }
 }
@@ -115,7 +150,7 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
 #' @import Matrix
 #' @importFrom Rfast dista
 #'
-.get_neighs_all_stat_single_batch = function(sce , genes.all = rownames(sce) , n.neigh = 5 , nPC.all = 50 , option = "approx"){
+.get_neighs_all_stat_single_batch = function(sce , genes.all = rownames(sce) , n.neigh = 5 , nPC.all = 50 , option = "exact"){
   set.seed(32)
   sce = sce[genes.all, ]
   res = tryCatch(
@@ -139,7 +174,7 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
         })
       }
       else if (option == "approx"){
-        cells_random = sample( rownames(counts) , min(10000, (nrow(counts)-1)) )
+        cells_random = sample( rownames(counts) , min(10000, nrow(counts)) )
         mean_dist = sapply(rownames(counts), function(cell){
           out = mean(dista(t(counts[cell, ]), counts[setdiff(cells_random , cell) , ] ))
           return(out)
@@ -147,11 +182,11 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
       }
       names(mean_dist) = rownames(counts)
 
-      list(counts = counts, neighs.all = neighs.all, mean_dist = mean_dist)
+      out = list(counts = counts, neighs.all = neighs.all, mean_dist = mean_dist)
+      out
       #return(out)
     },
     error = function(dummy){
-      message("test")
       counts = Matrix::t(logcounts(sce))
       if (!is.null(nPC.all)){
         pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC.all, (nrow(counts)-1) , (ncol(counts) - 1))) )
@@ -171,7 +206,7 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
         })
       }
       else if (option == "approx"){
-        cells_random = sample( rownames(counts) , min(10000, (nrow(counts)-1)) )
+        cells_random = sample( rownames(counts) , min(10000, nrow(counts)) )
         mean_dist = sapply(rownames(counts), function(cell){
           out = mean(dista(t(counts[cell, ]), counts[setdiff(cells_random , cell) , ] ))
           return(out)
@@ -183,7 +218,7 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
       return(out)
     },
     error = function(dump){
-      message("Either memory is exhausted or features you selected can not be used for pca. Try downsampling, smaller n.neigh or smaller nPC.all.")
+      message("Something went wrong or memory is exhausted or features you selected can not be used for pca. Try downsampling, smaller n.neigh or smaller nPC.all.")
       return(NULL)
     }
   )
