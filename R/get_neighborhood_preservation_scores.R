@@ -23,7 +23,7 @@
 #' colnames(sce) = c(1:n_col)
 #' sce$cell = colnames(sce)
 #' genes.selection = sample(rownames(sce) , 20)
-#' out = get_neighborhood_preservation_scores_alternative(sce, genes.selection = genes.selection)
+#' out = get_neighborhood_preservation_scores(sce, genes.selection = genes.selection)
 #'
 get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, genes.all = rownames(sce),
                                                             genes.selection, batch = NULL, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, ...){
