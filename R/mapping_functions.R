@@ -84,7 +84,7 @@
         return(out)
       },
       error = function(dump){
-        message("Either memory is exhausted or features you selected can not be used for pca")
+        message("Either memory is exhausted or features you selected can not be used for pca. Try downsampling, smaller n.neigh or smaller nPC.all.")
         return(NULL)
       }
     )
@@ -139,7 +139,7 @@
         return(out)
       },
       error = function(dump){
-        message("Features you use are insufficient to perform batch correction via fastMNN")
+        message("Either memory is exhausted or features you selected can not be used for pca. Try downsampling, smaller n.neigh or smaller nPC.all.")
         return(NULL)
       }
     )
