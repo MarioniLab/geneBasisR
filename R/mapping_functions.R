@@ -1,6 +1,5 @@
 # This script contains functions to construct kNN_graphs (designated for the internal use)
 
-#' @importFrom paleotree reverseList
 #'
 .get_mapping = function(sce , genes = rownames(sce), batch = NULL, n.neigh = 5, nPC = 50 , cosine = F){
   if (is.null(batch)){
@@ -48,6 +47,7 @@
 
 
 #' @importFrom irlba prcomp_irlba
+#' @import Matrix
 #'
 .get_mapping_single_batch = function(sce , genes = rownames(sce), n.neigh = 5, nPC = 50 , cosine = F){
   if (is.numeric(n.neigh) & n.neigh > ncol(sce)-1){
@@ -69,11 +69,12 @@
         }
         rownames(counts) = colnames(sce)
         out = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh)
-        return(out)
+        out
+        #return(out)
       },
       error = function(dummy){
-        message("Count matrix is too big - we will be working with sparse matrices.")
-        counts = t(logcounts(sce))
+        #message("Count matrix is too big - we will be working with sparse matrices.")
+        counts = Matrix::t(logcounts(sce))
         if (!is.null(nPC)){
           pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
           counts = pcs$x
@@ -83,15 +84,13 @@
         return(out)
       },
       error = function(dump){
-        message("Either memory is cupped or features you selected can not be used for pca")
+        message("Either memory is exhausted or features you selected can not be used for pca")
         return(NULL)
       }
     )
     return(res)
   }
 }
-
-
 
 
 #' @import batchelor
@@ -106,11 +105,28 @@
     if (cosine){
       logcounts(sce) = cosineNorm(logcounts(sce))
     }
-    counts = as.matrix( logcounts(sce))
-    meta = as.data.frame(colData(sce))
-    batchFactor = factor(meta[, colnames(meta) == batch])
+
     res = tryCatch(
       {
+        counts = as.matrix( logcounts(sce))
+        meta = as.data.frame(colData(sce))
+        batchFactor = factor(meta[, colnames(meta) == batch])
+        if (!is.null(nPC)){
+          counts = multiBatchPCA(counts , batch = batchFactor , d = nPC)
+          counts = do.call(reducedMNN , counts)
+          counts = counts$corrected
+        } else {
+          counts = fastMNN(counts , batch = batchFactor , d = NA)
+          counts = reducedDim(counts , "corrected")
+        }
+        out = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh)
+        out
+        #return(out)
+      },
+      error = function(dump){
+        counts = logcounts(sce)
+        meta = as.data.frame(colData(sce))
+        batchFactor = factor(meta[, colnames(meta) == batch])
         if (!is.null(nPC)){
           counts = multiBatchPCA(counts , batch = batchFactor , d = nPC)
           counts = do.call(reducedMNN , counts)
