@@ -62,15 +62,16 @@ test_that("Return of the correct output, simple", {
 
 })
 
-test_that("neighs.all matches number of batches", {
-  out = get_z_scaled_distances(sce_mouseEmbryo, batch = "sample")
-  # correct size
-  expect_equal(length(out), 2)
-  # correct names
-  meta = as.data.frame(colData(sce_mouseEmbryo))
-  batchFactor = factor(meta[, colnames(meta) == "sample"])
-  expect_equal(names(out), as.character(unique(batchFactor)))
+test_that("neighs.all_stat matches number of batches", {
+  out = get_neighs_all_stat(sce_mouseEmbryo, batch = "sample")
+  names_out = names(out)
+  expect_equal(length(out), 3)
+  expect_equal(names_out, c("counts", "neighs.all" , "mean_dist"))
 
+  out = get_neighs_all_stat(sce_mouseEmbryo, batch = NULL)
+  names_out = names(out)
+  expect_equal(length(out), 3)
+  expect_equal(names_out, c("counts", "neighs.all" , "mean_dist"))
 
 })
 
@@ -263,49 +264,51 @@ test_that("Wrong input, nPC.selection", {
 
 
 
-test_that("neighs.all is of correct format", {
+test_that("neighs.all_stat is of correct format", {
 
   # neighs.all can be NULL
   expect_error(get_neighborhood_preservation_scores(sce_correct, genes.selection = as.character(c(2)), n.neigh = 2),
                NA)
   # neighs.all can be NULL
-  expect_error(get_neighborhood_preservation_scores(sce_correct, genes.selection = as.character(c(2)), n.neigh = 2, neighs.all = NULL),
+  expect_error(get_neighborhood_preservation_scores(sce_correct, genes.selection = as.character(c(2)), n.neigh = 2, neighs.all_stat = NULL),
                NA
   )
-  # neighs.all should be list w right colnames
+  # neighs.all_stat should be list w right colnames
   expect_error(get_neighborhood_preservation_scores(sce_correct, genes.selection = "2", n.neigh = 2,
-                                                    neighs.all = data.frame(cells_mapped = 1 , distances = 1)),
-               "Something is wrong with neighs.all argument. For each batch, neighs.all should be a list containing 'cells_mapped' and 'distances' entries; nrow for each entry == n-cells in the batch. Consider recalculating using get_z_scaled_distances function.",
+                                                    neighs.all_stat = data.frame(counts = 1 , neighs.all = 1 , mean_dist = 1)),
+               "neighs.all_stat should be a list. Precompute neighs.all_stat with geneBasisR::get_neighs_all_stat.",
                fixed=TRUE
   )
-  # neighs.all should be list w right colnames
+  # neighs.all_stat should be list w right colnames
   expect_error(get_neighborhood_preservation_scores(sce_correct, genes.selection = as.character(c(2)), n.neigh = 2,
-                                                    neighs.all = list(cell_mapped = 1 , distances = 1)),
-               "Something is wrong with neighs.all argument. For each batch, neighs.all should be a list containing 'cells_mapped' and 'distances' entries; nrow for each entry == n-cells in the batch. Consider recalculating using get_z_scaled_distances function.",
+                                                    neighs.all_stat = list(counts = 1 , neigh.all = 1 , mean_dist = 1)),
+               "neighs.all_stat should contain fields 'counts', 'neighs.all' and 'mean_dist'. Precompute neighs.all_stat with geneBasisR::get_neighs_all_stat.",
                fixed=TRUE
   )
-  # neighs.all should be list w right colnames
+
+  # neighs.all_stat can be calculated w no errors
+  neighs.all = get_neighs_all_stat(sce_correct , batch = NULL, option = "approx")
   expect_error(get_neighborhood_preservation_scores(sce_correct, genes.selection = as.character(c(2)), n.neigh = 2,
-                                                    neighs.all = list(cells_mapped = 1 , distances = 1)),
-               "Something is wrong with neighs.all argument. For each batch, neighs.all should be a list containing 'cells_mapped' and 'distances' entries; nrow for each entry == n-cells in the batch. Consider recalculating using get_z_scaled_distances function.",
-               fixed=TRUE
-  )
-  # neighs.all should be list w right colnames
-  expect_error(get_neighborhood_preservation_scores(sce_correct_w_batch, genes.selection = as.character(c(2)), batch = "batch", n.neigh = 2,
-                                                    neighs.all = list("0" = 1 , "all" = 1)),
-               "Something is wrong with neighs.all argument. When batch is specified, it should be a list, named after batches. Consider recalculating using get_z_scaled_distances function.",
-               fixed=TRUE
-  )
-  # neighs.all can be calculated w no errors
-  neighs.all = get_z_scaled_distances(sce_correct , batch = NULL)
-  expect_error(get_gene_prediction_scores(sce_correct, genes.selection = as.character(c(2)), n.neigh = 2,
-                                          neighs.all = neighs.all),
+                                          neighs.all_stat = neighs.all),
                NA
   )
-  # neighs.all can be calculated w no errors
-  neighs.all = get_z_scaled_distances(sce_correct_w_batch , batch = "batch")
-  expect_error(get_gene_prediction_scores(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2, batch = "batch",
-                                          neighs.all = neighs.all),
+  # neighs.all_stat can be calculated w no errors
+  neighs.all_stat = get_neighs_all_stat(sce_correct_w_batch , batch = "batch", option = "approx")
+  expect_error(get_neighborhood_preservation_scores(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2, batch = "batch",
+                                          neighs.all_stat = neighs.all_stat),
+               NA
+  )
+
+  # neighs.all_stat can be calculated w no errors
+  neighs.all = get_neighs_all_stat(sce_correct , batch = NULL, option = "exact")
+  expect_error(get_neighborhood_preservation_scores(sce_correct, genes.selection = as.character(c(2)), n.neigh = 2,
+                                                    neighs.all_stat = neighs.all),
+               NA
+  )
+  # neighs.all_stat can be calculated w no errors
+  neighs.all_stat = get_neighs_all_stat(sce_correct_w_batch , batch = "batch", option = "exact")
+  expect_error(get_neighborhood_preservation_scores(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2, batch = "batch",
+                                                    neighs.all_stat = neighs.all_stat),
                NA
   )
 })

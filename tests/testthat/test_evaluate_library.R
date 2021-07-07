@@ -328,48 +328,12 @@ test_that("Wrong input, nPC.selection", {
 
 
 
-test_that("neighs.all is of correct format", {
-  # neighs.all can be NULL
+test_that("neighs.all_stat is of correct format", {
+  # neighs.all_stat can be NULL
   expect_error(evaluate_library(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2),
                NA)
-  # neighs.all can be NULL
-  expect_error(evaluate_library(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2, neighs.all = NULL),
-               NA
-  )
-  # neighs.all should be list w right colnames
-  expect_error(evaluate_library(sce_correct_w_batch, genes.selection = "2", n.neigh = 2,
-                                                    neighs.all = data.frame(cells_mapped = 1 , distances = 1)),
-               "Something is wrong with neighs.all argument. For each batch, neighs.all should be a list containing 'cells_mapped' and 'distances' entries; nrow for each entry == n-cells in the batch. Consider recalculating using get_z_scaled_distances function.",
-               fixed=TRUE
-  )
-  # neighs.all should be list w right colnames
-  expect_error(evaluate_library(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2,
-                                                    neighs.all = list(cell_mapped = 1 , distances = 1)),
-               "Something is wrong with neighs.all argument. For each batch, neighs.all should be a list containing 'cells_mapped' and 'distances' entries; nrow for each entry == n-cells in the batch. Consider recalculating using get_z_scaled_distances function.",
-               fixed=TRUE
-  )
-  # neighs.all should be list w right colnames
-  expect_error(evaluate_library(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2,
-                                                    neighs.all = list(cells_mapped = 1 , distances = 1)),
-               "Something is wrong with neighs.all argument. For each batch, neighs.all should be a list containing 'cells_mapped' and 'distances' entries; nrow for each entry == n-cells in the batch. Consider recalculating using get_z_scaled_distances function.",
-               fixed=TRUE
-  )
-  # neighs.all should be list w right colnames
-  expect_error(evaluate_library(sce_correct_w_batch, genes.selection = as.character(c(2)), batch = "batch", n.neigh = 2,
-                                                    neighs.all = list("0" = 1 , "all" = 1)),
-               "Something is wrong with neighs.all argument. When batch is specified, it should be a list, named after batches. Consider recalculating using get_z_scaled_distances function.",
-               fixed=TRUE
-  )
-  # neighs.all can be calculated w no errors
-  neighs.all = get_z_scaled_distances(sce_correct_w_batch , batch = NULL)
-  expect_error(evaluate_library(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2,
-                                          neighs.all = neighs.all),
-               NA
-  )
-  # neighs.all can be calculated w no errors
-  neighs.all = get_z_scaled_distances(sce_correct_w_batch , batch = "batch")
-  expect_error(evaluate_library(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2, batch = "batch",
-                                          neighs.all = neighs.all),
+  # neighs.all_stat can be NULL
+  expect_error(evaluate_library(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2, neighs.all_stat = NULL),
                NA
   )
 })
