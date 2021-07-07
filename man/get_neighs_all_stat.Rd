@@ -9,7 +9,8 @@ get_neighs_all_stat(
   genes.all = rownames(sce),
   batch = NULL,
   n.neigh = 5,
-  nPC.all = 50
+  nPC.all = 50,
+  option = "approx"
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ get_neighs_all_stat(
 \item{n.neigh}{Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
 
 \item{nPC.all}{Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.}
+
+\item{option}{String specifying how average distance for each cell should be calculated. If = 'exact', all other cells are taken into account. If = 'approx', the random subset of 10000 cells will be used. Approx recommended for big datasets.}
 
 \item{...}{Additional arguments.}
 }
