@@ -24,13 +24,13 @@ get_neighs_all_stat(
 
 \item{nPC.all}{Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.}
 
-\item{option}{String specifying how average distance for each cell should be calculated. If = 'exact', all other cells are taken into account. If = 'approx', the random subset of 10000 cells will be used. Approx recommended for big datasets.}
+\item{option}{String specifying how average distance for each cell should be calculated. If = 'exact', all other cells are taken into account. If = 'approx', the random subset of 10000 cells will be used. Approx is default and recommended for big datasets.}
 
 \item{...}{Additional arguments.}
 }
 \value{
-kNN-graph with assigned neighbors and corresponding z-scored distances.
+List containing fields 'counts' - PC coordinates for cells in True graph; 'neighs.all' - kNN-graph with assigned neighbors in True graph; 'mean_dist' - vector (for each cell) containing mean distance to other cells.
 }
 \description{
-get_neighs.all_stat
+Calculates intermediate stats relevant for cell neighborhoud preservation score that can be recycled for different selection.
 }

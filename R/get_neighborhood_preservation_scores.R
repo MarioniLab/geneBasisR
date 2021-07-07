@@ -3,6 +3,7 @@
 #' Calculates cell neighborhood preservation scores by comparing neighbors from True and Selection k-NN graphs.
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
+#' @param neighs.all_stat If not NULL, should be precomputed using function geneBasisR::get_neighs_all_stat. Useful to precompute if geneBasisR::get_neighborhood_preservation_scores is planned to be recycled multiple times for different selections.
 #' @param genes.all String specifying genes to be used for construction of True kNN-graph.
 #' @param genes.selection String specifying genes to be used for construction of Selection kNN-graph.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
@@ -27,7 +28,7 @@
 #' out = get_neighborhood_preservation_scores(sce, genes.selection = genes.selection)
 #'
 get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, genes.all = rownames(sce),
-                                                            genes.selection, batch = NULL, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, ...){
+                                                            genes.selection, batch = NULL, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, option = "approx", ...){
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
     sce = .prepare_sce(sce)
@@ -39,8 +40,11 @@ get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, gen
       out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.all) & .check_genes_in_sce(sce , genes.selection)
     }
   }
-  if (is.null(neighs.all_stat)){
-    neighs.all_stat = get_neighs_all_stat(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh , nPC.all = nPC.all)
+  if (!is.null(neighs.all_stat)){
+    out = .check_neighs.all_stat(neighs.all_stat)
+  }
+  else {
+    neighs.all_stat = get_neighs_all_stat(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh , nPC.all = nPC.all, option = option)
   }
   counts = neighs.all_stat$counts
   neighs.all = neighs.all_stat$neighs.all
@@ -69,15 +73,18 @@ get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, gen
 
 
 #' get_neighs.all_stat
+#'
+#' Calculates intermediate stats relevant for cell neighborhoud preservation score that can be recycled for different selection.
+#'
 #' @param sce SingleCellExperiment object containing gene counts matrix.
 #' @param genes.all String specifying genes to be used for construction of True kNN-graph.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
 #' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC.all Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.
-#' @param option String specifying how average distance for each cell should be calculated. If = 'exact', all other cells are taken into account. If = 'approx', the random subset of 10000 cells will be used. Approx recommended for big datasets.
+#' @param option String specifying how average distance for each cell should be calculated. If = 'exact', all other cells are taken into account. If = 'approx', the random subset of 10000 cells will be used. Approx is default and recommended for big datasets.
 #' @param ... Additional arguments.
 #'
-#' @return kNN-graph with assigned neighbors and corresponding z-scored distances.
+#' @return List containing fields 'counts' - PC coordinates for cells in True graph; 'neighs.all' - kNN-graph with assigned neighbors in True graph; 'mean_dist' - vector (for each cell) containing mean distance to other cells.
 #' @export
 #' @importFrom paleotree reverseList
 #'
@@ -176,7 +183,7 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
       return(out)
     },
     error = function(dump){
-      message("Either memory cupped or features you selected can not be used for pca. Try downsampling, smaller n.neigh or smaller nPC.all.")
+      message("Either memory is exhausted or features you selected can not be used for pca. Try downsampling, smaller n.neigh or smaller nPC.all.")
       return(NULL)
     }
   )
