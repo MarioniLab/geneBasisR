@@ -16,7 +16,7 @@
 #' @param return.gene_score_stat Boolean identifying whether stat on gene prediction score should be returned. Default return.gene_score_stat=TRUE.
 #' @param return.celltype_stat Boolean identifying whether stat on celltype mapping should be returned. Default return.celltype_stat=TRUE.
 #' @param verbose Boolean identifying whether intermediate print outputs should be returned. Default verbose=TRUE.
-#' @param neighs.all If not NULL (NULL is default), contains information about True kNN-graph (for each cell - ordered neighbors and distances). Useful to have a priori if cell score will be recalculated multiple times.
+#' @param neighs.all_stat If not NULL (NULL is default), contains information about True kNN-graph (for each cell - ordered neighbors and distances). Useful to have a priori if cell score will be recalculated multiple times.
 #' @param gene_stat_all If not NULL (NULL is default), gene_stat_all is pre-calculated stat for True graph. This is useful if this variable will be used re-used multiple times.
 #' @param ... Additional parameters
 #'
@@ -67,7 +67,7 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
       if (verbose){
         cat("Calculating cell neighborhood preservation scores.\n")
       }
-      if (!is.null(neighs.all)){
+      if (!is.null(neighs.all_stat)){
         if (!is.null(batch)){
           #out = .check_neighs.all_multipleBatches(sce , batch = batch , neighs.all = neighs.all)
           out = T
