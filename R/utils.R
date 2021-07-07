@@ -161,7 +161,7 @@
     stop("neighs.all_stat should be a list. Precompute neighs.all_stat with geneBasisR::get_neighs_all_stat.")
     return(FALSE)
   }
-  else if (!sum( names(neighs.all) %in% c("counts", "neighs.all", "mean_dist")) == 3){
+  else if (!sum( names(neighs.all_stat) %in% c("counts", "neighs.all", "mean_dist")) == 3){
     stop("neighs.all_stat should contain fields 'counts', 'neighs.all' and 'mean_dist'. Precompute neighs.all_stat with geneBasisR::get_neighs_all_stat.")
     return(FALSE)
   }
