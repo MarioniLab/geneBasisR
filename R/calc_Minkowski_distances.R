@@ -56,7 +56,6 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
         cells = neighs[,j]
         stat_predict = stat_predict + counts_predict[, cells]
       }
-
       stat_predict = stat_predict / n.neigh
       stat_real = counts_predict[, rownames(neighs)]
       stat = lapply(1:nrow(counts_predict) , function(i){
@@ -66,10 +65,11 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
       stat = do.call(rbind , stat)
       stat$gene = as.character(rownames(counts_predict))
       stat = stat[, c("gene", "dist")]
-      return(stat)
+      stat
+      #return(stat)
     },
     error = function(dump){
-      message("Count matrix is too big - we will be working with sparse matrices.")
+      #message("Count matrix is too big - we will be working with sparse matrices.")
       counts_predict = logcounts(sce[genes.predict , ])
       stat_predict = counts_predict
       stat_predict[!stat_predict == 0] = 0
