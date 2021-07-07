@@ -156,13 +156,13 @@
   }
 }
 
-.check_neighs.all_multipleBatches = function(sce, batch, neighs.all){
-  meta = as.data.frame(colData(sce))
-  batchFactor = factor(meta[, colnames(meta) == batch])
-  names_neighs.all = sort(as.character(names(neighs.all)))
-  names_batchFactor = sort(as.character(unique(batchFactor)))
-  if (mean(names_neighs.all == names_batchFactor) < 1){
-    stop("Something is wrong with neighs.all argument. When batch is specified, it should be a list, named after batches. Consider recalculating using get_z_scaled_distances function.")
+.check_neighs.all_stat = function(neighs.all_stat){
+  if (!is.list(neighs.all_stat)){
+    stop("neighs.all_stat should be a list. Precompute neighs.all_stat with geneBasisR::get_neighs_all_stat.")
+    return(FALSE)
+  }
+  else if (!sum( names(neighs.all) %in% c("counts", "neighs.all", "mean_dist")) == 3){
+    stop("neighs.all_stat should contain fields 'counts', 'neighs.all' and 'mean_dist'. Precompute neighs.all_stat with geneBasisR::get_neighs_all_stat.")
     return(FALSE)
   }
   else {
@@ -232,6 +232,8 @@
                                 "Check which_genes_to_use - should be either 'all' or 'DE'")
   out = .check_argument_correct(dots, "counts_type", function(x) .check_arg_within_options(x, c("counts", "logcounts")),
                                 "Check counts_type - should be either 'counts' or 'logcounts'")
+  out = .check_argument_correct(dots, "option", function(x) .check_arg_within_options(x, c("approx", "exact")),
+                                "Check option - should be either 'approx' or 'exact'")
   return(out)
 }
 
