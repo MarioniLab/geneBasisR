@@ -157,7 +157,7 @@
 }
 
 .check_neighs.all_stat = function(neighs.all_stat){
-  if (!is.list(neighs.all_stat)){
+  if (!inherits(neighs.all_stat, "list")){
     stop("neighs.all_stat should be a list. Precompute neighs.all_stat with geneBasisR::get_neighs_all_stat.")
     return(FALSE)
   }
