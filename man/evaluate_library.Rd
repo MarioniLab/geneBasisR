@@ -44,9 +44,9 @@ evaluate_library(
 
 \item{verbose}{Boolean identifying whether intermediate print outputs should be returned. Default verbose=TRUE.}
 
-\item{neighs.all_stat}{If not NULL (NULL is default), contains information about True kNN-graph (for each cell - ordered neighbors and distances). Useful to have a priori if cell score will be recalculated multiple times.}
+\item{neighs.all_stat}{If not NULL (NULL is default), contains precomputed stat relevant for cell neighbourhood preservation score. Use geneBasisR::get_neighs_all_stat to calculate this.}
 
-\item{gene_stat_all}{If not NULL (NULL is default), gene_stat_all is pre-calculated stat for True graph. This is useful if this variable will be used re-used multiple times.}
+\item{gene_stat_all}{If not NULL (NULL is default), contains precomputed stat relevant for gene prediction score. Use geneBasisR::get_gene_correlation_scores to calculate this.}
 
 \item{...}{Additional parameters}
 }
