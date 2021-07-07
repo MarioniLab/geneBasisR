@@ -40,7 +40,7 @@ get_gene_prediction_scores(
 
 \item{corr_all.thresh}{Scalar specifying suitable threshold for correlation to consider (on True graph).}
 
-\item{gene_stat_all}{If not NULL (NULL is default), gene_stat_all is pre-calculated stat for True graph. This is useful if this variable will be used re-used multiple times.}
+\item{gene_stat_all}{If not NULL (NULL is default), gene_stat_all is pre-calculated stat for True graph. This is useful if this variable will be used re-used multiple times. Use geneBasisR::get_gene_correlation_scores to calculate this.}
 
 \item{...}{Additional arguments}
 }

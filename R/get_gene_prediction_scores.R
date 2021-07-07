@@ -14,7 +14,7 @@
 #' @param genes.predict Character vector containing names of genes for which we want to calculate gene prediction score. Default = genes.all.
 #' @param method Character specifying method for correlation. Availbale options are c("spearman", "pearson", "kendall"). Default method="spearman".
 #' @param corr_all.thresh Scalar specifying suitable threshold for correlation to consider (on True graph).
-#' @param gene_stat_all If not NULL (NULL is default), gene_stat_all is pre-calculated stat for True graph. This is useful if this variable will be used re-used multiple times.
+#' @param gene_stat_all If not NULL (NULL is default), gene_stat_all is pre-calculated stat for True graph. This is useful if this variable will be used re-used multiple times. Use geneBasisR::get_gene_correlation_scores to calculate this.
 #' @param ... Additional arguments
 #'
 #' @return data.frame, each row corresponds to gene, contains field gene_score = gene prediction score.
@@ -120,12 +120,12 @@ get_gene_correlation_scores = function(sce, genes, batch = NULL, n.neigh = 5, nP
   neighs = .get_mapping(sce , genes = genes, batch = batch , n.neigh = n.neigh , nPC = nPC)
 
   counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
-  stat_predict = lapply(1:ncol(neighs) , function(j){
+  stat_predict = matrix( 0L, nrow = dim(counts_predict)[1], ncol = dim(counts_predict)[2])
+  for (j in c(1:n.neigh)){
     cells = neighs[,j]
-    current.stat_predict = counts_predict[, cells]
-    return(current.stat_predict)
-  })
-  stat_predict = Reduce("+", stat_predict) / length(stat_predict)
+    stat_predict = stat_predict + counts_predict[, cells]
+  }
+  stat_predict = stat_predict / n.neigh
   stat_real = counts_predict[, rownames(neighs)]
 
   if (nrow(counts_predict) > 1){
