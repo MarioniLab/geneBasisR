@@ -114,7 +114,7 @@ genes = genes_stat$gene
 
 ## Cell type confusion matrix
 
-Cell type mapping for a single library can be computed separately using `get_celltype_mapping`. We also included plotting fucntion that returns heatmap for the confusion matrix: `plot_mapping_heatmap`.
+Cell type mapping for a single library can be computed separately using `get_celltype_mapping`. We also included plotting function that returns heatmap for the confusion matrix: `plot_mapping_heatmap`.
 
 
 ```{r celltype-mapping-confusion, fig.wide = TRUE,  fig.height=10, fig.cap="Cell type confusion matrix."}
@@ -135,7 +135,7 @@ We estimate the quality of the library using `evaluate_library`. In this example
 ```{r evaluation-stat}
 
 stat = evaluate_library(sce_mouseEmbryo, genes, genes.all = rownames(sce_mouseEmbryo), batch = "sample", library.size_type = "single",
-                        return.cell_score_stat = T, return.gene_score_stat = F, return.celltype_stat = F, verbose = F)
+                        return.cell_score_stat = T, return.gene_score_stat = F, return.celltype_stat = F, verbose = FALSE)
 
 ```
 
@@ -163,9 +163,9 @@ p
 
 ``` 
 
-We see that PGCs and blood progentiors in average have lower scores. This is consistent with observation from Fig. 2. 
+We see that PGCs and blood progenitors in average have lower scores. This is consistent with observation from Fig. 2. 
 
-To note, it is not particularly surprising since PGC and blood progenitors are very rare cell types, and our library size is only 10. Therefore we suggest that more genes should be included into the library to succefully resolve these cell types.
+To note, it is not particularly surprising since PGC and blood progenitors are very rare cell types, and our library size is only 10. Therefore we suggest that more genes should be included into the library to succesfully resolve these cell types.
 
 
 # Characterisation of library 
