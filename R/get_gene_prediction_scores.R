@@ -136,7 +136,7 @@ get_gene_correlation_scores = function(sce, genes, batch = NULL, n.neigh = 5, nP
     stat = do.call(rbind , stat)
   }
   else if (nrow(counts_predict) == 1){
-    stat = data.frame(gene = rownames(counts_predict)[1] , corr = cor(stat_real , stat_predict , method = method))
+    stat = data.frame(gene = rownames(counts_predict)[1] , corr = cor(as.numeric(stat_real) , as.numeric(stat_predict) , method = method))
   }
   stat$corr[is.na(stat$corr)] = eps
   stat$corr[stat$corr < eps] = eps
