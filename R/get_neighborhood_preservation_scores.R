@@ -84,8 +84,6 @@ get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, gen
 
 
   neighs.compare = .get_mapping(sce , genes = genes.selection, batch = NULL, n.neigh = n.neigh, nPC = nPC.selection)
-  neighs.compare = neighs.compare$cells_mapped
-
 
   counts = counts[order(rownames(counts)),]
   neighs.all = neighs.all[order(rownames(neighs.all)),]

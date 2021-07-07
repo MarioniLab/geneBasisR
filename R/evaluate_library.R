@@ -156,4 +156,3 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
   }
 }
 
-
