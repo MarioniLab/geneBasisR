@@ -13,7 +13,7 @@ get_neighborhood_preservation_scores(
   n.neigh = 5,
   nPC.all = 50,
   nPC.selection = NULL,
-  option = "approx",
+  option = "exact",
   ...
 )
 }
@@ -33,6 +33,8 @@ get_neighborhood_preservation_scores(
 \item{nPC.all}{Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.}
 
 \item{nPC.selection}{Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.selection=NULL (no PCA).}
+
+\item{option}{String specifying how average distance for each cell should be calculated. If = 'exact', all other cells are taken into account. If = 'approx', the random subset of 10000 cells will be used. 'exact' is default and 'approx' is recommended for big datasets.}
 
 \item{...}{Additional arguments}
 }
