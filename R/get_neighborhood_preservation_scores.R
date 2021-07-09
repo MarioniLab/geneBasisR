@@ -174,7 +174,8 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
         })
       }
       else if (option == "approx"){
-        cells_random = sample( rownames(counts) , min(10000, nrow(counts)) )
+        n_cells_random = round(nrow(counts)/10)
+        cells_random = sample( rownames(counts) , n_cells_random)
         mean_dist = sapply(rownames(counts), function(cell){
           out = mean(dista(t(counts[cell, ]), counts[setdiff(cells_random , cell) , ] ))
           return(out)
@@ -206,7 +207,8 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
         })
       }
       else if (option == "approx"){
-        cells_random = sample( rownames(counts) , min(10000, nrow(counts)) )
+        n_cells_random = round(nrow(counts)/10)
+        cells_random = sample( rownames(counts) , n_cells_random)
         mean_dist = sapply(rownames(counts), function(cell){
           out = mean(dista(t(counts[cell, ]), counts[setdiff(cells_random , cell) , ] ))
           return(out)
