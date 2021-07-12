@@ -32,7 +32,8 @@
 #' out = get_gene_prediction_scores(sce, genes.selection)
 #'
 get_gene_prediction_scores = function(sce, genes.selection, genes.all = rownames(sce) , batch = NULL, n.neigh = 5, nPC.all = 50 , nPC.selection = NULL,
-                                      genes.predict = genes.all, method = "spearman", corr_all.thresh = 0.25 , gene_stat_all = NULL, ...){
+                                      genes.predict = rownames(sce), method = "spearman", corr_all.thresh = 0.25 , gene_stat_all = NULL, ...){
+  genes.predict = intersect(genes.all, genes.predict)
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
     sce = .prepare_sce(sce)
@@ -119,26 +120,63 @@ get_gene_correlation_scores = function(sce, genes, batch = NULL, n.neigh = 5, nP
   eps = 0.00001
   neighs = .get_mapping(sce , genes = genes, batch = batch , n.neigh = n.neigh , nPC = nPC)
 
-  counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
-  stat_predict = matrix( 0L, nrow = dim(counts_predict)[1], ncol = dim(counts_predict)[2])
-  for (j in c(1:n.neigh)){
-    cells = neighs[,j]
-    stat_predict = stat_predict + counts_predict[, cells]
-  }
-  stat_predict = stat_predict / n.neigh
-  stat_real = counts_predict[, rownames(neighs)]
 
-  if (nrow(counts_predict) > 1){
-    stat = lapply(1:nrow(counts_predict) , function(i){
-      out = data.frame(gene = rownames(counts_predict)[i] , corr = cor(stat_real[i,] , stat_predict[i,] , method = method))
-      return(out)
-    })
-    stat = do.call(rbind , stat)
-  }
-  else if (nrow(counts_predict) == 1){
-    stat = data.frame(gene = rownames(counts_predict)[1] , corr = cor(as.numeric(stat_real) , as.numeric(stat_predict) , method = method))
-  }
-  stat$corr[is.na(stat$corr)] = eps
-  stat$corr[stat$corr < eps] = eps
-  return(stat)
+  res = tryCatch(
+    {
+      counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
+      stat_predict = matrix( 0L, nrow = dim(counts_predict)[1], ncol = dim(counts_predict)[2])
+      for (j in c(1:n.neigh)){
+        cells = neighs[,j]
+        stat_predict = stat_predict + counts_predict[, cells]
+      }
+      stat_predict = stat_predict / n.neigh
+      stat_real = counts_predict[, rownames(neighs)]
+
+      if (nrow(counts_predict) > 1){
+        stat = lapply(1:nrow(counts_predict) , function(i){
+          out = data.frame(gene = rownames(counts_predict)[i] , corr = cor(stat_real[i,] , stat_predict[i,] , method = method))
+          return(out)
+        })
+        stat = do.call(rbind , stat)
+      }
+      else if (nrow(counts_predict) == 1){
+        stat = data.frame(gene = rownames(counts_predict)[1] , corr = cor(as.numeric(stat_real) , as.numeric(stat_predict) , method = method))
+      }
+      stat$corr[is.na(stat$corr)] = eps
+      stat$corr[stat$corr < eps] = eps
+      stat
+      #return(stat)
+    },
+    error = function(dump){
+      #message("Count matrix is too big - we will be working with sparse matrices.")
+      counts_predict = logcounts(sce[genes.predict , ])
+      stat_predict = counts_predict
+      stat_predict[!stat_predict == 0] = 0
+
+      for (j in c(1:n.neigh)){
+        cells = neighs[,j]
+        stat_predict = stat_predict + counts_predict[, cells]
+      }
+      stat_predict = stat_predict / n.neigh
+      stat_real = counts_predict[, rownames(neighs)]
+      if (nrow(counts_predict) > 1){
+        stat = lapply(1:nrow(counts_predict) , function(i){
+          out = data.frame(gene = rownames(counts_predict)[i] , corr = cor(stat_real[i,] , stat_predict[i,] , method = method))
+          return(out)
+        })
+        stat = do.call(rbind , stat)
+      }
+      else if (nrow(counts_predict) == 1){
+        stat = data.frame(gene = rownames(counts_predict)[1] , corr = cor(as.numeric(stat_real) , as.numeric(stat_predict) , method = method))
+      }
+      stat$corr[is.na(stat$corr)] = eps
+      stat$corr[stat$corr < eps] = eps
+      return(stat)
+    },
+    error = function(dump){
+      message("Something went wrong: likely memory is exhausted or features you selected can not be used for pca. Try downsampling, smaller n.neigh or smaller nPC.")
+      return(NA)
+    }
+  )
+  return(res)
 }

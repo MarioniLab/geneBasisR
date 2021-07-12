@@ -12,7 +12,7 @@ get_gene_prediction_scores(
   n.neigh = 5,
   nPC.all = 50,
   nPC.selection = NULL,
-  genes.predict = genes.all,
+  genes.predict = rownames(sce),
   method = "spearman",
   corr_all.thresh = 0.25,
   gene_stat_all = NULL,
