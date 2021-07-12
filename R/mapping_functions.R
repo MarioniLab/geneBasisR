@@ -105,7 +105,6 @@
     if (cosine){
       logcounts(sce) = cosineNorm(logcounts(sce))
     }
-
     res = tryCatch(
       {
         counts = as.matrix( logcounts(sce))
@@ -139,14 +138,13 @@
         return(out)
       },
       error = function(dump){
-        message("Either memory is exhausted or features you selected can not be used for pca. Try downsampling, smaller n.neigh or smaller nPC.all.")
+        message("Something went wrong: likely memory is exhausted or features you selected can not be used for pca. Try downsampling, smaller n.neigh or smaller nPC.all.")
         return(NULL)
       }
     )
     return(res)
   }
 }
-
 
 
 #' @importFrom BiocNeighbors queryKNN
