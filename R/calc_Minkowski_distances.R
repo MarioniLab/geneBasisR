@@ -46,8 +46,6 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
     neighs = .initiate_random_mapping(sce , batch = batch , n.neigh = n.neigh)
   }
 
-  # try with matrix - runs faster but can cup out of memory ~quickly;
-  # if latter happens - run with dgCMatrix. This will be slower though.
   res = tryCatch(
     {
       counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
@@ -90,7 +88,7 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
       return(stat)
     },
     error = function(dump){
-      message("Memory exhausted. Try lower number of cells, lower n.neigh or lower number of genes.")
+      message("Something went wrong: likely memory is exhausted. Try lower number of cells, lower n.neigh or lower number of genes.")
       return(NA)
     }
   )
