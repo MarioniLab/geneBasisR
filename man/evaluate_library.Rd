@@ -10,6 +10,7 @@ evaluate_library(
   genes.all = rownames(sce),
   batch = NULL,
   n.neigh = 5,
+  nPC.all = 50,
   library.size_type = "single",
   n_genes.step = 10,
   return.cell_score_stat = T,
@@ -31,6 +32,8 @@ evaluate_library(
 \item{batch}{Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.}
 
 \item{n.neigh}{Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
+
+\item{nPC.all}{Scalar (or NULL if no PCA is to be applied) specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.}
 
 \item{library.size_type}{String identifying whether evaluation should be performed only on the whole inserted library (= 'single') or on a series of subsets of the library (= 'series'). Default library.size_type="single".}
 

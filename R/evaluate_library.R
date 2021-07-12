@@ -10,6 +10,7 @@
 #' @param genes.all Character vector specifying genes to be used for the construction of True kNN-graph.
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
 #' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
+#' @param nPC.all Scalar (or NULL if no PCA is to be applied) specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.
 #' @param library.size_type String identifying whether evaluation should be performed only on the whole inserted library (= 'single') or on a series of subsets of the library (= 'series'). Default library.size_type="single".
 #' @param n_genes.step In case library.size_type == "series", a scalar identifying the step of the grid for library subsets. Default n_genes.step=10.
 #' @param return.cell_score_stat Boolean identifying whether stat on cell neighborhood preservation score should be returned. Default return.cell_score_stat=TRUE.
@@ -35,7 +36,7 @@
 #' genes.selection = sample(rownames(sce) , 20)
 #' out = evaluate_library(sce, genes.selection)
 #'
-evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), batch = NULL, n.neigh = 5,
+evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), batch = NULL, n.neigh = 5, nPC.all = 50,
                             library.size_type = "single" , n_genes.step = 10,
                             return.cell_score_stat = T, return.gene_score_stat = T, return.celltype_stat = T, verbose = TRUE,
                             neighs.all_stat = NULL, gene_stat_all = NULL, ...){
@@ -71,7 +72,7 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
         out = .check_neighs.all_stat(neighs.all_stat)
       }
       else {
-        neighs.all_stat = suppressWarnings( get_neighs_all_stat(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh, ...) )
+        neighs.all_stat = suppressWarnings( get_neighs_all_stat(sce , genes.all = genes.all , batch = batch, n.neigh = n.neigh, nPC.all = nPC.all, ...) )
       }
       cell_score_stat = lapply(n_genes.grid, function(n_genes){
         current.stat = suppressWarnings( get_neighborhood_preservation_scores(sce, neighs.all_stat = neighs.all_stat,  genes.all = genes.all,
@@ -97,8 +98,9 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
         cat("Calculating gene prediction scores.\n")
       }
       if (is.null(gene_stat_all)){
-        gene_stat_all = suppressWarnings( get_gene_correlation_scores(sce, genes.all, batch = batch, n.neigh = n.neigh, ...) )
+        gene_stat_all = suppressWarnings( get_gene_correlation_scores(sce, genes.all, batch = batch, n.neigh = n.neigh, nPC = nPC.all, ...) )
         colnames(gene_stat_all) = c("gene" , "corr_all")
+
       }
       gene_score_stat = lapply(n_genes.grid, function(n_genes){
         current.stat = suppressWarnings( get_gene_prediction_scores(sce, genes.selection[1:n_genes], genes.all = genes.all, batch = batch,
