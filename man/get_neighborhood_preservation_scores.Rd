@@ -26,15 +26,15 @@ get_neighborhood_preservation_scores(
 
 \item{genes.selection}{String specifying genes to be used for construction of Selection kNN-graph.}
 
-\item{batch}{Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.}
+\item{batch}{Name of the field in colData(sce) specifying batch. Default batch=NULL if no batch is applied.}
 
-\item{n.neigh}{Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
+\item{n.neigh}{Positive integer > 1 specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
 
-\item{nPC.all}{Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.}
+\item{nPC.all}{Scalar specifying number of PCs to use for construction of True kNN-graph (or NULL, if no PCA to be applied). Default nPC.all=50.}
 
-\item{nPC.selection}{Scalar specifying number of PCs to use for construction of True kNN-graph. Default nPC.selection=NULL (no PCA).}
+\item{nPC.selection}{Scalar specifying number of PCs to use for construction of True kNN-graph (or NULL, if no PCA to be applied). Default nPC.selection=NULL (no PCA to be applied).}
 
-\item{option}{String specifying how average distance for each cell should be calculated. If = 'exact', all other cells are taken into account. If = 'approx', the random subset of 10000 cells will be used. 'exact' is default and 'approx' is recommended for big datasets.}
+\item{option}{String specifying how average distance for each cell should be calculated. If == 'exact', all other cells in the batch are taken into account. If == 'approx', the random subset of 10\% of the cells will be used. 'exact' is default, but 'approx' is faster and is recommended for big data sets.}
 
 \item{...}{Additional arguments}
 }
@@ -42,7 +42,7 @@ get_neighborhood_preservation_scores(
 data.frame, each row corresponds to cell from counts matrix, contains field cell_score = cell neighborhood preservation score
 }
 \description{
-Calculates cell neighborhood preservation scores by comparing neighbors from True and Selection k-NN graphs.
+Calculates cell neighborhood preservation scores by comparing distances to the neighbors from True and Selection k-NN graphs.
 }
 \examples{
 require(SingleCellExperiment)
