@@ -39,8 +39,19 @@ gene_search = function(sce , genes_base = NULL, n_genes_total , batch = NULL, n.
   args = c(as.list(environment()))
   out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes_base)
 
+  # get together genes to discard
+  if (!is.null(genes.discard_prefix)){
+    rownames.sce = rownames(sce)
+    idx = sapply(1:nrow(sce) , function(i) max(startsWith(rownames.sce[i] , genes.discard_prefix)))
+    idx = which(idx == 1)
+    genes.discard = unique(c(genes.discard , rownames.sce[idx]))
+  }
+
   if (n_genes_total >= nrow(sce)){
-    stop("Selected library size is bigger than number of genes in the counts matrix")
+    stop("Selected library size should be smaller than number of genes in the counts matrix.")
+  }
+  else if (n_genes_total >= length(setdiff(rownames(sce) , genes.discard))){
+    stop("Selected library size should be smaller than number of non-discarded genes in counts matrix. Reduce n_genes_total or list of genes to be discraded.")
   }
   else {
     if (verbose){
@@ -75,9 +86,14 @@ gene_search = function(sce , genes_base = NULL, n_genes_total , batch = NULL, n.
     while(length(genes_all) < n_genes_total){
       gene = .add_gene_to_current_selection(sce , stat_all, genes = genes_all , batch = batch , n.neigh = n.neigh, nPC = nPC.selection,
                                             p.minkowski = p.minkowski, genes.discard = genes.discard, genes.discard_prefix = genes.discard_prefix)
-      genes_all = c(genes_all , as.character(gene))
-      if (verbose){
-        cat(paste0("New gene is added: ", as.character(gene) , ". " , n_genes_total - length(genes_all) , " left.\n"))
+      if (!is.null(gene)){
+        genes_all = c(genes_all , as.character(gene))
+        if (verbose){
+          cat(paste0("New gene is added: ", as.character(gene) , ". " , n_genes_total - length(genes_all) , " left.\n"))
+        }
+      }
+      else {
+        break
       }
     }
     out = data.frame(rank = c(1:length(genes_all)) , gene = genes_all)
@@ -102,9 +118,15 @@ gene_search = function(sce , genes_base = NULL, n_genes_total , batch = NULL, n.
                                                   genes.predict = rownames(sce) , p.minkowski = p.minkowski,
                                                   genes.discard = genes.discard, genes.discard_prefix = genes.discard_prefix, check_args = FALSE) )
   stat_genes = stat_genes[!stat_genes$gene %in% genes , ]
-  stat_genes = merge(stat_genes , stat_all)
-  stat_genes$dist_diff = stat_genes$dist - stat_genes$dist_all
-  idx = which(stat_genes$dist_diff == max(stat_genes$dist_diff))
-  gene = stat_genes$gene[idx[1]]
-  return(gene)
+  if (nrow(stat_genes) >= 1){
+    stat_genes = merge(stat_genes , stat_all)
+    stat_genes$dist_diff = stat_genes$dist - stat_genes$dist_all
+    idx = which(stat_genes$dist_diff == max(stat_genes$dist_diff))
+    gene = stat_genes$gene[idx[1]]
+    return(gene)
+  }
+  else {
+    message("No genes are left to be added.")
+    return(NULL)
+  }
 }
