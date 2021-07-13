@@ -196,6 +196,8 @@
   out = .check_argument_correct(dots, "batch", .check_string_or_null, "Check batch - should be NULL or string")
   out = .check_argument_correct(dots, "genes", .check_string_or_null, "Check genes - should be NULL or character vector")
   out = .check_argument_correct(dots, "genes_base", .check_string_or_null, "Check genes_base - should be NULL or character vector")
+  out = .check_argument_correct(dots, "genes.discard", .check_string_or_null, "Check genes.discard - should be NULL or character vector")
+  out = .check_argument_correct(dots, "genes.discard_prefix", .check_string_or_null, "Check genes.discard_prefix - should be NULL or character vector")
   out = .check_argument_correct(dots, "genes_to_assess", is.character, "Check genes_to_assess - should be NULL or character vector")
   out = .check_argument_correct(dots, "genes.selection", is.character, "Check genes.selection - should be character vector")
   out = .check_argument_correct(dots, "genes.all", is.character, "Check genes.all - should be character vector")
