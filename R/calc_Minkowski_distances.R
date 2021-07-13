@@ -45,7 +45,6 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
   else {
     neighs = .initiate_random_mapping(sce , batch = batch , n.neigh = n.neigh)
   }
-
   res = tryCatch(
     {
       counts_predict = as.matrix(logcounts(sce[genes.predict , ]))

@@ -120,7 +120,6 @@ get_gene_correlation_scores = function(sce, genes, batch = NULL, n.neigh = 5, nP
   eps = 0.00001
   neighs = .get_mapping(sce , genes = genes, batch = batch , n.neigh = n.neigh , nPC = nPC)
 
-
   res = tryCatch(
     {
       counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
