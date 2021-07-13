@@ -13,6 +13,8 @@ gene_search(
   p.minkowski = 3,
   nPC.selection = NULL,
   nPC.all = 50,
+  genes.discard = NULL,
+  genes.discard_prefix = NULL,
   verbose = TRUE,
   stat_all = NULL
 )
@@ -33,6 +35,10 @@ gene_search(
 \item{nPC.selection}{Scalar specifying number of PCs to use for Selection Graphs. Default nPC=NULL.}
 
 \item{nPC.all}{Scalar specifying number of PCs to use for True Graph. Default nPC.all=50.}
+
+\item{genes.discard}{Character vector containing genes to be excluded from candidates (note that they still will be used for graphs construction. If you want to exclude them from graph construction as well, just discard them prior in sce object). Default = NULL and no genes will be discarded.}
+
+\item{genes.discard_prefix}{Character vector containing prefixes of genes to be excluded (e.g. Rpl for L ribosomal proteins. Note that they still will be used for graphs construction. If you want to exclude them from graph construction as well, just discard them prior in sce object). Default = NULL and no genes will be discarded.}
 
 \item{verbose}{Boolean identifying whether intermediate print outputs should be returned. Default verbose=TRUE.}
 

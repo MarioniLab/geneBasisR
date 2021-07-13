@@ -12,6 +12,8 @@ calc_Minkowski_distances(
   nPC = NULL,
   genes.predict = rownames(sce),
   p.minkowski = 3,
+  genes.discard = NULL,
+  genes.discard_prefix = NULL,
   ...
 )
 }
@@ -29,6 +31,10 @@ calc_Minkowski_distances(
 \item{genes.predict}{Character vector containing genes for which we want to calculate Minkowsky distances. Default genes.predict = rownames(sce).}
 
 \item{p.minkowski}{Order of Minkowski distance. Default p.minkowski=3.}
+
+\item{genes.discard}{Character vector containing genes to be excluded from candidates (note that they still will be used for graphs construction. If you want to exclude them from graph construction as well, just discard them prior in sce object). Default = NULL and no genes will be discarded.}
+
+\item{genes.discard_prefix}{Character vector containing prefixes of genes to be excluded (e.g. Rpl for L ribosomal proteins. Note that they still will be used for graphs construction. If you want to exclude them from graph construction as well, just discard them prior in sce object). Default = NULL and no genes will be discarded.}
 
 \item{...}{Additional arguments}
 }
