@@ -7,6 +7,7 @@
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
 #' @param genes.selection Character vector specifying genes (at least 2 genes) to be used for the construction of Selection kNN-graph.
+#' @param celltype.id Character specifying which field in colData(sce) should be used as celltype. Default celltype.id="celltype".
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
 #' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC.selection Positive integer (or NULL, if no PCA to be applied) specifying number of PCs to use for construction of True kNN-graph. Default nPC.selection=NULL.
@@ -31,18 +32,18 @@
 #' genes.selection = sample( rownames(sce) , 20)
 #' out = get_celltype_mapping(sce, genes.selection = genes.selection)
 #'
-get_celltype_mapping = function(sce , genes.selection , batch = NULL, n.neigh = 5 , nPC.selection = NULL, cosine = F, return.stat = T, which_genes_to_use = "all", ...){
+get_celltype_mapping = function(sce , genes.selection , celltype.id = "celltype", batch = NULL, n.neigh = 5 , nPC.selection = NULL, cosine = F, return.stat = T, which_genes_to_use = "all", ...){
 
   # checks that inputs are eligible
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
     sce = .prepare_sce(sce)
-    out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_celltype_in_sce(sce) & .check_genes_in_sce(sce , genes.selection)
+    out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.selection)
   }
   else {
     if (args[[which(names(args) == "check_args")]]){
       sce = .prepare_sce(sce)
-      out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_celltype_in_sce(sce) & .check_genes_in_sce(sce , genes.selection)
+      out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.selection)
     }
   }
   if (n.neigh > ncol(sce) - 1){
@@ -55,8 +56,9 @@ get_celltype_mapping = function(sce , genes.selection , batch = NULL, n.neigh = 
 
   # run mapping
   else {
+    sce = .update_sce_w_custom_celltype_id(sce , celltype.id = celltype.id)
     if (which_genes_to_use == "DE"){
-      markers = get_DE_genes(sce, check_args = FALSE, ...)
+      markers = get_DE_genes(sce, celltype.id = celltype.id, check_args = FALSE, ...)
       if (is.null(markers)){
         message("Consider set which_genes_to_use = 'all' or tune settings for DE testings.")
         return(NULL)

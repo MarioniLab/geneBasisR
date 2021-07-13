@@ -7,6 +7,7 @@
 get_celltype_mapping(
   sce,
   genes.selection,
+  celltype.id = "celltype",
   batch = NULL,
   n.neigh = 5,
   nPC.selection = NULL,
@@ -20,6 +21,8 @@ get_celltype_mapping(
 \item{sce}{SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).}
 
 \item{genes.selection}{Character vector specifying genes (at least 2 genes) to be used for the construction of Selection kNN-graph.}
+
+\item{celltype.id}{Character specifying which field in colData(sce) should be used as celltype. Default celltype.id="celltype".}
 
 \item{batch}{Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.}
 

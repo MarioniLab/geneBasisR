@@ -16,6 +16,7 @@
 #' @param return.cell_score_stat Boolean identifying whether stat on cell neighborhood preservation score should be returned. Default return.cell_score_stat=TRUE.
 #' @param return.gene_score_stat Boolean identifying whether stat on gene prediction score should be returned. Default return.gene_score_stat=TRUE.
 #' @param return.celltype_stat Boolean identifying whether stat on celltype mapping should be returned. Default return.celltype_stat=TRUE.
+#' @param celltype.id Character specifying which field in colData(sce) should be used as celltype. Default celltype.id="celltype".
 #' @param verbose Boolean identifying whether intermediate print outputs should be returned. Default verbose=TRUE.
 #' @param neighs.all_stat If not NULL (NULL is default), contains precomputed stat relevant for cell neighbourhood preservation score. Use geneBasisR::get_neighs_all_stat to calculate this.
 #' @param gene_stat_all If not NULL (NULL is default), contains precomputed stat relevant for gene prediction score. Use geneBasisR::get_gene_correlation_scores to calculate this.
@@ -38,14 +39,11 @@
 #'
 evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), batch = NULL, n.neigh = 5, nPC.all = 50,
                             library.size_type = "single" , n_genes.step = 10,
-                            return.cell_score_stat = T, return.gene_score_stat = T, return.celltype_stat = T, verbose = TRUE,
+                            return.cell_score_stat = T, return.gene_score_stat = T, return.celltype_stat = T, celltype.id = "celltype", verbose = TRUE,
                             neighs.all_stat = NULL, gene_stat_all = NULL, ...){
   sce = .prepare_sce(sce)
   args = c(as.list(environment()), list(...))
   out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_genes_in_sce(sce , genes.selection) & .check_genes_in_sce(sce, genes.all)
-  if (return.celltype_stat){
-    out = .check_celltype_in_sce(sce)
-  }
 
   if (library.size_type == "single"){
     n_genes.grid = c(length(genes.selection))
@@ -131,7 +129,7 @@ evaluate_library = function(sce, genes.selection, genes.all = rownames(sce), bat
         cat("Calculating accuracy of cell type mappings.\n")
       }
       celltype_stat = lapply(n_genes.grid, function(n_genes){
-        current.stat = get_celltype_mapping(sce , genes.selection[1:n_genes] , batch = batch, n.neigh = n.neigh, return.stat = T, check_args = FALSE, ...)
+        current.stat = get_celltype_mapping(sce , genes.selection[1:n_genes] , celltype.id = celltype.id, batch = batch, n.neigh = n.neigh, return.stat = T, check_args = FALSE, ...)
         if (!is.null(current.stat)){
           current.stat = current.stat$stat
           current.stat$n_genes = n_genes

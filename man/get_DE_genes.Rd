@@ -6,6 +6,7 @@
 \usage{
 get_DE_genes(
   sce,
+  celltype.id = "celltype",
   test.type = "binom",
   pval.type = "some",
   FDR.thresh = 0.01,
@@ -14,6 +15,8 @@ get_DE_genes(
 }
 \arguments{
 \item{sce}{SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).}
+
+\item{celltype.id}{Character specifying which field in colData(sce) shoyld be used as celltype. Default celltype.id="celltype".}
 
 \item{test.type}{String specifying which testing will be performed. Available options are the same as for scran::findMarkers, parameter test.use. Default test.type="binom".}
 

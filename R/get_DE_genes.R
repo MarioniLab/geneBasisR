@@ -5,6 +5,7 @@
 #' each row corresponds to cell type and gene which is found to be DE in this cell type (using designated FDR as a threshold for significance), FDR and summary.logFC.
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
+#' @param celltype.id Character specifying which field in colData(sce) shoyld be used as celltype. Default celltype.id="celltype".
 #' @param test.type String specifying which testing will be performed. Available options are the same as for scran::findMarkers, parameter test.use. Default test.type="binom".
 #' @param pval.type String specifying how p-values are combined. Available options are the same as for scran::findMarkers, parameter pval.type. Default pval.type="some".
 #' @param FDR.thresh Positive scalar specifying threshold for FDR. Default FDR=0.01.
@@ -26,7 +27,7 @@
 #' sce$celltype = as.character(sample.int(5, n_col, replace = TRUE))
 #' out = get_DE_genes(sce)
 #'
-get_DE_genes = function(sce , test.type = "binom", pval.type = "some", FDR.thresh = 0.01, ...){
+get_DE_genes = function(sce , celltype.id = "celltype", test.type = "binom", pval.type = "some", FDR.thresh = 0.01, ...){
   args = c(as.list(environment()) , list(...))
   if (!"check_args" %in% names(args)){
     sce = .prepare_sce(sce)
@@ -38,7 +39,7 @@ get_DE_genes = function(sce , test.type = "binom", pval.type = "some", FDR.thres
       out = .general_check_arguments(args) & .check_batch(sce , batch) & .check_celltype_in_sce(sce)
     }
   }
-
+  sce = .update_sce_w_custom_celltype_id(sce , celltype.id = celltype.id)
   sce$celltype = as.character(sce$celltype)
   markers = findMarkers(sce , groups=sce$celltype, direction = "up", pval.type=pval.type, test = test.type, assay.type = "logcounts")
   markers = lapply(1:length(markers) , function(i) {

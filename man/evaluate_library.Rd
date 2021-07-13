@@ -16,6 +16,7 @@ evaluate_library(
   return.cell_score_stat = T,
   return.gene_score_stat = T,
   return.celltype_stat = T,
+  celltype.id = "celltype",
   verbose = TRUE,
   neighs.all_stat = NULL,
   gene_stat_all = NULL,
@@ -44,6 +45,8 @@ evaluate_library(
 \item{return.gene_score_stat}{Boolean identifying whether stat on gene prediction score should be returned. Default return.gene_score_stat=TRUE.}
 
 \item{return.celltype_stat}{Boolean identifying whether stat on celltype mapping should be returned. Default return.celltype_stat=TRUE.}
+
+\item{celltype.id}{Character specifying which field in colData(sce) should be used as celltype. Default celltype.id="celltype".}
 
 \item{verbose}{Boolean identifying whether intermediate print outputs should be returned. Default verbose=TRUE.}
 
