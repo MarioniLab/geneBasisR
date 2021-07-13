@@ -13,6 +13,7 @@
 #' @return Reduced sce with prefiltered set of genes.
 #' @export
 #' @import SingleCellExperiment
+#' @importFrom gdata startsWith
 #'
 #' @examples
 #' require(SingleCellExperiment)
@@ -38,7 +39,8 @@ retain_informative_genes = function(sce, n = NULL, var.thresh = 0, select.hvgs =
     else {
       if (discard.mt){
         rownames.sce = rownames(sce)
-        idx = which(!grepl("mt-" , rownames.sce) & !grepl("MT-" , rownames.sce) & !grepl("Mt-" , rownames.sce))
+        idx = sapply(1:nrow(sce) , function(i) max(startsWith(rownames.sce[i] , c("mt-", "MT-", "Mt-"))))
+        idx = which(idx == 1)
         sce = sce[idx, ]
       }
     }
