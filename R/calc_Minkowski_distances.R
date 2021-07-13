@@ -59,51 +59,56 @@ calc_Minkowski_distances = function(sce , genes , batch = NULL , n.neigh = 5 , n
   }
   genes.predict = setdiff(genes.predict , genes.discard)
 
-  res = tryCatch(
-    {
-      counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
-      stat_predict = matrix( 0L, nrow = dim(counts_predict)[1], ncol = dim(counts_predict)[2])
-      for (j in c(1:n.neigh)){
-        cells = neighs[,j]
-        stat_predict = stat_predict + counts_predict[, cells]
-      }
-      stat_predict = stat_predict / n.neigh
-      stat_real = counts_predict[, rownames(neighs)]
-      stat = lapply(1:nrow(counts_predict) , function(i){
-        out = data.frame(dist = as.numeric(dist(rbind(stat_real[i,] , stat_predict[i,]) , method = "minkowski" , p = p.minkowski)))
-        return(out)
-      })
-      stat = do.call(rbind , stat)
-      stat$gene = as.character(rownames(counts_predict))
-      stat = stat[, c("gene", "dist")]
-      stat
-      #return(stat)
-    },
-    error = function(dump){
-      #message("Count matrix is too big - we will be working with sparse matrices.")
-      counts_predict = logcounts(sce[genes.predict , ])
-      stat_predict = counts_predict
-      stat_predict[!stat_predict == 0] = 0
+  if (length(genes.predict) > 1){
+    res = tryCatch(
+      {
+        counts_predict = as.matrix(logcounts(sce[genes.predict , ]))
+        stat_predict = matrix( 0L, nrow = dim(counts_predict)[1], ncol = dim(counts_predict)[2])
+        for (j in c(1:n.neigh)){
+          cells = neighs[,j]
+          stat_predict = stat_predict + counts_predict[, cells]
+        }
+        stat_predict = stat_predict / n.neigh
+        stat_real = counts_predict[, rownames(neighs)]
+        stat = lapply(1:nrow(counts_predict) , function(i){
+          out = data.frame(dist = as.numeric(dist(rbind(stat_real[i,] , stat_predict[i,]) , method = "minkowski" , p = p.minkowski)))
+          return(out)
+        })
+        stat = do.call(rbind , stat)
+        stat$gene = as.character(rownames(counts_predict))
+        stat = stat[, c("gene", "dist")]
+        stat
+        #return(stat)
+      },
+      error = function(dump){
+        #message("Count matrix is too big - we will be working with sparse matrices.")
+        counts_predict = logcounts(sce[genes.predict , ])
+        stat_predict = counts_predict
+        stat_predict[!stat_predict == 0] = 0
 
-      for (j in c(1:n.neigh)){
-        cells = neighs[,j]
-        stat_predict = stat_predict + counts_predict[, cells]
+        for (j in c(1:n.neigh)){
+          cells = neighs[,j]
+          stat_predict = stat_predict + counts_predict[, cells]
+        }
+        stat_predict = stat_predict / n.neigh
+        stat_real = counts_predict[, rownames(neighs)]
+        stat = lapply(1:nrow(counts_predict) , function(i){
+          out = data.frame(dist = as.numeric(dist(rbind(stat_real[i,] , stat_predict[i,]) , method = "minkowski" , p = p.minkowski)))
+          return(out)
+        })
+        stat = do.call(rbind , stat)
+        stat$gene = as.character(rownames(counts_predict))
+        stat = stat[, c("gene", "dist")]
+        return(stat)
+      },
+      error = function(dump){
+        message("Something went wrong: likely memory is exhausted. Try lower number of cells, lower n.neigh or lower number of genes.")
+        return(NA)
       }
-      stat_predict = stat_predict / n.neigh
-      stat_real = counts_predict[, rownames(neighs)]
-      stat = lapply(1:nrow(counts_predict) , function(i){
-        out = data.frame(dist = as.numeric(dist(rbind(stat_real[i,] , stat_predict[i,]) , method = "minkowski" , p = p.minkowski)))
-        return(out)
-      })
-      stat = do.call(rbind , stat)
-      stat$gene = as.character(rownames(counts_predict))
-      stat = stat[, c("gene", "dist")]
-      return(stat)
-    },
-    error = function(dump){
-      message("Something went wrong: likely memory is exhausted. Try lower number of cells, lower n.neigh or lower number of genes.")
-      return(NA)
-    }
-  )
-  return(res)
+    )
+    return(res)
+  }
+  else {
+    stop("Need at least 2 genes to be predicted. Try reducing the list of genes to be discraded.")
+  }
 }
