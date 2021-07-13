@@ -19,6 +19,7 @@ Imports:
     batchelor,
     BiocManager,
     BiocNeighbors,
+    gdata,
     ggcorrplot,
     ggplot2,
     ggpubr,
