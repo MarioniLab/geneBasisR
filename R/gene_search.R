@@ -21,7 +21,7 @@
 #'
 #' @return data.frame containing selected genes and corresponding ranks. In case genes_base are supplied, rank among them will be assigned based on the order they are supplied in the corresponding string.
 #' @export
-#'
+#' @importFrom gdata startsWith
 #' @examples
 #' require(SingleCellExperiment)
 #' n_row = 1000
