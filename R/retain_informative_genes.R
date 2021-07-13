@@ -40,7 +40,7 @@ retain_informative_genes = function(sce, n = NULL, var.thresh = 0, select.hvgs =
       if (discard.mt){
         rownames.sce = rownames(sce)
         idx = sapply(1:nrow(sce) , function(i) max(startsWith(rownames.sce[i] , c("mt-", "MT-", "Mt-"))))
-        idx = which(idx == 1)
+        idx = which(idx == 0)
         sce = sce[idx, ]
       }
     }
