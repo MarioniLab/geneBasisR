@@ -330,3 +330,19 @@
   }
   return(out)
 }
+
+
+
+.update_sce_w_custom_celltype_id = function(sce , celltype.id = "celltype"){
+  meta = as.data.frame(colData(sce))
+  if (!celltype.id %in% colnames(meta)){
+    stop("celltype.id should be one of the fields in colData(sce)")
+  }
+  else {
+    sce$celltype = meta[, celltype.id]
+    return(sce)
+  }
+}
+
+
+
