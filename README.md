@@ -2,13 +2,11 @@
 
 `geneBasisR` is a package that:
 
-a) selects an optimal targeted gene panel (based on scRNA-seq data) as a function of designated number of genes. 
+a. Selects an optimal targeted gene panel (based on scRNA-seq data) as a function of designated number of genes. 
 
-b) provides evaluation of any select gene panel on -cell type/-cell and -gene levels. 
+b. Provides evaluation of any select gene panel on -cell type/-cell and -gene levels. 
 
-For greater details on the method, please read our paper: .
-
-Also, explore vignette and tutorials to get a better grasp on the package and its functions.
+For greater details on the method, please read our paper: . Also, explore vignette and tutorials to get a better grasp on the package and its functions.
 
 ### Installation
 
@@ -18,9 +16,8 @@ library(devtools)
 devtools::install_github("MarioniLab/geneBasisR") 
 ```
 
-### Main usage
 
-#### Gene panel selection
+### Gene panel selection
 
 `gene_search` is the main function of the package and it selects the gene panel of designated size. The schematic below illustrates the steps of the algorithm.
 
@@ -32,11 +29,11 @@ Essential to specify arguments of `gene_search` are counts matrix (stored in Sin
 
 Requirements for scRNA-seq data format:
 
-a) SingleCellExperiment object, containing assay 'logcounts'. Henceforth this SingleCellExperiment object will be referred to as sce.
+a. SingleCellExperiment object, containing assay 'logcounts'. Henceforth this SingleCellExperiment object will be referred to as sce.
 
-b) Rownames of sce correspond to unique gene identifiers.
+b. Rownames of sce correspond to unique gene identifiers.
 
-c) If colData(sce) contains field 'cell', this field should correspond to unique identifiers of cell entries (if not, we use colnames(sce) for cell IDs instead).
+c. If colData(sce) contains field 'cell', this field should correspond to unique identifiers of cell entries (if not, we use colnames(sce) for cell IDs instead).
 
 Few notes:
 
@@ -61,11 +58,11 @@ genes = gene_search(sce, n_genes_total = 50)
 
 We evaluate gene panels on next levels:
 
-a) cell type: for each cell type, we estimate how often cells from the cell type are assigned with the correct cell type based on their neighbors in the 'selection' graph.
+- cell type: for each cell type, we estimate how often cells from the cell type are assigned with the correct cell type based on their neighbors in the 'selection' graph.
 
-b) cell: for each cell, we compare normalized distances between neighbors in 'true' and 'selection' graphs. 
+- cell: for each cell, we compare normalized distances between neighbors in 'true' and 'selection' graphs. 
 
-c) gene: for each gene, we assess imputation accuracy based on the average expression values across cell's neighbors in the 'selection' graph.
+- gene: for each gene, we assess imputation accuracy based on the average expression values across cell's neighbors in the 'selection' graph.
 
 The wraper function that performs evaluation is `evaluate_library` takes as inputs scRNA-seq data (as a SingleCellExperiment objects, using logcounts) and character vector of gene names, and estimates the quality of the selected library at cell type, cell and gene levels. 
 
