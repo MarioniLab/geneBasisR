@@ -7,7 +7,7 @@
 plot_umaps_w_counts(sce, genes, size = 0.25, ncol = NULL)
 }
 \arguments{
-\item{sce}{SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).}
+\item{sce}{SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay). Should contain field 'UMAP' in reducedDim slot, colnames = x and y.}
 
 \item{genes}{Character vector containing gene names for which to plot UMAPs.}
 
