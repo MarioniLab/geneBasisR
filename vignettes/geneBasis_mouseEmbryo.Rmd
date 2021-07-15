@@ -119,7 +119,7 @@ Cell type mapping for a single library can be computed separately using `get_cel
 
 ```{r celltype-mapping-confusion, fig.wide = TRUE,  fig.height=10, fig.cap="Cell type confusion matrix."}
 
-celltype_mapping = get_celltype_mapping(sce_mouseEmbryo , genes, batch = "sample", return.stat = F)
+celltype_mapping = get_celltype_mapping(sce_mouseEmbryo , genes.selection = genes, batch = "sample", return.stat = F)
 p = plot_mapping_heatmap(celltype_mapping$mapping, title = "Cell type confusion matrix")
 p
 
@@ -193,7 +193,7 @@ Let's look a bit more systematically into how cell type specific are expressions
 
 ```{r general-stat-heatmap-avg-expression, fig.wide = TRUE, fig.cap="Average expression per cell type."}
 
-p = plot_expression_heatmap(sce_mouseEmbryo, genes, value.type = "mean") 
+p = plot_expression_heatmap(sce_mouseEmbryo, genes = genes, value.type = "mean") 
 p 
 
 ``` 
