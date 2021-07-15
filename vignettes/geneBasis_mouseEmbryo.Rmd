@@ -194,9 +194,11 @@ We also select cell state marker - cell cycle gene Ube2c.
 
 ## UMAP-representation on how well data is preserved for the selected panel
 
-Let's compare UMAP plots when using whole transcriptome (already pre-saved) and using the selected panel (UMAP-coordinates can be calculated using `get_umap_coordinates`).
+Let's compare UMAP plots when using whole transcriptome and using the selected panel (UMAP-coordinates can be calculated using `get_umap_coordinates`).
 
-```{r comp-umaps, fig.wide = TRUE, fig.cap="Average expression per cell type."}
+For consistency, e will re-calculate UMAP coordinates for the whole transcriptome as well.
+
+```{r comp-umaps, fig.wide = TRUE, fig.cap="UMAP comparison while using all genes and the selection."}
 
 
 
