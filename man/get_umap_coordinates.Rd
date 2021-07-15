@@ -16,7 +16,7 @@ get_umap_coordinates(sce, genes, batch = NULL, nPC = length(genes) - 1)
 \item{nPC}{Scalar specifying number of PCs to use. Default = length(genes)-1}
 }
 \value{
-Return data.frame, where UMAP-coordinates are assigned as x and y.
+data.frame, where UMAP-coordinates are assigned as x and y.
 }
 \description{
 Function returns UMAP-coordinates if onle selected genes are used.
