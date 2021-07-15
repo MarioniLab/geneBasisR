@@ -37,7 +37,7 @@ library(ggpubr)
 
 `geneBasis` is an iterative greedy approach for gene selection. It strives a gene selection that will preserve transcriptional relationships between cells, represented as kNN-graphs.
 
-Here we exemplify how `geneBasis` can be utilized for library design (just main steps; for the extended workflow, covering various aspects of gene selection process, please see tutorials linked on GitHub). 
+Here we exemplify how `geneBasis` can be utilized for the design of targeted gene panels (just main steps; for the extended workflow, covering various aspects of gene selection process, please see tutorials here: https://github.com/MarioniLab/geneBasisR). 
 
 # Load data
 
@@ -93,9 +93,9 @@ p
 
 ```
 
-# Select library of size 10
+# Select gene panel of size 10
 
-To select library, use `gene_search`. 
+To select gene panel, use `gene_search`. 
 
 We use `sample` as batch identification. 
 
@@ -110,12 +110,13 @@ genes = genes_stat$gene
 
 ```
 
-# Evaluation of the library
+# Evaluation of the gene panel
 
 ## Cell type confusion matrix
 
-Cell type mapping for a single library can be computed separately using `get_celltype_mapping`. We also included plotting function that returns heatmap for the confusion matrix: `plot_mapping_heatmap`.
+Cell type mapping for a single gene panel can be computed separately using `get_celltype_mapping`. 
 
+We also included visualization function that returns heatmap for the confusion matrix: `plot_mapping_heatmap`.
 
 ```{r celltype-mapping-confusion, fig.wide = TRUE,  fig.height=10, fig.cap="Cell type confusion matrix."}
 
@@ -129,12 +130,13 @@ p
 
 Henceforth, to be less wordy, we refer to cell neighborhood preservation score as cell score; gene prediction score as gene score.
 
-We estimate the quality of the library using `evaluate_library`. In this example, we will only compute cell score (see extended tutorials for more in-depth analysis).
+We estimate the quality of the panel using `evaluate_library`. In this example, we will only compute cell score (see extended tutorials for more in-depth analysis).
 
 
 ```{r evaluation-stat}
 
-stat = evaluate_library(sce_mouseEmbryo, genes, genes.all = rownames(sce_mouseEmbryo), batch = "sample", library.size_type = "single",
+stat = evaluate_library(sce_mouseEmbryo, genes, genes.all = rownames(sce_mouseEmbryo), batch = "sample", 
+                        library.size_type = "single", celltype.id = "celltype",
                         return.cell_score_stat = T, return.gene_score_stat = F, return.celltype_stat = F, verbose = FALSE)
 
 ```
@@ -165,16 +167,19 @@ p
 
 We see that PGCs and blood progenitors in average have lower scores. This is consistent with observation from Fig. 2. 
 
-To note, it is not particularly surprising since PGC and blood progenitors are very rare cell types, and our library size is only 10. Therefore we suggest that more genes should be included into the library to succesfully resolve these cell types.
+To note, it is not particularly surprising since PGC and blood progenitors are very rare cell types, and our panel size is only 10. Therefore we suggest that more genes should be included into the panel to successfully resolve these cell types.
 
 
-# Characterisation of library 
+# Characterisation of the selected genes 
 
 Let's actually look into what genes we select.
 
 ## What are the genes we are selecting - visual inspection
 
-Let's plot UMAPs, colored by expression of the selected genes, to have an intuitive grasp of what kind of genes we select. UMAPs can be easily plotted with provided function `plot_umaps_w_counts`. 
+Let's plot UMAPs, colored by expression of the selected genes, to have an intuitive grasp of what kind of genes we select. UMAPs can be easily plotted with provided function `plot_umaps_w_counts`. Note that we require UMAP coordinates to be stored in reducedDim(sce) under the name 'UMAP', and colnames for the coordinates should be 'x' and 'y'. 
+
+If UMAPs are not provided, you can compute them using `get_umap_coordinates` and then store it in sce.
+
 
 ```{r umaps-selected-genes, fig.wide = TRUE, fig.height=9, fig.cap="UMAPs of selected genes."}
 
@@ -187,6 +192,48 @@ Overall we see that most of the genes are expressed in some transcriptional regi
 
 We also select cell state marker - cell cycle gene Ube2c.
 
+## UMAP-representation on how well data is preserved for the selected panel
+
+Let's compare UMAP plots when using whole transcriptome (already pre-saved) and using the selected panel (UMAP-coordinates can be calculated using `get_umap_coordinates`).
+
+```{r comp-umaps, fig.wide = TRUE, fig.cap="Average expression per cell type."}
+
+
+
+umaps_all = get_umap_coordinates(sce_mouseEmbryo, genes = rownames(sce_mouseEmbryo), batch = "sample", nPC = 50)
+colnames(umaps_all) = c("cell", "x_all", "y_all")
+
+umaps_selection = get_umap_coordinates(sce, genes = genes, batch = "sample")
+colnames(umaps_selection) = c("cell", "x_selection", "y_selection")
+
+umaps_combined = merge(umaps_all, umaps_selection)
+
+meta = as.data.frame(colData(sce_mouseEmbryo))
+meta = merge(meta, umaps_combined)
+
+# plot
+p1 = ggplot(meta , aes(x = x_all , y = y_all , col = celltype)) +
+  geom_point(size=1,alpha = .9) +
+  scale_color_manual(values = celltype_colors) +
+  theme_classic() +
+  labs(x = "UMAP-1" , y = "UMAP-2") +
+  ggtitle("All genes")
+p2 = ggplot(meta , aes(x = x_selection , y = y_selection , col = celltype)) +
+  geom_point(size=1,alpha = .9) +
+  scale_color_manual(values = celltype_colors) +
+  theme_classic() +
+  labs(x = "UMAP-1" , y = "UMAP-2") +
+  ggtitle("All genes")
+p = ggarrange(p1,p2,common.legend = T)
+p
+
+
+
+
+
+``` 
+
+
 ## Average expression across cell types and co-expression 
 
 Let's look a bit more systematically into how cell type specific are expressions of the selected genes.
@@ -198,9 +245,19 @@ p
 
 ``` 
 
+Also, let's look in overall co-expression between selected genes.
+
+```{r general-stat-coexpression, fig.wide = TRUE, fig.cap="Co-expression of the selected genes."}
+
+p = plot_coexpression(sce_mouseEmbryo, genes = genes) 
+p 
+
+``` 
+
+
 ## Estimation of redundancy 
 
-Finally, let's estimate the redundancy of the library on gene/celltype level: for each gene, we temporarily remove it from the library and compare  the accuracies of cell type mappings with and without removed gene (per cell type). 
+Finally, let's estimate the redundancy of the gene panel on gene/celltype level: for each gene, we temporarily remove it from the panel and compare the accuracy of cell type mappings with and without removed gene (per cell type). 
 
 The function to get this stat is `get_redundancy_stat`. We also provide the function that will plot the results as a heatmap: `plot_redundancy_stat`. Red corresponds to cases where cell type mapping accuracy drops with the removal of the gene, green - where cell type mapping accuracy increases with the removal of the gene (that can occur for cell type that were not well mapped to begin with).
 
@@ -215,7 +272,7 @@ p
 
 From this analysis, we can conclude the particular relevance of some genes for some cell types e.g. Plvap for Endothelium, Acta2 for Cardiomyocytes, etc.
 
-This line of analysis also allows to estimate overall redundancy of the library which is useful when planning seq-FISH experiments.
+This line of analysis also allows to estimate overall redundancy of the panel which is useful when planning -FISH experiments.
 
 
 # Session Info
