@@ -37,9 +37,9 @@ c. If colData(sce) contains field 'cell', this field should correspond to unique
 
 Few notes:
 
-a) If the initial gene screening (e.g. HVG selection) has not been performed, use `retain_informative_genes` prior to `gene_search`.
+- If the initial gene screening (e.g. HVG selection) has not been performed, use `retain_informative_genes` prior to `gene_search`.
 
-b) `gene_search` works in iterative fashion and adds genes one by one. The practicality of this is if the initially chosen n_genes_total returned the selection that seems to be insufficient, the selected panel can be plugged back in (specified *genes_base*) to avoid the repetition and discover additional to the selection genes.
+- `gene_search` works in iterative fashion and adds genes one by one. The practicality of this is if the initially chosen n_genes_total returned the selection that seems to be insufficient, the selected panel can be plugged back in (specified *genes_base*) to avoid the repetition and discover additional to the selection genes.
 
 
 ```
@@ -68,9 +68,9 @@ The wrapper function that performs evaluation is `evaluate_library` takes as inp
 
 Few notes:
 
-a) This function is independent from `gene_search` meaning that you can plug any selection you want and assess how ~complete it is.
+- This function is independent from `gene_search` meaning that you can plug any selection you want and assess how ~complete it is.
 
-b) For assessment of accuracy of cell type mappings, you need to provide cell type labels. We require that it is stored in colData(sce). The default name for the field is 'celltype' - in case, it differes, please specify it in the argument *celltype.id*.
+- For assessment of accuracy of cell type mappings, you need to provide cell type labels. We require that it is stored in colData(sce). The default name for the field is 'celltype' - in case, it differes, please specify it in the argument *celltype.id*.
 
 
 ### Tutorials
