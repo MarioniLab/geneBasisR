@@ -205,7 +205,7 @@ For consistency, e will re-calculate UMAP coordinates for the whole transcriptom
 umaps_all = get_umap_coordinates(sce_mouseEmbryo, genes = rownames(sce_mouseEmbryo), batch = "sample", nPC = 50)
 colnames(umaps_all) = c("cell", "x_all", "y_all")
 
-umaps_selection = get_umap_coordinates(sce, genes = genes, batch = "sample")
+umaps_selection = get_umap_coordinates(sce_mouseEmbryo, genes = genes, batch = "sample")
 colnames(umaps_selection) = c("cell", "x_selection", "y_selection")
 
 umaps_combined = merge(umaps_all, umaps_selection)
@@ -228,8 +228,6 @@ p2 = ggplot(meta , aes(x = x_selection , y = y_selection , col = celltype)) +
   ggtitle("All genes")
 p = ggarrange(p1,p2,common.legend = T)
 p
-
-
 
 
 
