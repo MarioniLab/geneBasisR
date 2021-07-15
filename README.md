@@ -54,7 +54,7 @@ genes = gene_search(sce, n_genes_total = 50)
 
 ```
 
-#### Gene panel evaluation
+### Gene panel evaluation
 
 We evaluate gene panels on next levels:
 
@@ -79,7 +79,7 @@ Few notes:
 [Vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/b692ca1939937535204ee55a34ecc6ab3f9b2e41/geneBasis_mouseEmbryo.html)
 
 
-**Additional vignettes for further exploration of the package:**
+**Additional tutorials for further exploration of the package:**
 
 2. Extended version of in-built vignette where we provide further suggestions how to proceed with detailed evaluation of the selected gene panels: [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/eb746577190c2326e311a1289eb8f779dd4f9e9f/geneBasis_mouseEmbryo_extended.html)
 
