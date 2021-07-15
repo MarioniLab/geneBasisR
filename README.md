@@ -1,13 +1,14 @@
 # geneBasisR
 
-`geneBasis` is an approach to select an optimal gene library (based on scRNA-seq data) as a function of designated number of genes. 
-Essentially, we attempt to identify all sources of heterogeneity driving transcriptional relationships between cells, represented in the form of k-NN graph. For greater details on the method, read our paper. 
+`geneBasisR` is a package that:
 
+a) selects an optimal targeted gene panel (based on scRNA-seq data) as a function of designated number of genes. 
 
-<p align="center">
-  <img src="geneBasis_cartoon.png" width="500">
-</p>
+b) provides evaluation of any select gene panel on -cell type/-cell and -gene levels. 
 
+For greater details on the method, please read our paper: .
+
+Also, explore vignette and tutorials to get a better grasp on the package and its functions.
 
 ### Installation
 
@@ -19,9 +20,15 @@ devtools::install_github("MarioniLab/geneBasisR")
 
 ### Main usage
 
-Main functions of the package are `gene_search` and `evaluate_library`.
+#### Gene panel selection
 
-1. `gene_search` takes as inputs scRNA-seq data and number of genes to select.
+`gene_search` is the main function of the package and it selects the gene panel of designated size. The schematic below illustrates the steps of the algorithm.
+
+<p align="center">
+  <img src="geneBasis_cartoon.png" width="500">
+</p>
+
+Essential to specify arguments of `gene_search` are counts matrix (stored in SingleCellExperiment object or henceforth *sce*) and *n_genes_total* specifying the size of the panel. 
 
 Requirements for scRNA-seq data format:
 
@@ -29,12 +36,44 @@ a) SingleCellExperiment object, containing assay 'logcounts'. Henceforth this Si
 
 b) Rownames of sce correspond to unique gene identifiers.
 
-c) If colData(sce) contains field 'cell', this field should correspond to unique identifiers of cell entries (if not, we use colnames(sce) instead).
+c) If colData(sce) contains field 'cell', this field should correspond to unique identifiers of cell entries (if not, we use colnames(sce) for cell IDs instead).
 
-2. `evaluate_library` takes as inputs scRNA-seq data (as a SingleCellExperiment objects, using logcounts) and charcter vector of gene names, and estimates the quality of the selected library at cell type, cell and gene levels. Note that this is independent from `gene_search` meaning that you can plug any selection you want and assess how ~complete it is.
+Few notes:
+
+a) If the initial gene screening (e.g. HVG selection) has not been performed, use `retain_informative_genes` prior to `gene_search`.
+
+b) `gene_search` works in iterative fashion and adds genes one by one. The practicality of this is if the initially chosen n_genes_total returned the selection that seems to be insufficient, the selected panel can be plugged back in (in the variable *genes_base*) to avoid the repetition and discover additional to the selection genes.
 
 
-Explore vignette and tutorials to get a grasp on the package and its functions.
+```
+library(geneBasisR)
+
+# sce - SingleCellExperiment object, wehre normalized counts stored in 'logcounts' assay
+# discard definetely uninteresting genes
+sce = retain_informative_genes(sce)
+
+# run gene selection
+genes = gene_search(sce, n_genes_total = 50)
+
+```
+
+#### Gene panel evaluation
+
+We evaluate gene panels on next levels:
+
+a) cell type: for each cell type, we estimate how often cells from the cell type are assigned with the correct cell type based on their neighbors in the 'selection' graph.
+
+b) cell: for each cell, we compare normalized distances between neighbors in 'true' and 'selection' graphs. 
+
+c) gene: for each gene, we assess imputation accuracy based on the average expression values across cell's neighbors in the 'selection' graph.
+
+The wraper function that performs evaluation is `evaluate_library` takes as inputs scRNA-seq data (as a SingleCellExperiment objects, using logcounts) and character vector of gene names, and estimates the quality of the selected library at cell type, cell and gene levels. 
+
+Few notes:
+
+a) This function is independent from `gene_search` meaning that you can plug any selection you want and assess how ~complete it is.
+
+b) For assessment of accuracy of cell type mappings, you need to provide cell type labels. We require that it is stored in colData(sce). The default name for the field is 'celltype' - in case, it differes, please specify it in the argument *celltype.id*.
 
 
 ### Tutorials
