@@ -75,11 +75,15 @@ Few notes:
 
 ### Tutorials
 
-1. [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/ef2d83ae4eaf607c447037dc8981b18d4e7821af/geneBasis_mouseEmbryo_extended.html)
+In-built vignette provides the main work-flow to select and evaluate gene panel for mouse embryo. Additionally, it displays visualization functions to provide further insights of the selected panels and, finally, displays how to compute cell type mapping redundancy for the selected panel.
 
-2. Add-on: illustration of **geneBasis** within an individual cell type + suggestion for how to pre-select relevant genes:
+Additional vignettes for further exploration of the package:
+
+1. Extended version of in-built vignette where we provide further suggestions how to proceed with detailed evaluation of the selected gene panels: [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/ef2d83ae4eaf607c447037dc8981b18d4e7821af/geneBasis_mouseEmbryo_extended.html)
+
+2. Illustration of performance of **geneBasis** within an individual cell type + suggestion (functional) how to pre-select relevant for the cell type genes:
 [Vignette of library design within brain cells, mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/03c70e494ae2f36136f6f5cfefdb60e7d5f76fe4/geneBasis_mouseEmbryo_within_celltype.html)
 
-3. [Vignette of library design for spleen dataset](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/ef2d83ae4eaf607c447037dc8981b18d4e7821af/geneBasis_spleen.html) . Here we introduce how to create working sce object from raw .txt data and introduce a workflow to compare two independent selections.
+3. Here we introduce how to create correct sce object from raw .txt data (exemplified for spleen) and introduce a workflow to compare two independent selections. [Vignette of library design for spleen dataset](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/ef2d83ae4eaf607c447037dc8981b18d4e7821af/geneBasis_spleen.html)
 
 
