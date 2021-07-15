@@ -119,10 +119,10 @@ plot_expression_heatmap = function(sce , celltype.id = "celltype", genes , value
   stat$gene = factor(stat$gene , levels = genes)
   p <- ggplot(data=stat , aes(x = celltype , y = gene , fill = value)) +
     geom_tile() +
-    scale_fill_viridis(discrete = F) +
+    scale_fill_viridis(discrete = F, name = value.type) +
     theme_classic() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
-    theme(legend.position = "none") +
+    #theme(legend.position = "none") +
     coord_flip()
   return(p)
 }
