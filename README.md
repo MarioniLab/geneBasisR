@@ -75,15 +75,17 @@ Few notes:
 
 ### Tutorials
 
-In-built vignette provides the main work-flow to select and evaluate gene panel for mouse embryo. Additionally, it displays visualization functions to provide further insights of the selected panels and, finally, displays how to compute cell type mapping redundancy for the selected panel.
+1. In-built vignette provides the main workflow to select and evaluate gene panel for mouse embryo. Additionally, it displays visualization functions to provide further insights of the selected panels and, finally, displays how to compute cell type mapping redundancy for the selected panel. Also can be assessed via link below:
+[Vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/b692ca1939937535204ee55a34ecc6ab3f9b2e41/geneBasis_mouseEmbryo.html)
 
-Additional vignettes for further exploration of the package:
 
-1. Extended version of in-built vignette where we provide further suggestions how to proceed with detailed evaluation of the selected gene panels: [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/ef2d83ae4eaf607c447037dc8981b18d4e7821af/geneBasis_mouseEmbryo_extended.html)
+**Additional vignettes for further exploration of the package:**
 
-2. Illustration of performance of **geneBasis** within an individual cell type + suggestion (functional) how to pre-select relevant for the cell type genes:
-[Vignette of library design within brain cells, mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/03c70e494ae2f36136f6f5cfefdb60e7d5f76fe4/geneBasis_mouseEmbryo_within_celltype.html)
+2. Extended version of in-built vignette where we provide further suggestions how to proceed with detailed evaluation of the selected gene panels: [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/eb746577190c2326e311a1289eb8f779dd4f9e9f/geneBasis_mouseEmbryo_extended.html)
 
-3. Here we introduce how to create correct sce object from raw .txt data (exemplified for spleen) and introduce a workflow to compare two independent selections. [Vignette of library design for spleen dataset](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/ef2d83ae4eaf607c447037dc8981b18d4e7821af/geneBasis_spleen.html)
+3. Illustration of performance of **geneBasis** within an individual cell type + suggestion (functional) how to pre-select relevant for the cell type genes:
+[Vignette of library design within brain cells, mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/eb746577190c2326e311a1289eb8f779dd4f9e9f/geneBasis_mouseEmbryo_within_celltype.html)
+
+4. Here we introduce how to create correct sce object from raw .txt data (exemplified for spleen) and introduce a gene panel evaluation workflow to compare two independent selections. [Vignette of library design for spleen dataset](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/055b5e181c5cbe99f7aa0c3f655c38cd06ac942e/geneBasis_spleen.html)
 
 
