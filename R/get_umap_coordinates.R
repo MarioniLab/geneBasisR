@@ -48,6 +48,6 @@ get_umap_coordinates = function(sce, genes, batch = NULL, nPC = length(genes) - 
   rownames(umaps) = rownames(counts)
   colnames(umaps) = c("x" , "y")
   umaps = rownames_to_column(umaps, var = "cell")
-  return(counts)
+  return(umaps)
 }
 
