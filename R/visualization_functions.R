@@ -54,7 +54,7 @@ plot_mapping_heatmap = function(mapping , levels = unique(mapping$celltype) , ti
 
 #' plot_umaps_w_counts
 #'
-#' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
+#' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay). Should contain field 'UMAP' in reducedDim slot, colnames = x and y.
 #' @param genes Character vector containing gene names for which to plot UMAPs.
 #' @param size Size of dots for geom_point
 #' @param ncol Positive integer specifying number of columns for ggarrange
@@ -92,6 +92,7 @@ plot_umaps_w_counts = function(sce , genes, size = .25, ncol = NULL){
 #' plot_expression_heatmap
 #'
 #' @param sce SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).
+#' @param celltype.id Character specifying which field in colData(sce) should be used as celltype. Default celltype.id="celltype".
 #' @param genes Character vector containing gene names.
 #' @param value.type String specifying whether to plot average expression (= "mean") or fraction of cells with non-zero counts(= "frac").
 #'
@@ -99,8 +100,9 @@ plot_umaps_w_counts = function(sce , genes, size = .25, ncol = NULL){
 #' @export
 #' @import ggpubr ggplot2 viridis SingleCellExperiment
 #'
-plot_expression_heatmap = function(sce , genes , value.type){
+plot_expression_heatmap = function(sce , celltype.id = "celltype", genes , value.type){
   sce = sce[genes, ]
+  sce = .update_sce_w_custom_celltype_id(sce , celltype.id = celltype.id)
   stat = lapply(unique(sce$celltype) , function(celltype){
     current.sce = sce[, sce$celltype == celltype]
     current.counts = as.matrix( assay(current.sce, "logcounts" ))
@@ -150,5 +152,11 @@ plot_redundancy_stat = function(redundancy_stat, celltypes = unique(redundancy_s
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
     labs(x = "Gene" , y = "Celltype")
   return(p)
-
 }
+
+
+
+
+
+
+

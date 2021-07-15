@@ -4,10 +4,12 @@
 \alias{plot_expression_heatmap}
 \title{plot_expression_heatmap}
 \usage{
-plot_expression_heatmap(sce, genes, value.type)
+plot_expression_heatmap(sce, celltype.id = "celltype", genes, value.type)
 }
 \arguments{
 \item{sce}{SingleCellExperiment object containing gene counts matrix (stored in 'logcounts' assay).}
+
+\item{celltype.id}{Character specifying which field in colData(sce) should be used as celltype. Default celltype.id="celltype".}
 
 \item{genes}{Character vector containing gene names.}
 
