@@ -222,5 +222,33 @@ test_that("Wrong input, p.minkowski", {
                "Check p.minkowski - should be positive integer",
                fixed=TRUE
   )
+})
 
+
+
+test_that("Wrong input, genes.discard", {
+  # genes.discard - character
+  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct) , genes.discard = c(1,4)),
+               "Check genes.discard - should be NULL or character vector",
+               fixed=TRUE
+  )
+  # genes.discard_prefix - character
+  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct) , genes.discard_prefix = c(1,4)),
+               "Check genes.discard_prefix - should be NULL or character vector",
+               fixed=TRUE
+  )
+})
+
+
+
+test_that("Calc mink distance won't work if genes.predict < 2", {
+  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct) , genes.discard = c("1","2","3","4")),
+               "Need at least 2 genes to be predicted. Try reducing the list of genes to be discraded.",
+               fixed=TRUE
+  )
+  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct) , genes.discard = c("1","2","3")),
+               NA)
+
+  expect_error(calc_Minkowski_distances(sce_correct, genes = rownames(sce_correct) , genes.discard = c("1","2","3","6")),
+               NA)
 })

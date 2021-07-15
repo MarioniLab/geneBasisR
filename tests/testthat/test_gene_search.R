@@ -53,10 +53,15 @@ test_that("Wrong input gives errors", {
 
   # n_genes_total should be bigger than nrow(sce)
   expect_error(gene_search(sce_1, n_genes_total = 4, n.neigh = 2),
-               "Selected library size is bigger than number of genes in the counts matrix",
+               "Selected library size should be smaller than number of genes in the counts matrix.",
                fixed=TRUE
   )
 
+  # n_genes_total should be bigger than retained genes
+  expect_error(gene_search(sce_1, n_genes_total = 3, n.neigh = 2, genes.discard = "1"),
+               "Selected library size should be smaller than number of non-discarded genes in counts matrix. Reduce n_genes_total or list of genes to be discraded.",
+               fixed=TRUE
+  )
 })
 
 
@@ -64,6 +69,9 @@ test_that("Return of the correct output", {
   out = gene_search(sce_1, stat_all = stat_all_1 , n_genes_total = 1, n.neigh = 2, nPC.all = NULL)
   expect_identical(out$gene, "2")
 })
+
+
+
 
 
 

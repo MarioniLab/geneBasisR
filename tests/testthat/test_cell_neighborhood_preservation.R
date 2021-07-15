@@ -293,7 +293,7 @@ test_that("neighs.all_stat is of correct format", {
                NA
   )
   # neighs.all_stat can be calculated w no errors
-  neighs.all_stat = get_neighs_all_stat(sce_correct_w_batch , batch = "batch", option = "approx")
+  neighs.all_stat = get_neighs_all_stat(sce_correct_w_batch , batch = "batch", option = "approx", n.neigh = 2)
   expect_error(get_neighborhood_preservation_scores(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2, batch = "batch",
                                           neighs.all_stat = neighs.all_stat),
                NA
@@ -306,7 +306,7 @@ test_that("neighs.all_stat is of correct format", {
                NA
   )
   # neighs.all_stat can be calculated w no errors
-  neighs.all_stat = get_neighs_all_stat(sce_correct_w_batch , batch = "batch", option = "exact")
+  neighs.all_stat = get_neighs_all_stat(sce_correct_w_batch , batch = "batch", option = "exact", n.neigh = 2)
   expect_error(get_neighborhood_preservation_scores(sce_correct_w_batch, genes.selection = as.character(c(2)), n.neigh = 2, batch = "batch",
                                                     neighs.all_stat = neighs.all_stat),
                NA

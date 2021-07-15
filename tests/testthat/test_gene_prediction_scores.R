@@ -269,11 +269,11 @@ test_that("Wrong input, genes.predict", {
                "Check genes.predict - should be character vector",
                fixed=TRUE
   )
-  # genes.predict should be a subset of rownames in sce_correct
-  expect_error(get_gene_prediction_scores(sce_correct, genes.selection = rownames(sce_correct) , genes.predict = as.character(c(1,2,3,6))),
-               "Some gene names are missing from SCE.",
-               fixed=TRUE
-  )
+  # # genes.predict should be a subset of rownames in sce_correct
+  # expect_error(get_gene_prediction_scores(sce_correct, genes.selection = rownames(sce_correct) , genes.predict = as.character(c(1,2,3,6))),
+  #              "Some gene names are missing from SCE.",
+  #              fixed=TRUE
+  # )
   # genes.predict should be a subset of rownames in sce_correct
   expect_error(get_gene_prediction_scores(sce_correct, genes.selection = rownames(sce_correct) , genes.all = as.character(c(1:5)) , genes.predict = as.character(c(4,5))),
                NA

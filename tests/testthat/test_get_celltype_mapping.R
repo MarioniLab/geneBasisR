@@ -146,9 +146,15 @@ test_that("Wrong input, sce", {
   )
   # sce should contain field celltype
   expect_error(get_celltype_mapping(sce_no_celltype_field, genes.selection = rownames(sce_no_celltype_field)),
-               "'celltype' field should be in colData(sce)",
+               "celltype.id should be one of the fields in colData(sce)",
                fixed=TRUE
   )
+  # sce should contain field celltype
+  expect_error(get_celltype_mapping(sce_correct, genes.selection = rownames(sce_correct), celltype.id = "Celltype"),
+               "celltype.id should be one of the fields in colData(sce)",
+               fixed=TRUE
+  )
+
 })
 
 
