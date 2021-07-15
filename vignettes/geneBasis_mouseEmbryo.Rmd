@@ -200,8 +200,6 @@ For consistency, e will re-calculate UMAP coordinates for the whole transcriptom
 
 ```{r comp-umaps, fig.wide = TRUE, fig.cap="UMAP comparison while using all genes and the selection."}
 
-
-
 umaps_all = get_umap_coordinates(sce_mouseEmbryo, genes = rownames(sce_mouseEmbryo), batch = "sample", nPC = 50)
 colnames(umaps_all) = c("cell", "x_all", "y_all")
 
