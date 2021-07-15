@@ -12,7 +12,7 @@
 #' @export
 #' @importFrom uwot umap
 #' @importFrom irlba prcomp_irlba
-#' @importFrom batchelor multiBatchPCA
+#' @import batchelor
 #' @importFrom tibble rownames_to_column
 #'
 #' @examples
@@ -26,6 +26,7 @@
 #' out = get_umap_coordinates(sce, genes = rownames(sce)[1:10])
 #'
 get_umap_coordinates = function(sce, genes, batch = NULL, nPC = length(genes) - 1){
+  set.seed(32)
   sce = sce[genes, ]
   counts = as.matrix( logcounts(sce))
   meta = as.data.frame(colData(sce))
