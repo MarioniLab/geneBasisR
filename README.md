@@ -64,7 +64,7 @@ We evaluate gene panels on next levels:
 
 - gene: for each gene, we assess imputation accuracy based on the average expression values across cell's neighbors in the 'selection' graph.
 
-The wraper function that performs evaluation is `evaluate_library` takes as inputs scRNA-seq data (as a SingleCellExperiment objects, using logcounts) and character vector of gene names.
+The wrapper function that performs evaluation is `evaluate_library` takes as inputs scRNA-seq data (as a SingleCellExperiment objects, using logcounts) and character vector of gene names.
 
 Few notes:
 
