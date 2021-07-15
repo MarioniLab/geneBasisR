@@ -2,9 +2,9 @@
 
 `geneBasisR` is a package that:
 
-a. Selects an optimal targeted gene panel (based on scRNA-seq data) as a function of designated number of genes. 
+- Selects an optimal targeted gene panel (based on scRNA-seq data) as a function of designated number of genes. 
 
-b. Provides evaluation of any selected gene panel on -cell type/-cell and -gene levels. 
+- Provides evaluation of any selected gene panel on -cell type/-cell and -gene levels. 
 
 For greater details on the method, please read our paper: . Also, explore vignette and tutorials to get a better grasp on the package and its functions.
 
@@ -29,11 +29,11 @@ Essential to specify arguments of `gene_search` are counts matrix (stored in Sin
 
 Requirements for scRNA-seq data format:
 
-a. SingleCellExperiment object, containing assay 'logcounts'. Henceforth this SingleCellExperiment object will be referred to as sce.
+- SingleCellExperiment object, containing assay 'logcounts'. Henceforth this SingleCellExperiment object will be referred to as sce.
 
-b. Rownames of sce correspond to unique gene identifiers.
+- Rownames of sce correspond to unique gene identifiers.
 
-c. If colData(sce) contains field 'cell', this field should correspond to unique identifiers of cell entries (if not, we use colnames(sce) for cell IDs instead).
+- If colData(sce) contains field 'cell', this field should correspond to unique identifiers of cell entries (if not, we use colnames(sce) for cell IDs instead).
 
 Few notes:
 
