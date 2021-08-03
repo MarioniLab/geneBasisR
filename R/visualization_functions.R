@@ -64,7 +64,7 @@ plot_mapping_heatmap = function(mapping , levels = unique(mapping$celltype) , ti
 #'
 plot_umaps_w_counts = function(sce , genes, size = .25, ncol = NULL){
   # SCE should contain reducedDim = UMAP, which contains 2 columns: x and y
-  umaps = as.data.frame(reducedDim(sce , "umap"))
+  umaps = as.data.frame(reducedDim(sce , "UMAP"))
   umaps = rownames_to_column(umaps, var = "cell")
   plots = lapply(genes, function(gene){
     counts = data.frame(cell = colnames(sce) , counts = as.numeric(logcounts(sce)[gene , ]))
