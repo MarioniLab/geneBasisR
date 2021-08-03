@@ -64,8 +64,11 @@
       {
         counts = t(as.matrix(logcounts(sce)))
         if (!is.null(nPC)){
-          pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
-          counts = pcs$x
+          n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))
+          if (n > 2){
+            pcs = suppressWarnings( prcomp_irlba(counts , n = n ) )
+            counts = pcs$x
+          }
         }
         rownames(counts) = colnames(sce)
         out = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh)
@@ -76,8 +79,11 @@
         #message("Count matrix is too big - we will be working with sparse matrices.")
         counts = Matrix::t(logcounts(sce))
         if (!is.null(nPC)){
-          pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
-          counts = pcs$x
+          n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))
+          if (n > 2){
+            pcs = suppressWarnings( prcomp_irlba(counts , n = min(nPC, (nrow(counts)-1) , (ncol(counts) - 1))) )
+            counts = pcs$x
+          }
         }
         rownames(counts) = colnames(sce)
         out = .assign_neighbors(counts , reference_cells = colnames(sce), query_cells = colnames(sce), n.neigh = n.neigh)
