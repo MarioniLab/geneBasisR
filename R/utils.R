@@ -1,7 +1,8 @@
 # Contains various check functions to examine whether variables are of the right format
 
 
-#' @importFrom SingleCellExperiment assays logcounts counts
+#' @importFrom SingleCellExperiment logcounts counts
+#' @importFrom SummarizedExperiment assays
 .prepare_sce_counts = function(sce){
   if (!is(sce , "SingleCellExperiment")){
     stop("sce should be a SingleCellExperiment object.")
@@ -58,7 +59,7 @@
 }
 
 
-#' @import SingleCellExperiment
+#' @importFrom SummarizedExperiment assays
 .check_sce = function(sce){
   if (!is(sce , "SingleCellExperiment")){
     stop("sce should be a SingleCellExperiment object.")
@@ -74,7 +75,7 @@
   }
 }
 
-
+#' @importFrom SingleCellExperiment colData
 .check_celltype_in_sce = function(sce){
   if (.check_sce(sce)){
     if (!("celltype" %in% colnames(colData(sce)))){
@@ -106,6 +107,7 @@
   }
 }
 
+#' @importFrom SingleCellExperiment colData
 .check_batch = function(sce, batch){
   if (.check_sce(sce)){
     if (!is.null(batch)){
@@ -331,7 +333,7 @@
 }
 
 
-
+#' @importFrom SingleCellExperiment colData
 .update_sce_w_custom_celltype_id = function(sce , celltype.id = "celltype"){
   meta = as.data.frame(colData(sce))
   if (!celltype.id %in% colnames(meta)){

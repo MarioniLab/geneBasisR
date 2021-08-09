@@ -30,6 +30,7 @@ Imports:
     scran,
     scuttle,
     SingleCellExperiment,
+    SummarizedExperiment,
     tibble,
     uwot,
     viridis,
