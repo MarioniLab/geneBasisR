@@ -47,6 +47,8 @@
 
 
 #' @importFrom irlba prcomp_irlba
+#' @importFrom batchelor cosineNorm
+#' @importFrom SingleCellExperiment logcounts colData
 #' @import Matrix
 #'
 .get_mapping_single_batch = function(sce , genes = rownames(sce), n.neigh = 5, nPC = 50 , cosine = F){
@@ -99,7 +101,8 @@
 }
 
 
-#' @import batchelor
+#' @importFrom batchelor cosineNorm multiBatchPCA reducedMNN fastMNN
+#' @importFrom SingleCellExperiment logcounts reducedDim
 #'
 .get_MNN_corrected_mapping = function(sce , genes = rownames(sce), batch = NULL, n.neigh = 5, nPC = 50, cosine = F){
   set.seed(32)
@@ -154,6 +157,7 @@
 
 
 #' @importFrom BiocNeighbors queryKNN
+#' @importFrom SingleCellExperiment colData
 .initiate_random_mapping = function(sce , batch = NULL, n.neigh = 5){
   if (is.null(batch)){
     batchFactor = factor(rep(1 , ncol(sce)))

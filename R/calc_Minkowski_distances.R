@@ -17,6 +17,7 @@
 #' @return data.frame, field 'gene' to gene from genes.predict; field 'dist' corresponds to calculated Minkowski distance.
 #' @export
 #' @importFrom gdata startsWith
+#' @importFrom SingleCellExperiment logcounts
 #'
 #' @examples
 #' require(SingleCellExperiment)
