@@ -1,7 +1,7 @@
 # Contains various check functions to examine whether variables are of the right format
 
 
-#' @import SingleCellExperiment
+#' @importFrom SingleCellExperiment assays logcounts counts
 .prepare_sce_counts = function(sce){
   if (!is(sce , "SingleCellExperiment")){
     stop("sce should be a SingleCellExperiment object.")
@@ -18,7 +18,7 @@
   }
 }
 
-#' @import SingleCellExperiment
+#' @importFrom SingleCellExperiment colData
 .prepare_sce_cell_ids = function(sce){
   if (!is(sce , "SingleCellExperiment")){
     stop("sce should be a SingleCellExperiment object.")
@@ -44,7 +44,6 @@
   }
 }
 
-#' @import SingleCellExperiment
 .prepare_sce = function(sce){
   sce = .prepare_sce_counts(sce)
   sce = .prepare_sce_cell_ids(sce)
