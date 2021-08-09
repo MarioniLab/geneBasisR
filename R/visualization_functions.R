@@ -8,7 +8,8 @@
 #' @param ... Additional arguments to pass.
 #' @return Heatmap for co-expression.
 #' @export
-#' @import ggcorrplot
+#' @importFrom ggcorrplot ggcorrplot
+#' @importFrom SingleCellExperiment logcounts
 #'
 plot_coexpression = function(sce , genes , title = NULL, ...){
   current.sce = sce[genes , ]
@@ -60,7 +61,9 @@ plot_mapping_heatmap = function(mapping , levels = unique(mapping$celltype) , ti
 #' @param ncol Positive integer specifying number of columns for ggarrange
 #' @return For each gene: scater plot with UMAP-coordinates colored by gene expression
 #' @export
-#' @import tibble ggpubr ggplot2 viridis SingleCellExperiment
+#' @import ggpubr ggplot2 viridis
+#' @importFrom tibble rownames_to_column
+#' @importFrom SingleCellExperiment reducedDim
 #'
 plot_umaps_w_counts = function(sce , genes, size = .25, ncol = NULL){
   # SCE should contain reducedDim = UMAP, which contains 2 columns: x and y
@@ -98,14 +101,15 @@ plot_umaps_w_counts = function(sce , genes, size = .25, ncol = NULL){
 #'
 #' @return Heatmap with average across (per gene/per celltype)
 #' @export
-#' @import ggpubr ggplot2 viridis SingleCellExperiment
+#' @import ggpubr ggplot2 viridis
+#' @importFrom SingleCellExperiment logcounts
 #'
 plot_expression_heatmap = function(sce , celltype.id = "celltype", genes , value.type){
   sce = sce[genes, ]
   sce = .update_sce_w_custom_celltype_id(sce , celltype.id = celltype.id)
   stat = lapply(unique(sce$celltype) , function(celltype){
     current.sce = sce[, sce$celltype == celltype]
-    current.counts = as.matrix( assay(current.sce, "logcounts" ))
+    current.counts = as.matrix( logcounts(current.sce))
     if (value.type == "mean"){
       current.stat = data.frame(gene = rownames(sce) , value = apply(current.counts , 1 , mean))
     }
@@ -153,9 +157,6 @@ plot_redundancy_stat = function(redundancy_stat, celltypes = unique(redundancy_s
     labs(x = "Gene" , y = "Celltype")
   return(p)
 }
-
-
-
 
 
 

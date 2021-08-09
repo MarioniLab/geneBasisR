@@ -11,7 +11,6 @@
 #' @param verbose Boolean identifying whether intermediate print outputs should be returned. Default verbose=TRUE.
 #' @return List, each element corresponds to a gene in genes. Each element is data.frame with co-expressed genes.
 #' @export
-#' @import SingleCellExperiment
 #'
 #' @examples
 #' require(SingleCellExperiment)
@@ -38,8 +37,9 @@ get_coexpression_stat = function(sce, genes, n = 10, corr.thresh = 0.5, method =
   }
 }
 
+#' @importFrom SingleCellExperiment logcounts
+#' @importFrom stats cor
 .get_coexpression_stat_single_gene = function(sce, gene, n = 10 , corr.thresh = 0.5, method = "spearman"){
-
   res = tryCatch(
     {
       counts = as.matrix( logcounts(sce))

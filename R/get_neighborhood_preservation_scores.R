@@ -16,6 +16,7 @@
 #' @return data.frame, each row corresponds to cell from counts matrix, contains field cell_score = cell neighborhood preservation score
 #' @export
 #' @importFrom Rfast dista
+#' @importFrom SingleCellExperiment colData
 #'
 #' @examples
 #' require(SingleCellExperiment)
@@ -67,7 +68,7 @@ get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, gen
   }
 }
 
-
+#' @importFrom Rfast dista
 .get_neighborhood_preservation_scores_single_batch = function(sce, neighs.all_stat = NULL,  genes.all = rownames(sce),
                                                               genes.selection, n.neigh = 5, nPC.all = 50, nPC.selection = NULL, option = "exact"){
   if (n.neigh > ncol(sce)-1){
@@ -121,6 +122,7 @@ get_neighborhood_preservation_scores = function(sce, neighs.all_stat = NULL, gen
 #' @return List containing fields 'counts' - PC coordinates for cells in True graph; 'neighs.all' - kNN-graph with assigned neighbors in True graph; 'mean_dist' - vector (for each cell) containing mean distance to other cells.
 #' @export
 #' @importFrom paleotree reverseList
+#' @importFrom SingleCellExperiment colData
 #'
 get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n.neigh = 5 , nPC.all = 50 , option = "exact", ...){
   args = c(as.list(environment()) , list(...))
@@ -155,6 +157,7 @@ get_neighs_all_stat = function(sce , genes.all = rownames(sce) , batch = NULL, n
 #' @importFrom irlba prcomp_irlba
 #' @import Matrix
 #' @importFrom Rfast dista
+#' @importFrom SingleCellExperiment logcounts
 #'
 .get_neighs_all_stat_single_batch = function(sce , genes.all = rownames(sce) , n.neigh = 5 , nPC.all = 50 , option = "exact"){
   set.seed(32)

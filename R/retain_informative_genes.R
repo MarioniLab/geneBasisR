@@ -12,7 +12,6 @@
 #'
 #' @return Reduced sce with prefiltered set of genes.
 #' @export
-#' @import SingleCellExperiment
 #' @importFrom gdata startsWith
 #'
 #' @examples
@@ -55,7 +54,7 @@ retain_informative_genes = function(sce, n = NULL, var.thresh = 0, select.hvgs =
 }
 
 
-#' @import scran
+#' @importFrom scran modelGeneVar getTopHVGs
 .get_hvgs = function(sce, n = NULL, var.thresh = 0){
   out = tryCatch(
     {

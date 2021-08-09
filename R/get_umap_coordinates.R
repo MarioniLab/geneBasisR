@@ -10,8 +10,8 @@
 #'
 #' @return data.frame, where UMAP-coordinates are assigned as x and y.
 #' @export
-#' @import SingleCellExperiment
-#' @import batchelor
+#' @importFrom SingleCellExperiment colData logcounts
+#' @importFrom batchelor multiBatchPCA reducedMNN
 #' @importFrom uwot umap
 #' @importFrom irlba prcomp_irlba
 #' @importFrom tibble rownames_to_column

@@ -13,8 +13,8 @@
 #'
 #' @return
 #' @export
-#' @import scran
-#' @import tibble
+#' @importFrom scran findMarkers
+#' @importFrom tibble rownames_to_column
 #'
 #' @examples
 #' require(SingleCellExperiment)

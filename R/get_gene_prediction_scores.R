@@ -90,6 +90,8 @@ get_gene_prediction_scores = function(sce, genes.selection, genes.all = rownames
 #'
 #' @return
 #' @export
+#' @importFrom SingleCellExperiment logcounts
+#' @importFrom stats cor
 #'
 #' @examples
 #' require(SingleCellExperiment)

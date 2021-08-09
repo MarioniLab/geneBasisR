@@ -25,7 +25,8 @@
 #'
 #' @return SingleCellExperiment object with gene counts/logcounts and meta-data (if supplied) stored in colData.
 #' @export
-#' @import SingleCellExperiment
+#' @importFrom SingleCellExperiment SingleCellExperiment colData
+#' @importFrom SummarizedExperiment assays
 #' @importFrom scuttle readSparseCounts
 #' @examples
 #' require(SingleCellExperiment)
@@ -90,7 +91,7 @@ raw_to_sce = function(counts_dir, counts_type = "counts", transform_counts_to_lo
 }
 
 
-#' @import SingleCellExperiment
+#' @importFrom SingleCellExperiment colData
 #' @importFrom scuttle logNormCounts
 #' @importFrom batchelor multiBatchNorm
 .log_normalise = function(sce, batch = NULL, verbose = TRUE, d = 50, min.mean = 0.1){

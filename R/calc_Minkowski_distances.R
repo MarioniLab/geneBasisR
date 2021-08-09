@@ -18,6 +18,7 @@
 #' @export
 #' @importFrom gdata startsWith
 #' @importFrom SingleCellExperiment logcounts
+#' @importFrom stats dist
 #'
 #' @examples
 #' require(SingleCellExperiment)
