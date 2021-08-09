@@ -140,7 +140,7 @@
         batchFactor = factor(meta[, colnames(meta) == batch])
         if (!is.null(nPC)){
           counts = multiBatchPCA(counts , batch = batchFactor , d = nPC)
-          counts = do.call(reducedMNN , counts)
+          counts = do.call(reducedMNN , as.list(counts))
           counts = counts$corrected
         } else {
           counts = fastMNN(counts , batch = batchFactor , d = NA)
