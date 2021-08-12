@@ -6,7 +6,7 @@
 
 - Provides evaluation of any selected gene panel on -cell type/-cell and -gene levels. 
 
-For greater details on the method, please read our paper: https://www.biorxiv.org/content/10.1101/2021.08.10.455720v1. Also, explore vignette and tutorials to get a better grasp on the package and its functions.
+For greater details on the method, please read our preprint: https://www.biorxiv.org/content/10.1101/2021.08.10.455720v1. Also, explore vignette and tutorials to get a better grasp on the package and its functions.
 
 ### Installation
 
