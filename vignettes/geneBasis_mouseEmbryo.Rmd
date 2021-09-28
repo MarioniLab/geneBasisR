@@ -97,9 +97,18 @@ p
 
 To select gene panel, use `gene_search`. 
 
-We use `sample` as batch identification. 
+The main arguments of `gene_search` include:
 
-We also pre-computed first 5 genes for the selection from scratch, and we will plug them as an argument for `genes_base`.
+- `genes_base`: string specifying pre-selected genes to be included in the panel. Default `genes_base = NULL` meaning that no genes are selected. In this vignette we pre-computed first 5 genes, and we will plug them as an argument for `genes_base`: `genes_base = c("Hba-x", "Acta2", "Ttr", "Crabp1" , "Hoxaas3")`.
+
+- `n_genes_total`: a scalar specifying number of genes to be selected.
+
+- `batch`: character vector specifying batch (if known). Should be in colData of SingleCellExperiment object. Default `batch = NULL`meaning no batches are specified. Here we use `sample` as batch identification: `batch = "sample`.
+
+- `genes.discard`: string specifying pre-selected genes to be explicitly discarded from the panel. Default `genes.discard = NULL` meaning that no genes are discarded. 
+
+- `genes.discard_prefix`: string specifying prefix for genes to be explicitly discarded from the panel (e.g. "Rpl" for large ribosomal subunit if no ribosomal genes are of interest). Default `genes.discard_prefix = NULL` meaning that no genes are discarded. 
+
 
 ```{r gene-search}
  
