@@ -103,7 +103,7 @@ The main arguments of `gene_search` include:
 
 - `n_genes_total`: a scalar specifying number of genes to be selected.
 
-- `batch`: character vector specifying batch (if known). Should be in colData of SingleCellExperiment object. Default `batch = NULL`meaning no batches are specified. Here we use `sample` as batch identification: `batch = "sample`.
+- `batch`: character vector specifying batch (if known). Should be in colData of SingleCellExperiment object. Default `batch = NULL` meaning no batches are specified. Here we use `sample` as batch identification: `batch = "sample`.
 
 - `genes.discard`: string specifying pre-selected genes to be explicitly discarded from the panel. Default `genes.discard = NULL` meaning that no genes are discarded. 
 
