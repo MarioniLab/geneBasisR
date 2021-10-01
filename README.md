@@ -81,7 +81,7 @@ Few notes:
 
 **Additional tutorials for further exploration of the package:**
 
-2. Extended version of in-built vignette where we provide further suggestions how to proceed with detailed evaluation of the selected gene panels: [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/eb746577190c2326e311a1289eb8f779dd4f9e9f/geneBasis_mouseEmbryo_extended.html)
+2. Extended version of in-built vignette where we provide further suggestions how to proceed with detailed evaluation of the selected gene panels: [Extended vignette of library design and its evaluation for mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/7aedf70db1fff6f4b616c07a36789eecc097a286/geneBasis_mouseEmbryo_extended.html)
 
 3. Illustration of performance of **geneBasis** within an individual cell type + suggestion (functional) how to pre-select relevant for the cell type genes:
 [Vignette of library design within brain cells, mouse embryo, E8.5](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/eb746577190c2326e311a1289eb8f779dd4f9e9f/geneBasis_mouseEmbryo_within_celltype.html)
