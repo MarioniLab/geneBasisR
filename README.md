@@ -89,3 +89,4 @@ Few notes:
 4. Here we introduce how to create correct sce object from raw .txt data (exemplified for spleen) and introduce a gene panel evaluation workflow to compare two independent selections. [Vignette of library design for spleen dataset](https://rawcdn.githack.com/MarioniLab/geneBasis_tutorials/055b5e181c5cbe99f7aa0c3f655c38cd06ac942e/geneBasis_spleen.html)
 
 
+Cite the code: [![DOI](https://zenodo.org/badge/327073039.svg)](https://zenodo.org/badge/latestdoi/327073039).
