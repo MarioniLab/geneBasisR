@@ -120,11 +120,11 @@
         meta = as.data.frame(colData(sce))
         batchFactor = factor(meta[, colnames(meta) == batch])
         if (!is.null(nPC)){
-          print(1)
+
           counts = multiBatchPCA(counts , batch = batchFactor , d = nPC)
-          print(2)
+
           counts = do.call(reducedMNN , counts)
-          print(3)
+
           counts = counts$corrected
         } else {
           counts = fastMNN(counts , batch = batchFactor , d = NA)

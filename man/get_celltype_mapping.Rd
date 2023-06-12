@@ -28,7 +28,7 @@ get_celltype_mapping(
 
 \item{n.neigh}{Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
 
-\item{nPC.selection}{Positive integer (or NULL, if no PCA to be applied) specifying number of PCs to use for construction of True kNN-graph. Default nPC.selection=NULL.}
+\item{nPC.selection}{Positive integer (or NULL, if no PCA to be applied) specifying number of PCs to use for construction of True kNN-graph. Default nPC.selection=NULL. We advise to set it to 50 if \code{length(genes.selection) > 50}.}
 
 \item{cosine}{Boolean specifying if cosine normalization should be applied prior to constructing kNN-graph. Default cosine=FALSE.}
 

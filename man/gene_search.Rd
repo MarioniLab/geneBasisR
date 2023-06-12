@@ -32,7 +32,7 @@ gene_search(
 
 \item{p.minkowski}{Order of Minkowski distance. Default p.minkowski=3.}
 
-\item{nPC.selection}{Scalar specifying number of PCs to use for Selection Graphs. Default nPC=NULL.}
+\item{nPC.selection}{Scalar specifying number of PCs to use for Selection Graphs. Default nPC=NULL. We advise to set it to 50 if \code{length(genes.selection) > 50}.}
 
 \item{nPC.all}{Scalar specifying number of PCs to use for True Graph. Default nPC.all=50.}
 

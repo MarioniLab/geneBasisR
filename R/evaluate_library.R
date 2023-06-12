@@ -22,7 +22,7 @@
 #' @param gene_stat_all If not NULL (NULL is default), contains precomputed stat relevant for gene prediction score. Use geneBasisR::get_gene_correlation_scores to calculate this.
 #' @param ... Additional parameters
 #'
-#' @return
+#' @return list of evaluation metrics on provided dataset and gene selection
 #' @export
 #'
 #' @examples

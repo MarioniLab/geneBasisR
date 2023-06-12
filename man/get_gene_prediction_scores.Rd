@@ -32,7 +32,7 @@ get_gene_prediction_scores(
 
 \item{nPC.all}{Scalar (or NULL) specifying number of PCs to use for construction of True kNN-graph. Default nPC.all=50.}
 
-\item{nPC.selection}{Scalar (or NULL) specifying number of PCs to use for construction of Selection kNN-graph. Default nPC.selection=NULL (no PCA).}
+\item{nPC.selection}{Scalar (or NULL) specifying number of PCs to use for construction of Selection kNN-graph. Default nPC.selection=NULL (no PCA). We advise to set it to 50 if \code{length(genes.selection) > 50}.}
 
 \item{genes.predict}{Character vector containing names of genes for which we want to calculate gene prediction score. Default = genes.all.}
 

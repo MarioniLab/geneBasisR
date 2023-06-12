@@ -32,7 +32,7 @@ get_neighborhood_preservation_scores(
 
 \item{nPC.all}{Scalar specifying number of PCs to use for construction of True kNN-graph (or NULL, if no PCA to be applied). Default nPC.all=50.}
 
-\item{nPC.selection}{Scalar specifying number of PCs to use for construction of True kNN-graph (or NULL, if no PCA to be applied). Default nPC.selection=NULL (no PCA to be applied).}
+\item{nPC.selection}{Scalar specifying number of PCs to use for construction of True kNN-graph (or NULL, if no PCA to be applied). Default nPC.selection=NULL (no PCA to be applied). We advise to set it to 50 if \code{length(genes.selection) > 50}.}
 
 \item{option}{String specifying how average distance for each cell should be calculated. If == 'exact', all other cells in the batch are taken into account. If == 'approx', the random subset of 10\% of the cells will be used. 'exact' is default, but 'approx' is faster and is recommended for big data sets.}
 

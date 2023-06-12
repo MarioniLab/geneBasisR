@@ -10,7 +10,7 @@
 #' @param celltype.id Character specifying which field in colData(sce) should be used as celltype. Default celltype.id="celltype".
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
 #' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
-#' @param nPC.selection Positive integer (or NULL, if no PCA to be applied) specifying number of PCs to use for construction of True kNN-graph. Default nPC.selection=NULL.
+#' @param nPC.selection Positive integer (or NULL, if no PCA to be applied) specifying number of PCs to use for construction of True kNN-graph. Default nPC.selection=NULL. We advise to set it to 50 if `length(genes.selection) > 50`.
 #' @param cosine Boolean specifying if cosine normalization should be applied prior to constructing kNN-graph. Default cosine=FALSE.
 #' @param return.stat Boolean specifying if stat for the mapping (= diagonal values for the cell type confusion matrix) should be returned alongside the mapping.
 #' @param which_genes_to_use String specifying whether cell type mapping should be performed only on differentially expressed (between cell types) genes (= 'DE') or all selected genes (= 'all'). Default which_genes_to_use="all".

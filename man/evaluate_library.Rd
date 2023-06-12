@@ -57,7 +57,7 @@ evaluate_library(
 \item{...}{Additional parameters}
 }
 \value{
-
+list of evaluation metrics on provided dataset and gene selection
 }
 \description{
 For the selected library, returns estimates of the library quality (at cell, gene and/or celltype levels) as a function of number of genes.

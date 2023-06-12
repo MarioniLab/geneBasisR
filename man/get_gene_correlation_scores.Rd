@@ -24,16 +24,13 @@ get_gene_correlation_scores(
 
 \item{n.neigh}{Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.}
 
-\item{nPC}{Scalar (or NULL) specifying number of PCs to use for construction of kNN-graph. Default nPC=NULL.}
+\item{nPC}{Scalar (or NULL) specifying number of PCs to use for construction of kNN-graph. Default nPC=NULL. We advise to set it to 50 if \code{length(genes.selection) > 50}.}
 
 \item{genes.predict}{Character vector containing names of genes for which we want to calculate gene prediction score. Default = rownames(sce).}
 
 \item{method}{Character specifying method for correlation. Availbale options are c("spearman", "pearson", "kendall"). Default method="spearman".}
 
 \item{...}{Additional arguments.}
-}
-\value{
-
 }
 \description{
 Calculates per gene correlation between measured expression levels and estimated expression levels (average across neighbors).

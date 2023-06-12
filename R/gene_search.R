@@ -10,7 +10,7 @@
 #' @param batch Name of the field in colData(sce) to specify batch. Default batch=NULL if no batch is applied.
 #' @param n.neigh Positive integer > 1, specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param p.minkowski Order of Minkowski distance. Default p.minkowski=3.
-#' @param nPC.selection Scalar specifying number of PCs to use for Selection Graphs. Default nPC=NULL.
+#' @param nPC.selection Scalar specifying number of PCs to use for Selection Graphs. Default nPC=NULL. We advise to set it to 50 if `length(genes.selection) > 50`.
 #' @param nPC.all Scalar specifying number of PCs to use for True Graph. Default nPC.all=50.
 #' @param genes.discard Character vector containing genes to be excluded from candidates (note that they still will be used for graphs construction. If you want to exclude them from graph construction as well, just discard them prior in sce object). Default = NULL and no genes will be discarded.
 #' @param genes.discard_prefix Character vector containing prefixes of genes to be excluded (e.g. Rpl for L ribosomal proteins. Note that they still will be used for graphs construction. If you want to exclude them from graph construction as well, just discard them prior in sce object). Default = NULL and no genes will be discarded.

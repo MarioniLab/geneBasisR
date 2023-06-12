@@ -26,9 +26,6 @@ get_DE_genes(
 
 \item{...}{Additional arguments}
 }
-\value{
-
-}
 \description{
 Essentially a wrapper for scran::findMarkers. Returns an aggregated stat across all cell types in a form of data.frame:
 each row corresponds to cell type and gene which is found to be DE in this cell type (using designated FDR as a threshold for significance), FDR and summary.logFC.

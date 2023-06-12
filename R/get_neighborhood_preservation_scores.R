@@ -9,7 +9,7 @@
 #' @param batch Name of the field in colData(sce) specifying batch. Default batch=NULL if no batch is applied.
 #' @param n.neigh Positive integer > 1 specifying number of neighbors to use for kNN-graph. Default n.neigh=5.
 #' @param nPC.all Scalar specifying number of PCs to use for construction of True kNN-graph (or NULL, if no PCA to be applied). Default nPC.all=50.
-#' @param nPC.selection Scalar specifying number of PCs to use for construction of True kNN-graph (or NULL, if no PCA to be applied). Default nPC.selection=NULL (no PCA to be applied).
+#' @param nPC.selection Scalar specifying number of PCs to use for construction of True kNN-graph (or NULL, if no PCA to be applied). Default nPC.selection=NULL (no PCA to be applied). We advise to set it to 50 if `length(genes.selection) > 50`.
 #' @param option String specifying how average distance for each cell should be calculated. If == 'exact', all other cells in the batch are taken into account. If == 'approx', the random subset of 10% of the cells will be used. 'exact' is default, but 'approx' is faster and is recommended for big data sets.
 #' @param ... Additional arguments
 #'
